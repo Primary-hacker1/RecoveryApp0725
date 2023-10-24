@@ -142,9 +142,7 @@ public class ActiveActivity extends XPageActivity {
     public void initLiveData() {
         LiveEventBus
                 .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, new Observer<PoolMessage>() {
-                    @Override
-                    public void onChanged(@Nullable PoolMessage msg) {
+                .observe(this, msg->{
                         if (msg.isState()) {
                             Log.d("BT", msg.getObjectName());
                             if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
@@ -170,14 +168,11 @@ public class ActiveActivity extends XPageActivity {
                         } else {
                             Log.d("BT", "没有任何数据");
                         }
-                    }
-                });
+                    });
 
         LiveEventBus
                 .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, new Observer<LiveMessage>() {
-                    @Override
-                    public void onChanged(@Nullable LiveMessage msg) {
+                .observe(this, msg->{
                         if (!msg.getIsConnt()) {
                             //未连接
                             binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
@@ -209,8 +204,7 @@ public class ActiveActivity extends XPageActivity {
                             //    binding.progressViewRight.startProgressAnimation();
                             binding.activeTxtRight.setCenterString("0");
                         }
-                    }
-                });
+                    });
         LiveEventBus
                 .get("BT_PROTOCOL", PoolMessage.class)
                 .observe(this,
