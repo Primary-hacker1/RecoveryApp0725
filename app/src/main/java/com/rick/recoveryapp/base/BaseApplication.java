@@ -21,7 +21,6 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.entity.LiveMessage;
@@ -31,7 +30,6 @@ import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
-import com.rick.recoveryapp.helper.LogUtils;
 import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
@@ -47,11 +45,8 @@ import com.xuexiang.xupdate.utils.UpdateUtils;
 import com.xuexiang.xutil.tip.ToastUtils;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Administrator on 2017/4/5.

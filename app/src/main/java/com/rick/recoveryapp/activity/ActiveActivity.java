@@ -211,7 +211,6 @@ public class ActiveActivity extends XPageActivity {
                         }
                     }
                 });
-
         LiveEventBus
                 .get("BT_PROTOCOL", PoolMessage.class)
                 .observe(this,
