@@ -31,6 +31,7 @@ import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
+import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -166,7 +167,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
         XHttpSDK.init(this);   //初始化网络请求框架，必须首先执行
         //XHttpSDK.setBaseUrl("http://124.221.169.68:8088");
-        XHttpSDK.setBaseUrl("http://124.221.169.68:5000");
+        XHttpSDK.setBaseUrl(UriConfig.BASE_URL);
     }
 
     /**

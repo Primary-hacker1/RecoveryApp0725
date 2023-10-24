@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.greenrobot.greendao' // apply plugin  数据库
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -37,7 +38,7 @@ android {
         viewBinding = true
     }
 
-//greendao配置
+    //greendao配置
     greendao {
         // 指定数据库schema版本号，迁移等  c操作会用到
         schemaVersion 2
@@ -45,6 +46,25 @@ android {
         targetGenDir 'src/main/java'
         // 设置生成的数据库相关文件的包名，默认为entity所在的包名
         daoPackage 'com.rick.recoveryapp.greendao'
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                Calendar calendar = Calendar.getInstance(Locale.CHINA)
+                def buildDate = String.format(Locale.CHINA, "%04d%02d%02d",
+                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))
+                def versionName = defaultConfig.versionName
+                if (variant.buildType.name == 'release') {
+                    outputFileName = "ZXJ-inspect-${buildDate}-${versionName}r${versionCode}.apk"
+                } else {
+                    outputFileName = "ZXJ-inspect-${buildDate}_debug.apk"
+                }
+            }
     }
 }
 
@@ -55,20 +75,6 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation files('libs\\unity-classes.jar')
     implementation files('libs\\jarsdk.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
-    implementation files('libs\\unity-classes.jar')
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
