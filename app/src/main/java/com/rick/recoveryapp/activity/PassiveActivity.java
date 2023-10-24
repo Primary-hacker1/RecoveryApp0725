@@ -48,6 +48,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/*
+* "被动模式需要重构界面冗余"
+* */
+@Deprecated()
 public class PassiveActivity extends XPageActivity {
 
     int modleType = 0;
@@ -531,32 +535,29 @@ public class PassiveActivity extends XPageActivity {
             }
         });
 
-        binding.passiveImgBlood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                        if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                            // Thread.sleep(500);
-                            btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
-                            // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                        } else if (ContorlState.equals("51")) {
-                            // Thread.sleep(500);
-                            btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
-                            // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                            ContorlState = "52";
-                            binding.passiveTxtBlood.setCenterString("点击开始测量血压");
-                        }
-                    } else {
-                        Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+        binding.passiveImgBlood.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                    if (ContorlState.equals("00") || ContorlState.equals("52")) {
+                        // Thread.sleep(500);
+                        btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
+                        // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                    } else if (ContorlState.equals("51")) {
+                        // Thread.sleep(500);
+                        btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
+                        // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
+                        ContorlState = "52";
+                        binding.passiveTxtBlood.setCenterString("点击开始测量血压");
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 //                binding.tabSegment.setOnTabClickListener(new TabSegment.OnTabClickListener() {

@@ -83,14 +83,10 @@ public class HistoryFragment extends Fragment implements AdapterView.OnItemClick
 
 
     public void initClick() {
-
-        binding.hisImgSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.hisImgSelect.setOnClickListener(view -> {
                 String message = binding.hisEtxtUser.getText().toString();
                 Bandin(message);
-            }
-        });
+            });
     }
 
     @Override

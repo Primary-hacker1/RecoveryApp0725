@@ -31,6 +31,7 @@ import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
+import com.rick.recoveryapp.helper.LogUtils;
 import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
@@ -383,8 +384,12 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
             }
         } else {
             Toast.makeText(context, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
-
         }
+//        LogUtils.d("macDrList="+macDrList.get(0).getBlueThMac().toString());
+//        LogUtils.d("macDrList="+macDrList.get(0).getEcgMac().toString());
+//        LogUtils.d("macDrList="+macDrList.get(0).getBloodMac().toString());
+//        LogUtils.d("macDrList="+macDrList.get(0).getOxygenMac().toString());
+
     }
 
     public static String deleteCharString(String sourceString) {

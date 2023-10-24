@@ -572,7 +572,7 @@ public class LoginActivity extends XPageActivity {
 //                String bloodmac = "A4C138402A4D";
 //                String oxygen = "00A0503D0264";
 
-                String bluethmac = "001B10F04B60";
+                String bluethmac = "001B10F1EE79";
                 String ecgmac = "E76B581B5164";
                 String bloodmac = "A4C138421CF3";
                 String oxygen = "00A0503BD222";

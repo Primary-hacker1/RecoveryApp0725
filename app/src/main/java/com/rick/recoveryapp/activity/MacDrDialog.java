@@ -75,6 +75,9 @@ public class MacDrDialog extends XPageActivity {
             @Override
             public void onClick(View v) {
                 if (SetMac()) {
+                    if(isfer==null){
+                        return;
+                    }
                     if (isfer.equals("Y")) {
                         Intent in = new Intent(context, AdminMainActivity.class);
                         startActivity(in);
