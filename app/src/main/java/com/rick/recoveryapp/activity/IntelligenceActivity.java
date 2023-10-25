@@ -581,9 +581,7 @@ public class IntelligenceActivity extends XPageActivity {
 //                        LocalConfig.UserID = Long.valueOf(sim).longValue();
                     if (modletype == 1) {
                         LocalConfig.ModType = 0;
-                        Intent in = new Intent(context, ActiveActivity.class);
-                        //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(in);
+                        ActiveXActivity.newActiveXActivity(this);
                         finish();
                     } else if (modletype == 2) {
                         LocalConfig.ModType = 1;

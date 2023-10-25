@@ -1,10 +1,7 @@
 package com.rick.recoveryapp.activity.u3d;
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,20 +11,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.activity.AdminMainActivity;
 import com.rick.recoveryapp.activity.DataResultsActivity;
-import com.rick.recoveryapp.activity.SelectRolesActivity;
-import com.rick.recoveryapp.activity.TestActivity;
 import com.rick.recoveryapp.base.BaseApplication;
-import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.bluetooth.BtKeepService;
 import com.rick.recoveryapp.chart.MyAVG;
-import com.rick.recoveryapp.entity.ConnectData;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.Ondata;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
@@ -37,19 +26,15 @@ import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.ActiveTimeTool;
-import com.rick.recoveryapp.utils.CRC16Util;
-import com.rick.recoveryapp.utils.DateUtil;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.rick.recoveryapp.utils.view.WaveShowView;
 import com.unity3d.player.UnityPlayer;
-import com.xuexiang.xui.widget.button.roundbutton.RoundButton;
 import com.xuexiang.xui.widget.button.shadowbutton.ShadowButton;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xui.widget.progress.CircleProgressView;
 import com.xuexiang.xui.widget.textview.supertextview.SuperTextView;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

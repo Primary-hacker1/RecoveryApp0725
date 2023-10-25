@@ -104,8 +104,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                     }
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
                     if (LocalConfig.ModType == 0) {
-                        Intent in = new Intent(context, ActiveActivity.class);
-                        startActivity(in);
+                        ActiveXActivity.newActiveXActivity(this);
                         finish();
                     }
                     if (LocalConfig.ModType == 1) {
