@@ -13,43 +13,43 @@ public abstract class BaseFrameLayout<Vb extends androidx.databinding.ViewDataBi
         return null;
     }
     
-    @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
     public final Vb getBinding() {
         return null;
     }
     
-    public final void setBinding(@org.jetbrains.annotations.NotNull
+    public final void setBinding(@org.jetbrains.annotations.NotNull()
     Vb p0) {
     }
     
-    @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
     public final android.content.Context getMContext() {
         return null;
     }
     
-    public final void setMContext(@org.jetbrains.annotations.NotNull
+    public final void setMContext(@org.jetbrains.annotations.NotNull()
     android.content.Context p0) {
     }
     
-    public BaseFrameLayout(@org.jetbrains.annotations.NotNull
+    public BaseFrameLayout(@org.jetbrains.annotations.NotNull()
     android.content.Context context) {
         super(null);
     }
     
-    public BaseFrameLayout(@org.jetbrains.annotations.NotNull
-    android.content.Context context, @org.jetbrains.annotations.NotNull
+    public BaseFrameLayout(@org.jetbrains.annotations.NotNull()
+    android.content.Context context, @org.jetbrains.annotations.NotNull()
     android.util.AttributeSet attributes) {
         super(null);
     }
     
-    public BaseFrameLayout(@org.jetbrains.annotations.NotNull
-    android.content.Context context, @org.jetbrains.annotations.NotNull
+    public BaseFrameLayout(@org.jetbrains.annotations.NotNull()
+    android.content.Context context, @org.jetbrains.annotations.NotNull()
     android.util.AttributeSet attributes, int p2_52215) {
         super(null);
     }
     
     public abstract void initView();
     
-    @androidx.annotation.LayoutRes
+    @androidx.annotation.LayoutRes()
     protected abstract int getLayout();
 }

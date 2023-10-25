@@ -8,7 +8,7 @@ public final class BaseKt {
     /**
      * 类似java->runOnUiThread
      */
-    @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
     private static final kotlin.Lazy mainThread$delegate = null;
     
     /**
@@ -23,120 +23,120 @@ public final class BaseKt {
      * 扩展函数基类
      * @author zt
      */
-    public static final void toast(@org.jetbrains.annotations.NotNull
-    android.app.Activity $this$toast, @org.jetbrains.annotations.Nullable
+    public static final void toast(@org.jetbrains.annotations.NotNull()
+    android.app.Activity $this$toast, @org.jetbrains.annotations.Nullable()
     java.lang.String msg, int duration) {
     }
     
-    public static final void toast(@org.jetbrains.annotations.NotNull
-    android.app.Activity $this$toast, @org.jetbrains.annotations.Nullable
+    public static final void toast(@org.jetbrains.annotations.NotNull()
+    android.app.Activity $this$toast, @org.jetbrains.annotations.Nullable()
     java.lang.Integer msg, int duration) {
     }
     
-    public static final void toast(@org.jetbrains.annotations.NotNull
-    androidx.fragment.app.Fragment $this$toast, @org.jetbrains.annotations.Nullable
+    public static final void toast(@org.jetbrains.annotations.NotNull()
+    androidx.fragment.app.Fragment $this$toast, @org.jetbrains.annotations.Nullable()
     java.lang.String msg, int duration) {
     }
     
-    @org.jetbrains.annotations.NotNull
-    public static final <T extends java.lang.Object>io.reactivex.Single<T> single(@org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
+    public static final <T extends java.lang.Object>io.reactivex.Single<T> single(@org.jetbrains.annotations.NotNull()
     io.reactivex.Single<T> $this$single) {
         return null;
     }
     
-    public static final void navigateToActivity(@org.jetbrains.annotations.NotNull
-    android.app.Activity $this$navigateToActivity, @org.jetbrains.annotations.NotNull
+    public static final void navigateToActivity(@org.jetbrains.annotations.NotNull()
+    android.app.Activity $this$navigateToActivity, @org.jetbrains.annotations.NotNull()
     java.lang.Class<?> c) {
     }
     
-    public static final void navigateToActivity(@org.jetbrains.annotations.NotNull
-    android.app.Activity $this$navigateToActivity, @org.jetbrains.annotations.NotNull
-    java.lang.Class<?> c, @org.jetbrains.annotations.NotNull
+    public static final void navigateToActivity(@org.jetbrains.annotations.NotNull()
+    android.app.Activity $this$navigateToActivity, @org.jetbrains.annotations.NotNull()
+    java.lang.Class<?> c, @org.jetbrains.annotations.NotNull()
     android.os.Bundle bundle) {
     }
     
-    @org.jetbrains.annotations.NotNull
-    public static final <T extends java.lang.Object>io.reactivex.Single<T> async(@org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
+    public static final <T extends java.lang.Object>io.reactivex.Single<T> async(@org.jetbrains.annotations.NotNull()
     io.reactivex.Single<T> $this$async) {
         return null;
     }
     
-    @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
     @io.reactivex.annotations.SchedulerSupport(value = "none")
-    @io.reactivex.annotations.CheckReturnValue
-    public static final <T extends java.lang.Object>io.reactivex.disposables.Disposable subscribes(@org.jetbrains.annotations.NotNull
-    io.reactivex.Single<T> $this$subscribes, @org.jetbrains.annotations.NotNull
-    kotlin.jvm.functions.Function1<? super T, kotlin.Unit> onSuccess, @org.jetbrains.annotations.NotNull
+    @io.reactivex.annotations.CheckReturnValue()
+    public static final <T extends java.lang.Object>io.reactivex.disposables.Disposable subscribes(@org.jetbrains.annotations.NotNull()
+    io.reactivex.Single<T> $this$subscribes, @org.jetbrains.annotations.NotNull()
+    kotlin.jvm.functions.Function1<? super T, kotlin.Unit> onSuccess, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super com.common.throwe.BaseResponseThrowable, kotlin.Unit> onError) {
         return null;
     }
     
-    public static final <T extends java.lang.Object>void subscribes(@org.jetbrains.annotations.NotNull
-    com.uber.autodispose.SingleSubscribeProxy<T> $this$subscribes, @org.jetbrains.annotations.NotNull
-    kotlin.jvm.functions.Function1<? super T, kotlin.Unit> onSuccess, @org.jetbrains.annotations.NotNull
+    public static final <T extends java.lang.Object>void subscribes(@org.jetbrains.annotations.NotNull()
+    com.uber.autodispose.SingleSubscribeProxy<T> $this$subscribes, @org.jetbrains.annotations.NotNull()
+    kotlin.jvm.functions.Function1<? super T, kotlin.Unit> onSuccess, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super com.common.throwe.BaseResponseThrowable, kotlin.Unit> onError) {
     }
     
     /**
      * 设置view显示
      */
-    public static final void visible(@org.jetbrains.annotations.NotNull
+    public static final void visible(@org.jetbrains.annotations.NotNull()
     android.view.View $this$visible) {
     }
     
     /**
      * 设置view占位隐藏
      */
-    public static final void invisible(@org.jetbrains.annotations.NotNull
+    public static final void invisible(@org.jetbrains.annotations.NotNull()
     android.view.View $this$invisible) {
     }
     
     /**
      * 根据条件设置view显示隐藏 为true 显示，为false 隐藏
      */
-    public static final void visibleOrGone(@org.jetbrains.annotations.NotNull
+    public static final void visibleOrGone(@org.jetbrains.annotations.NotNull()
     android.view.View $this$visibleOrGone, boolean flag) {
     }
     
     /**
      * 根据条件设置view显示隐藏 为true 显示，为false 隐藏
      */
-    public static final void visibleOrInvisible(@org.jetbrains.annotations.NotNull
+    public static final void visibleOrInvisible(@org.jetbrains.annotations.NotNull()
     android.view.View $this$visibleOrInvisible, boolean flag) {
     }
     
     /**
      * 设置view隐藏
      */
-    public static final void gone(@org.jetbrains.annotations.NotNull
+    public static final void gone(@org.jetbrains.annotations.NotNull()
     android.view.View $this$gone) {
     }
     
     /**
      * 类似java->runOnUiThread
      */
-    @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
     public static final android.os.Handler getMainThread() {
         return null;
     }
     
-    public static final void onUI(@org.jetbrains.annotations.NotNull
+    public static final void onUI(@org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function0<kotlin.Unit> callback) {
     }
     
     /**
      * 将view转为bitmap
      */
-    @org.jetbrains.annotations.Nullable
-    @java.lang.Deprecated
-    public static final android.graphics.Bitmap toBitmap(@org.jetbrains.annotations.NotNull
-    android.view.View $this$toBitmap, float scale, @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.Nullable()
+    @java.lang.Deprecated()
+    public static final android.graphics.Bitmap toBitmap(@org.jetbrains.annotations.NotNull()
+    android.view.View $this$toBitmap, float scale, @org.jetbrains.annotations.NotNull()
     android.graphics.Bitmap.Config config) {
         return null;
     }
     
-    @org.jetbrains.annotations.Nullable
-    public static final android.graphics.Bitmap createBitmapSafely(int width, int height, @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.Nullable()
+    public static final android.graphics.Bitmap createBitmapSafely(int width, int height, @org.jetbrains.annotations.NotNull()
     android.graphics.Bitmap.Config config, int retryCount) {
         return null;
     }
@@ -148,38 +148,38 @@ public final class BaseKt {
     public static final void setLastClickTime(long p0) {
     }
     
-    public static final void setNoRepeatListener(@org.jetbrains.annotations.NotNull
-    android.view.View $this$setNoRepeatListener, long interval, @org.jetbrains.annotations.NotNull
+    public static final void setNoRepeatListener(@org.jetbrains.annotations.NotNull()
+    android.view.View $this$setNoRepeatListener, long interval, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super android.view.View, kotlin.Unit> action) {
     }
     
-    public static final boolean clickNoRepeat(@org.jetbrains.annotations.NotNull
+    public static final boolean clickNoRepeat(@org.jetbrains.annotations.NotNull()
     androidx.appcompat.app.AppCompatActivity $this$clickNoRepeat, long interval) {
         return false;
     }
     
-    public static final boolean clickNoRepeat(@org.jetbrains.annotations.NotNull
+    public static final boolean clickNoRepeat(@org.jetbrains.annotations.NotNull()
     androidx.fragment.app.DialogFragment $this$clickNoRepeat, long interval) {
         return false;
     }
     
-    public static final void notNull(@org.jetbrains.annotations.Nullable
-    java.lang.Object $this$notNull, @org.jetbrains.annotations.NotNull
-    kotlin.jvm.functions.Function1<java.lang.Object, kotlin.Unit> notNullAction, @org.jetbrains.annotations.NotNull
+    public static final void notNull(@org.jetbrains.annotations.Nullable()
+    java.lang.Object $this$notNull, @org.jetbrains.annotations.NotNull()
+    kotlin.jvm.functions.Function1<java.lang.Object, kotlin.Unit> notNullAction, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function0<kotlin.Unit> nullAction1) {
     }
     
     /**
      * 对一个输入框关闭键盘
      */
-    public static final void closeBoard(@org.jetbrains.annotations.NotNull
+    public static final void closeBoard(@org.jetbrains.annotations.NotNull()
     android.widget.EditText $this$closeBoard) {
     }
     
     /**
      * 对一个activity关闭键盘
      */
-    public static final void closeBoard(@org.jetbrains.annotations.NotNull
+    public static final void closeBoard(@org.jetbrains.annotations.NotNull()
     android.app.Activity $this$closeBoard) {
     }
     
@@ -219,7 +219,7 @@ public final class BaseKt {
      * 将一个整数作为id来寻找对应的颜色值，
      * 如果找不到或者发生了异常，那么将会返回白色
      */
-    public static final int findColor(int $this$findColor, @org.jetbrains.annotations.NotNull
+    public static final int findColor(int $this$findColor, @org.jetbrains.annotations.NotNull()
     android.content.Context context) {
         return 0;
     }
@@ -228,7 +228,7 @@ public final class BaseKt {
      * 将一个整数作为id来寻找对应的颜色值，
      * 如果找不到或者发生了异常，那么将会返回白色
      */
-    public static final int findColor(int $this$findColor, @org.jetbrains.annotations.NotNull
+    public static final int findColor(int $this$findColor, @org.jetbrains.annotations.NotNull()
     android.view.View view) {
         return 0;
     }
@@ -237,7 +237,7 @@ public final class BaseKt {
      * 如果当前整数是0，那么获取回调函数中的值作为返回值
      * 否则返回当前
      */
-    public static final int zeroTo(int $this$zeroTo, @org.jetbrains.annotations.NotNull
+    public static final int zeroTo(int $this$zeroTo, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function0<java.lang.Integer> value) {
         return 0;
     }
@@ -253,7 +253,7 @@ public final class BaseKt {
      * 将一个字符串转换为颜色值
      * 只接受1～8位0～F之间的字符
      */
-    public static final int parseColor(@org.jetbrains.annotations.NotNull
+    public static final int parseColor(@org.jetbrains.annotations.NotNull()
     java.lang.String $this$parseColor) {
         return 0;
     }
@@ -262,7 +262,7 @@ public final class BaseKt {
      * 尝试将一个字符串转换为整形，
      * 如果发生了异常或者为空，那么将会返回默认值
      */
-    public static final int tryInt(@org.jetbrains.annotations.NotNull
+    public static final int tryInt(@org.jetbrains.annotations.NotNull()
     java.lang.String $this$tryInt, int def) {
         return 0;
     }
@@ -270,7 +270,7 @@ public final class BaseKt {
     /**
      * 以一个View为res来源获取指定id的颜色值
      */
-    public static final int getColor(@org.jetbrains.annotations.NotNull
+    public static final int getColor(@org.jetbrains.annotations.NotNull()
     android.view.View $this$getColor, int id) {
         return 0;
     }
@@ -285,8 +285,8 @@ public final class BaseKt {
     /**
      * 从Context中尝试通过名字获取一个drawable的id
      */
-    public static final int findDrawableId(@org.jetbrains.annotations.NotNull
-    android.content.Context $this$findDrawableId, @org.jetbrains.annotations.NotNull
+    public static final int findDrawableId(@org.jetbrains.annotations.NotNull()
+    android.content.Context $this$findDrawableId, @org.jetbrains.annotations.NotNull()
     java.lang.String name) {
         return 0;
     }
@@ -294,9 +294,9 @@ public final class BaseKt {
     /**
      * 从Context中尝试通过名字获取一个指定类型的资源id
      */
-    public static final int findId(@org.jetbrains.annotations.NotNull
-    android.content.Context $this$findId, @org.jetbrains.annotations.NotNull
-    java.lang.String name, @org.jetbrains.annotations.NotNull
+    public static final int findId(@org.jetbrains.annotations.NotNull()
+    android.content.Context $this$findId, @org.jetbrains.annotations.NotNull()
+    java.lang.String name, @org.jetbrains.annotations.NotNull()
     java.lang.String type) {
         return 0;
     }
@@ -304,8 +304,8 @@ public final class BaseKt {
     /**
      * 尝试通过一个id获取对应的资源名
      */
-    @org.jetbrains.annotations.NotNull
-    public static final java.lang.String findName(@org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
+    public static final java.lang.String findName(@org.jetbrains.annotations.NotNull()
     android.content.Context $this$findName, int id) {
         return null;
     }
@@ -313,8 +313,8 @@ public final class BaseKt {
     /**
      * 从context中获取当前应用的版本名称
      */
-    @org.jetbrains.annotations.NotNull
-    public static final java.lang.String versionName(@org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.NotNull()
+    public static final java.lang.String versionName(@org.jetbrains.annotations.NotNull()
     android.content.Context $this$versionName) {
         return null;
     }
@@ -322,7 +322,7 @@ public final class BaseKt {
     /**
      * 从context中获取当前应用的版本名称
      */
-    public static final long versionCode(@org.jetbrains.annotations.NotNull
+    public static final long versionCode(@org.jetbrains.annotations.NotNull()
     android.content.Context $this$versionCode) {
         return 0L;
     }
@@ -332,31 +332,31 @@ public final class BaseKt {
      * 它属于IO操作，这是一个耗时的任务，
      * 需要在子线程中执行
      */
-    public static final void writeTo(@org.jetbrains.annotations.NotNull
-    java.lang.String $this$writeTo, @org.jetbrains.annotations.NotNull
+    public static final void writeTo(@org.jetbrains.annotations.NotNull()
+    java.lang.String $this$writeTo, @org.jetbrains.annotations.NotNull()
     java.io.File file) {
     }
     
-    public static final <T extends android.view.View>void visibleOrGone(@org.jetbrains.annotations.NotNull
-    T $this$visibleOrGone, boolean p1_32355860, @org.jetbrains.annotations.NotNull
+    public static final <T extends android.view.View>void visibleOrGone(@org.jetbrains.annotations.NotNull()
+    T $this$visibleOrGone, boolean p1_32355860, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super T, kotlin.Unit> onVisible) {
     }
     
-    public static final <T extends android.view.View>void visibleOrInvisible(@org.jetbrains.annotations.NotNull
-    T $this$visibleOrInvisible, boolean p1_32355860, @org.jetbrains.annotations.NotNull
+    public static final <T extends android.view.View>void visibleOrInvisible(@org.jetbrains.annotations.NotNull()
+    T $this$visibleOrInvisible, boolean p1_32355860, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super T, kotlin.Unit> onVisible) {
     }
     
-    public static final void tryVisible(@org.jetbrains.annotations.NotNull
+    public static final void tryVisible(@org.jetbrains.annotations.NotNull()
     android.view.View $this$tryVisible) {
     }
     
-    public static final void tryInvisible(@org.jetbrains.annotations.NotNull
+    public static final void tryInvisible(@org.jetbrains.annotations.NotNull()
     android.view.View $this$tryInvisible) {
     }
     
-    public static final void onClick(@org.jetbrains.annotations.NotNull
-    android.view.View $this$onClick, @org.jetbrains.annotations.NotNull
+    public static final void onClick(@org.jetbrains.annotations.NotNull()
+    android.view.View $this$onClick, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super android.view.View, kotlin.Unit> callback) {
     }
     
@@ -372,9 +372,9 @@ public final class BaseKt {
         return false;
     }
     
-    @org.jetbrains.annotations.Nullable
-    public static final android.view.ViewGroup findRootGroup(@org.jetbrains.annotations.NotNull
-    android.view.View $this$findRootGroup, @org.jetbrains.annotations.NotNull
+    @org.jetbrains.annotations.Nullable()
+    public static final android.view.ViewGroup findRootGroup(@org.jetbrains.annotations.NotNull()
+    android.view.View $this$findRootGroup, @org.jetbrains.annotations.NotNull()
     kotlin.jvm.functions.Function1<? super android.view.ViewGroup, java.lang.Boolean> filter) {
         return null;
     }
@@ -382,7 +382,7 @@ public final class BaseKt {
     /**
      * 是否已经被销毁
      */
-    public static final boolean isDestroyed(@org.jetbrains.annotations.NotNull
+    public static final boolean isDestroyed(@org.jetbrains.annotations.NotNull()
     androidx.lifecycle.LifecycleOwner $this$isDestroyed) {
         return false;
     }
@@ -390,7 +390,7 @@ public final class BaseKt {
     /**
      * 是否已经被创建
      */
-    public static final boolean isCreated(@org.jetbrains.annotations.NotNull
+    public static final boolean isCreated(@org.jetbrains.annotations.NotNull()
     androidx.lifecycle.LifecycleOwner $this$isCreated) {
         return false;
     }
@@ -398,7 +398,7 @@ public final class BaseKt {
     /**
      * 是否已经被初始化
      */
-    public static final boolean isInitialized(@org.jetbrains.annotations.NotNull
+    public static final boolean isInitialized(@org.jetbrains.annotations.NotNull()
     androidx.lifecycle.LifecycleOwner $this$isInitialized) {
         return false;
     }
@@ -406,7 +406,7 @@ public final class BaseKt {
     /**
      * 是否已经开始运行
      */
-    public static final boolean isStarted(@org.jetbrains.annotations.NotNull
+    public static final boolean isStarted(@org.jetbrains.annotations.NotNull()
     androidx.lifecycle.LifecycleOwner $this$isStarted) {
         return false;
     }
@@ -414,7 +414,7 @@ public final class BaseKt {
     /**
      * 是否已经可见
      */
-    public static final boolean isResumed(@org.jetbrains.annotations.NotNull
+    public static final boolean isResumed(@org.jetbrains.annotations.NotNull()
     androidx.lifecycle.LifecycleOwner $this$isResumed) {
         return false;
     }
