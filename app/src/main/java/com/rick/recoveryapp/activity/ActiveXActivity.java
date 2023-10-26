@@ -31,6 +31,7 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
+import com.rick.recoveryapp.utils.ActiveTimeTool;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.MyTimeUtils;
 import com.rick.recoveryapp.utils.PeterTimeCountRefresh;
@@ -50,7 +51,6 @@ import java.util.TimerTask;
  * "主动模式需要重构界面冗余"
  * */
 public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding> {
-
     ActivityActiviteXBinding binding;
     int resiDta = 1;
     ArrayList<Float> EcgListData;
@@ -81,13 +81,16 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
     static long nowTime = 300000;//现在时间
 
-    int zhuansu = 5, spasmData = 1;//转速
+    int zhuansu = 5, resistance = 1, spasmData = 1;//转速
 
     Long activeTime = 0L; //活动时间
 
     boolean isOk = false; //是否确认
 
     int spasmCount = 0; //
+
+    //智能模式
+    public ActiveTimeTool activeTimeTool = ActiveTimeTool.getInstance();
 
 
     Type type;
@@ -129,6 +132,12 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 binding.activeTxtZhuansu.setCenterString(zhuansu + "");
                 binding.activeTxtSpasm.setCenterString(spasmData + "");
             }
+
+            if (type == Type.INTELLIGENT) {
+                binding.activeTxtResistance.setCenterString(resistance + "");
+            }
+
+
             PassEcg();
         } catch (Exception ex) {
             ex.getMessage();
@@ -157,10 +166,17 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     public void initViewType() {//不同模式不同界面
-        //被动模式界面和数据变化
+        if (type == Type.ACTIVE) {
+            binding.llTimeControl.setVisibility(View.GONE);
+            binding.stxActiveTitle.setBottomDividerLineVisibility(View.VISIBLE);
+            binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
+            binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.GONE);
+        }
+
         if (type == Type.SUBJECT) {
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.VISIBLE);
+            binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.GONE);
             binding.llTimeControl.setVisibility(View.VISIBLE);
 
             nowTime = 300000;
@@ -169,11 +185,13 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             binding.passiveTxtDowntimer.setCenterString(text1);
             countList = new ArrayList<>();
         }
-        if (type == Type.ACTIVE) {
-            binding.llTimeControl.setVisibility(View.GONE);
-            binding.stxActiveTitle.setBottomDividerLineVisibility(View.VISIBLE);
+
+        if (type == Type.INTELLIGENT) {
+            binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
+            binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.VISIBLE);
         }
+
     }
 
     public void PassEcg() {
@@ -242,9 +260,14 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         binding.activeTxtBloodstate1.setCenterString("血压仪未连接");
                         binding.activeTxtBloodstate2.setCenterString("血压仪未连接");
 
-                        binding.activeTxtCoory.setCenterString("--");
-                        binding.activeTxtEcgstate.setCenterString("心电仪未连接");
-                        OftenListData.clear();
+                        if (type == Type.INTELLIGENT) {
+                            int left = 0;
+                            binding.progressViewLeft.setGraduatedEnabled(true);
+                            binding.activeTxtLeft.setCenterString("0");
+
+                            int right = 0;
+                            binding.progressViewRight.setGraduatedEnabled(true);
+                        }
 
                         if (type == Type.ACTIVE) {
                             int left = 0;
@@ -257,6 +280,11 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                             binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
                             binding.activeTxtRight.setCenterString("0");
                         }
+
+                        binding.activeTxtCoory.setCenterString("--");
+                        binding.activeTxtEcgstate.setCenterString("心电仪未连接");
+                        OftenListData.clear();
+
 
                     }
                 });
@@ -287,14 +315,23 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         String sim = dateFormat.format(date);
+        String aduration = "0";
+        String pduration = "0";
+        if (type == Type.INTELLIGENT) {
+            activeTimeTool.stopCount();
+            int SurplusTime = timeCountTool.getTime() - activeTimeTool.getTime();
+            aduration = activeTimeTool.SurplusTi(activeTimeTool.getTime());
+            pduration = activeTimeTool.SurplusTi(SurplusTime);
+        }
+
         ActivitRecord activitRecord = new ActivitRecord();
         activitRecord.setRecordID(LocalConfig.UserID);
         activitRecord.setUserName(LocalConfig.userName);
         activitRecord.setUserNumber(LocalConfig.medicalNumber);
         activitRecord.setRecordTime(sim);
         activitRecord.setLongTime(timeCount);
-        activitRecord.setAduration("0");
-        activitRecord.setPduration("0");
+        activitRecord.setAduration(aduration);
+        activitRecord.setPduration(pduration);
         activitRecord.setActivtType(LocalConfig.ModType + "");
         activitRecord.setB_Diastole_Shrink(Active_B_Diastole_Shrink);
         activitRecord.setL_Diastole_Shrink(Active_L_Diastole_Shrink);
@@ -333,9 +370,10 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         }
 
         double perimeter = (float) (3.14 * 0.102 * 2);
+
         Total_mileage = average_speed * time * perimeter;//总里程
 
-        if (type == Type.ACTIVE) {
+        if (type == Type.ACTIVE || type == Type.INTELLIGENT) {
             List<RecordDetailed> DetailedList = recordDetailedDao.queryBuilder().where(
                             RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID),
                             RecordDetailedDao.Properties.Resistance.notEq(0))
@@ -378,7 +416,6 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         });
 
         binding.trainBtnReturn.setOnClickListener(v -> {
-
             if (BloodEndState == 1) {
                 //取消测量运动后血压
                 BloodEndState = 2;

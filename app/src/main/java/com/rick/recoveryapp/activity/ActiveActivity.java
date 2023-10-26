@@ -1,19 +1,17 @@
 package com.rick.recoveryapp.activity;
 
-import static android.view.View.*;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,9 +19,12 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
+import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteBinding;
+import com.rick.recoveryapp.databinding.ActivityU3ddataBinding;
+import com.rick.recoveryapp.databinding.FragemtActiveBinding;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
@@ -34,12 +35,17 @@ import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.CRC16Util;
+import com.rick.recoveryapp.utils.ContentPage;
 import com.rick.recoveryapp.utils.LocalConfig;
+import com.rick.recoveryapp.utils.MyTimeUtils;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.xuexiang.xui.utils.CountDownButtonHelper;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
+import com.xuexiang.xui.widget.dialog.materialdialog.MaterialDialog;
+import com.xuexiang.xui.widget.tabbar.TabSegment;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,10 +53,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/*
- * "主动模式需要重构界面冗余"
- * */
-@Deprecated()
+@Deprecated
 public class ActiveActivity extends XPageActivity {
 
     int resiDta = 1, modletype = 0;
@@ -142,7 +145,9 @@ public class ActiveActivity extends XPageActivity {
     public void initLiveData() {
         LiveEventBus
                 .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, msg->{
+                .observe(this, new Observer<PoolMessage>() {
+                    @Override
+                    public void onChanged(@Nullable PoolMessage msg) {
                         if (msg.isState()) {
                             Log.d("BT", msg.getObjectName());
                             if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
@@ -168,11 +173,14 @@ public class ActiveActivity extends XPageActivity {
                         } else {
                             Log.d("BT", "没有任何数据");
                         }
-                    });
+                    }
+                });
 
         LiveEventBus
                 .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, msg->{
+                .observe(this, new Observer<LiveMessage>() {
+                    @Override
+                    public void onChanged(@Nullable LiveMessage msg) {
                         if (!msg.getIsConnt()) {
                             //未连接
                             binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
@@ -204,28 +212,33 @@ public class ActiveActivity extends XPageActivity {
                             //    binding.progressViewRight.startProgressAnimation();
                             binding.activeTxtRight.setCenterString("0");
                         }
-                    });
+                    }
+                });
+
         LiveEventBus
                 .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this,
-                        msg->{
-                            if (msg.isState()) {
-                                int mark = 0;
-                                if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                                    mark = 1;
-                                } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
-                                    mark = 2;
-                                } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
-                                    mark = 3;
-                                }
-                                DataDisplay(mark, msg.getObjectJson());
-                                if (isBegin) {
-                                    UpdatProgress();
-                                }
-                            } else {
-                                Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
+                .observe(this, new Observer<PoolMessage>() {
+                    @Override
+                    public void onChanged(@Nullable PoolMessage msg) {
+                        com.efs.sdk.base.core.util.Log.d("test_BT_PROTOCOL", "ActiveFragemt");
+                        if (msg.isState()) {
+                            int mark = 0;
+                            if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                                mark = 1;
+                            } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
+                                mark = 2;
+                            } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
+                                mark = 3;
                             }
-                        });
+                            DataDisplay(mark, msg.getObjectJson());
+                            if (isBegin) {
+                                UpdatProgress();
+                            }
+                        } else {
+                            Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     public void SaveRecord() {
@@ -311,7 +324,7 @@ public class ActiveActivity extends XPageActivity {
 
     public void itinClick() {
 
-        binding.btnTest.setOnClickListener(new OnClickListener() {
+        binding.btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -324,7 +337,7 @@ public class ActiveActivity extends XPageActivity {
             }
         });
 
-        binding.trainBtnReturn.setOnClickListener(new OnClickListener() {
+        binding.trainBtnReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -337,17 +350,23 @@ public class ActiveActivity extends XPageActivity {
             }
         });
 
-        binding.activeTitlePress.setOnClickListener(v -> {
-            modletype = 1;
-            ChangeDialog();
+        binding.activeTitlePress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                modletype = 1;
+                ChangeDialog();
+            }
         });
 
-        binding.activeTitleIntelligence.setOnClickListener(v -> {
+        binding.activeTitleIntelligence.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 modletype = 2;
                 ChangeDialog();
-            });
+            }
+        });
 
-        binding.activeImgBegin.setOnClickListener(new OnClickListener() {
+        binding.activeImgBegin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (BloodEndState == 1) {
@@ -358,7 +377,7 @@ public class ActiveActivity extends XPageActivity {
             }
         });
 
-        binding.activeImbtnJia.setOnClickListener(new OnClickListener() {
+        binding.activeImbtnJia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isBegin) {
@@ -384,7 +403,7 @@ public class ActiveActivity extends XPageActivity {
             }
         });
 
-        binding.activeImbtnMove.setOnClickListener(new OnClickListener() {
+        binding.activeImbtnMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (BloodEndState == 1) {
@@ -410,7 +429,9 @@ public class ActiveActivity extends XPageActivity {
             }
         });
 
-        binding.activeImgBlood.setOnClickListener(v-> {
+        binding.activeImgBlood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if (isBegin) {
                     Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
                     return;
@@ -418,11 +439,11 @@ public class ActiveActivity extends XPageActivity {
                 try {
                     if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                         if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                              btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                               btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
+                            //  btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                            //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
                         } else if (ContorlState.equals("51")) {
-                             btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                               btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
+                            // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
+                            //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
                             ContorlState = "52";
                             binding.activeTxtBlood.setCenterString("点击开始测量血压");
                         }
@@ -433,7 +454,8 @@ public class ActiveActivity extends XPageActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+            }
+        });
 //                binding.tabSegment.setOnTabClickListener(new TabSegment.OnTabClickListener() {
 //
 //                    @Override
