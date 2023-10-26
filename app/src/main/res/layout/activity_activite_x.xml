@@ -73,6 +73,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+                        android:id="@+id/stx_active_title"
                         android:layout_width="150dp"
                         android:layout_height="45dp"
                         android:layout_marginTop="5dp"
@@ -89,13 +90,13 @@
                         app:sCenterTextSize="20sp"
                         app:sCenterTextString="主动模式"
                         app:sDividerLineColor="@color/white"
-                        app:sDividerLineType="bottom"
+                        app:sDividerLineType="none"
                         app:sShapeCornersRadius="20dp"
                         app:sUseRipple="false"
                         tools:ignore="MissingConstraints" />
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
-                        android:id="@+id/active_title_press"
+                        android:id="@+id/stx_press_title"
                         android:layout_width="150dp"
                         android:layout_height="45dp"
                         android:layout_marginTop="5dp"
@@ -116,7 +117,7 @@
                         tools:ignore="MissingConstraints" />
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
-                        android:id="@+id/active_title_intelligence"
+                        android:id="@+id/stx_intelligence_title_"
                         android:layout_width="150dp"
                         android:layout_height="45dp"
                         android:layout_marginLeft="50dp"
@@ -1323,6 +1324,70 @@
                         <!--                    app:sShapeCornersRadius="20dp"-->
                         <!--                    app:sShapeSelectorNormalColor="#16a6fb"-->
                         <!--                    app:sUseRipple="false" />-->
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="2dp"
+                                android:layout_marginRight="2dp"
+                                android:background="@color/white" />
+
+                            <LinearLayout
+                                android:id="@+id/ll_time_control"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_gravity="center"
+                                android:visibility="gone"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                                    android:id="@+id/passive_time_jia"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="10dp"
+                                    android:background="@drawable/white_jia"
+                                    app:sb_radius="100dp" />
+
+                                <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+                                    android:id="@+id/passive_txt_downtimer"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_marginBottom="5dp"
+                                    android:layout_weight="3"
+                                    app:sCenterTextColor="@color/white"
+                                    app:sCenterTextIsBold="true"
+                                    app:sCenterTextSize="20sp"
+                                    app:sCenterTextString="00:00:00"
+                                    app:sDividerLineType="none"
+                                    app:sShapeCornersRadius="20dp"
+                                    app:sShapeSelectorNormalColor="#16a6fb"
+                                    app:sUseRipple="false" />
+
+                                <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                                    android:id="@+id/passive_time_jian"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="5dp"
+                                    android:background="@drawable/white_jian"
+                                    app:sb_radius="100dp" />
+
+                            </LinearLayout>
+                        </LinearLayout>
 
                     </com.xuexiang.xui.widget.layout.XUILinearLayout>
 

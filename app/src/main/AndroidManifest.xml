@@ -149,6 +149,10 @@
             android:screenOrientation="landscape" />
 
         <activity
+            android:name=".activity.ActiveXActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
             android:name=".activity.PassiveActivity"
             android:screenOrientation="landscape" />
 

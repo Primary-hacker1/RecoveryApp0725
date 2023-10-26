@@ -180,28 +180,25 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     public void controlBT() {
         LiveEventBus
                 .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, new Observer<LiveMessage>() {
-                    @Override
-                    public void onChanged(@Nullable LiveMessage msg) {
-                        try {
-                            if (msg.getIsConnt()) {
-                                Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
-                                binding.mainImgLink.setBackgroundResource(drawable.img_bt_open);
-                                binding.mainImgLink.setEnabled(false);
+                .observe(this, msg -> {
+                    try {
+                        if (msg.getIsConnt()) {
+                            Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
+                            binding.mainImgLink.setBackgroundResource(drawable.img_bt_open);
+                            binding.mainImgLink.setEnabled(false);
+                            Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
+                            btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                            btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                        } else {
+                            Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
+                            binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);
+                            binding.mainImgLink.setEnabled(true);
+                            if (!msg.getMessage().equals("")) {
                                 Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                                btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-                                btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
-                            } else {
-                                Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
-                                binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);
-                                binding.mainImgLink.setEnabled(true);
-                                if (!msg.getMessage().equals("")) {
-                                    Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
                             }
-                        } catch (Exception e) {
-                            Log.d("AdminMainActivity", e.getMessage());
                         }
+                    } catch (Exception e) {
+                        Log.d("AdminMainActivity", e.getMessage());
                     }
                 });
     }
@@ -233,89 +230,68 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
         //获取GPS现在的状态（打开或是关闭状态）
         //   boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(getContentResolver(), LocationManager.GPS_PROVIDER);
 
-        binding.mainImgLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.mainImgLink.setOnClickListener(v -> {
 //                if (BaseApplication.mConnectService != null) {
 //                    BaseApplication.AutoConnect();
 //                }
-                BaseApplication.AutoConnect();
-            }
+            BaseApplication.AutoConnect();
         });
 
-        binding.mainImgActive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (LocalConfig.isControl) {
-                    LocalConfig.ModType = 0;
-                    intent = new Intent(context, DialogActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        binding.mainImgPassive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (LocalConfig.isControl) {
-                    LocalConfig.ModType = 1;
-                    intent = new Intent(context, DialogActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        binding.mainImgIntelligence.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (LocalConfig.isControl) {
-                    LocalConfig.ModType = 2;
-                    intent = new Intent(context, DialogActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        binding.mainImgEntertainment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (LocalConfig.isControl) {
-                        LocalConfig.ModType = 3;
-                        intent = new Intent(context, DialogActivity.class);
-                        startActivity(intent);
-                        // finish();
-                    } else {
-                        Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception ex) {
-                    ToastUtils.toast(ex.getMessage());
-                }
-            }
-        });
-
-        binding.mainImgHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(context, HistoryActivity.class);
+        binding.mainImgActive.setOnClickListener(v -> {
+            if (LocalConfig.isControl) {
+                LocalConfig.ModType = 0;
+                intent = new Intent(context, DialogActivity.class);
                 startActivity(intent);
-                finish();
+            } else {
+                Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.mainImgSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(context, SettingActivity.class);
+        binding.mainImgPassive.setOnClickListener(v -> {
+            if (LocalConfig.isControl) {
+                LocalConfig.ModType = 1;
+                intent = new Intent(context, DialogActivity.class);
                 startActivity(intent);
-                finish();
+            } else {
+                Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        binding.mainImgIntelligence.setOnClickListener(v -> {
+            if (LocalConfig.isControl) {
+                LocalConfig.ModType = 2;
+                intent = new Intent(context, DialogActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.mainImgEntertainment.setOnClickListener(v -> {
+            try {
+                if (LocalConfig.isControl) {
+                    LocalConfig.ModType = 3;
+                    intent = new Intent(context, DialogActivity.class);
+                    startActivity(intent);
+                    // finish();
+                } else {
+                    Toast.makeText(context, "请先连接蓝牙设备！", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ToastUtils.toast(ex.getMessage());
+            }
+        });
+
+        binding.mainImgHistory.setOnClickListener(v -> {
+            intent = new Intent(context, HistoryActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        binding.mainImgSetting.setOnClickListener(v -> {
+            intent = new Intent(context, SettingActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 

@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.rick.recoveryapp.R;
 
 import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -37,6 +38,7 @@ import com.xuexiang.xutil.tip.ToastUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,9 +62,13 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
         dialog_userid = findViewById(R.id.dialog_userid);
         dialog_name = findViewById(R.id.dialog_name);
         dialog_medicalNumber = findViewById(R.id.dialog_medicalNumber);
+        if(UriConfig.test){
+            dialog_name.setText("test");
+            dialog_medicalNumber.setText("123");
+        }
 
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
         String sim = dateFormat.format(date);
 
         dialog_userid.setText(sim);
@@ -87,7 +93,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                 try {
                     LocalConfig.userName = dialog_name.getText().toString();
                     LocalConfig.medicalNumber = dialog_medicalNumber.getText().toString();
-                    LocalConfig.UserID = Long.valueOf(dialog_userid.getText().toString()).longValue();
+                    LocalConfig.UserID = Long.parseLong(dialog_userid.getText().toString());
                     if (LocalConfig.userName.equals("")) {
                         Toast.makeText(context, "请输入患者姓名！", Toast.LENGTH_SHORT).show();
                         return;
@@ -104,12 +110,11 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                     }
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
                     if (LocalConfig.ModType == 0) {
-                        ActiveXActivity.newActiveXActivity(this);
+                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.ACTIVE);
                         finish();
                     }
                     if (LocalConfig.ModType == 1) {
-                        Intent in = new Intent(context, PassiveActivity.class);
-                        startActivity(in);
+                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.SUBJECT);
                         finish();
                     }
                     if (LocalConfig.ModType == 2) {

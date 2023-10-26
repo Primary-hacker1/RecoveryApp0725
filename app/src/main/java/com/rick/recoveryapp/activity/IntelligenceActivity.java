@@ -581,13 +581,11 @@ public class IntelligenceActivity extends XPageActivity {
 //                        LocalConfig.UserID = Long.valueOf(sim).longValue();
                     if (modletype == 1) {
                         LocalConfig.ModType = 0;
-                        ActiveXActivity.newActiveXActivity(this);
+                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.ACTIVE);
                         finish();
                     } else if (modletype == 2) {
                         LocalConfig.ModType = 1;
-                        Intent in = new Intent(context, PassiveActivity.class);
-                        //  in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(in);
+                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.SUBJECT);
                         finish();
                     }
                     //    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);

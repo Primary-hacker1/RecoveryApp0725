@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.activity.serial.SerialPort;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
@@ -29,8 +31,9 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
-import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LocalConfig;
+import com.rick.recoveryapp.utils.MyTimeUtils;
+import com.rick.recoveryapp.utils.PeterTimeCountRefresh;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
@@ -49,7 +52,7 @@ import java.util.TimerTask;
 public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding> {
 
     ActivityActiviteXBinding binding;
-    int resiDta = 1, modelType = 0;
+    int resiDta = 1;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
     RecordDetailedDao recordDetailedDao;
@@ -59,7 +62,6 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     String controlState = "52";
     BtDataPro btDataPro;
-    String CMD_CODE = "";
     private Timer timer1;
     private TimerTask timerTask1;
     boolean isBegin = false;
@@ -68,11 +70,36 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     public TimeCountTool timeCountTool = TimeCountTool.getInstance();
     String timeCount = "";
     double Total_mileage, Calories;
-    String Active_B_Diastole_Shrink = "0/0", Active_L_Diastole_Shrink = "0/0";
+    String Active_B_Diastole_Shrink = "0/0", Active_L_Diastole_Shrink = "0/0";//主动模式被动模式都有
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
 
-    public static void newActiveXActivity(Context context) {
-        Intent intent = new Intent(context,ActiveXActivity.class);
+
+    //被动模式
+    ArrayList<Integer> countList;
+
+    static PeterTimeCountRefresh downTimer;//向下定时器
+
+    static long nowTime = 300000;//现在时间
+
+    int zhuansu = 5, spasmData = 1;//转速
+
+    Long activeTime = 0L; //活动时间
+
+    boolean isOk = false; //是否确认
+
+    int spasmCount = 0; //
+
+
+    Type type;
+
+
+    public enum Type {
+        ACTIVE, SUBJECT, INTELLIGENT
+    }
+
+    public static void newActiveXActivity(Context context, Type type) {
+        Intent intent = new Intent(context, ActiveXActivity.class);
+        intent.putExtra("type", type);
         context.startActivity(intent);
     }
 
@@ -86,12 +113,22 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
     @Override
     protected void initView() {
-        initData();
-        initClick();
+        initData();//初始化数据
+        initViewType();//不同模式不同界面
+        initClick();//点击操作
         try {
             initLiveData();
-            btDataPro.sendBTMessage(GetCmdCode(1, "53", false));
-            binding.activeTxtResistance.setCenterString("1");
+            if (type == Type.ACTIVE) {
+                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(1, "53", false));
+                binding.activeTxtResistance.setCenterString("1");
+            }
+
+            if (type == Type.SUBJECT) {
+                binding.activeWaveShowView.resetCanavas();
+                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("53", false, 5, 5, activeTime));
+                binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                binding.activeTxtSpasm.setCenterString(spasmData + "");
+            }
             PassEcg();
         } catch (Exception ex) {
             ex.getMessage();
@@ -99,6 +136,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     private void initData() {
+        Intent intent = getIntent();
+        type = (Type) intent.getSerializableExtra("type");//获取点击的模式
+        LogUtils.d("type==" + type.name());
         binding = getBinding();
         btDataPro = new BtDataPro();
         binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
@@ -112,6 +152,28 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         OftenListData = new ArrayList<>();
         binding.activeWaveShowView.resetCanavas();
         ecgDataDBDao = LocalConfig.daoSession.getEcgDataDBDao();
+
+
+    }
+
+    public void initViewType() {//不同模式不同界面
+        //被动模式界面和数据变化
+        if (type == Type.SUBJECT) {
+            binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
+            binding.stxPressTitle.setBottomDividerLineVisibility(View.VISIBLE);
+            binding.llTimeControl.setVisibility(View.VISIBLE);
+
+            nowTime = 300000;
+            activeTime = MyTimeUtils.Getminute(nowTime);
+            String text1 = MyTimeUtils.formatTime(nowTime);
+            binding.passiveTxtDowntimer.setCenterString(text1);
+            countList = new ArrayList<>();
+        }
+        if (type == Type.ACTIVE) {
+            binding.llTimeControl.setVisibility(View.GONE);
+            binding.stxActiveTitle.setBottomDividerLineVisibility(View.VISIBLE);
+            binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
+        }
     }
 
     public void PassEcg() {
@@ -125,13 +187,10 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                             float cooY = OftenListData.get(0);
                             binding.activeWaveShowView.showLine(cooY);
                             OftenListData.remove(0);
-                        } else {
-                            //     binding.activeWaveviewOne.showLine(0f);
-                            return;
                         }
                     }
                 } catch (Exception e) {
-                    com.efs.sdk.base.core.util.Log.d("EcgError", e.getMessage());
+                    LogUtils.d("EcgError" + e.getMessage());
                 }
             }
         };
@@ -172,8 +231,8 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         LiveEventBus
                 .get("BT_CONNECTED", LiveMessage.class)
                 .observe(this, msg -> {
-                    if (!msg.getIsConnt()) {
-                        //未连接
+                    if (!msg.getIsConnt()) {//未连接
+
                         binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
                         binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
                         binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
@@ -187,17 +246,18 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         binding.activeTxtEcgstate.setCenterString("心电仪未连接");
                         OftenListData.clear();
 
-                        int left = 0;
-                        binding.progressViewLeft.setGraduatedEnabled(true);
-                        binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
-                        //  binding.progressViewLeft.startProgressAnimation();
-                        binding.activeTxtLeft.setCenterString("0");
+                        if (type == Type.ACTIVE) {
+                            int left = 0;
+                            binding.progressViewLeft.setGraduatedEnabled(true);
+                            binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
+                            binding.activeTxtLeft.setCenterString("0");
 
-                        int right = 0;
-                        binding.progressViewRight.setGraduatedEnabled(true);
-                        binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
-                        //    binding.progressViewRight.startProgressAnimation();
-                        binding.activeTxtRight.setCenterString("0");
+                            int right = 0;
+                            binding.progressViewRight.setGraduatedEnabled(true);
+                            binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
+                            binding.activeTxtRight.setCenterString("0");
+                        }
+
                     }
                 });
         LiveEventBus
@@ -215,7 +275,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                 }
                                 DataDisplay(mark, msg.getObjectJson());
                                 if (isBegin) {
-                                    UpdatProgress();
+                                    updatePerogress();
                                 }
                             } else {
                                 Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
@@ -224,7 +284,6 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     public void SaveRecord() {
-
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         String sim = dateFormat.format(date);
@@ -239,7 +298,6 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         activitRecord.setActivtType(LocalConfig.ModType + "");
         activitRecord.setB_Diastole_Shrink(Active_B_Diastole_Shrink);
         activitRecord.setL_Diastole_Shrink(Active_L_Diastole_Shrink);
-        //使用String.format()格式化(四舍五入)
         activitRecord.setTotal_mileage(String.format("%.2f", Total_mileage));
         activitRecord.setCalories(String.format("%.2f", Calories));
         activitRecord.setSpasmCount(0 + "");
@@ -261,8 +319,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         double resistance = 0;
         double resistanceVal = 0;
 
-        //* 查询转速不为“0” 的所有记录集合。集合不为大于0时取平均值
-        List<RecordDetailed> recordList = recordDetailedDao.queryBuilder().where(
+        List<RecordDetailed> recordList = recordDetailedDao.queryBuilder().where(//* 查询转速不为“0” 的所有记录集合。集合不为大于0时取平均值
                         RecordDetailedDao.Properties.Speed.notEq("0"),
                         RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID))
                 .list();
@@ -270,33 +327,35 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             for (int i = 0; i < recordList.size(); i++) {
                 speed = recordList.get(i).getSpeed() + speed;
             }
-            //平均转速
-            average_speed = speed / recordList.size();
+            average_speed = speed / recordList.size(); //平均转速
         } else {
             average_speed = 0;
         }
 
         double perimeter = (float) (3.14 * 0.102 * 2);
         Total_mileage = average_speed * time * perimeter;//总里程
-        /*********************************************/
-        List<RecordDetailed> DetailedList = recordDetailedDao.queryBuilder().where(
-                        RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID),
-                        RecordDetailedDao.Properties.Resistance.notEq(0))
-                .list();
 
-        if (DetailedList.size() > 0) {
-            for (int i = 0; i < DetailedList.size(); i++) {
-                resistance = resistance + DetailedList.get(i).getResistance();
+        if (type == Type.ACTIVE) {
+            List<RecordDetailed> DetailedList = recordDetailedDao.queryBuilder().where(
+                            RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID),
+                            RecordDetailedDao.Properties.Resistance.notEq(0))
+                    .list();
+
+            if (DetailedList.size() > 0) {
+                for (int i = 0; i < DetailedList.size(); i++) {
+                    resistance = resistance + DetailedList.get(i).getResistance();
+                }
+                //平均阻力
+                int Avg = (int) Math.ceil(resistance / DetailedList.size());
+                resistanceVal = LocalConfig.Getvalue(Avg);
             }
-            //平均阻力
-            int Avg = (int) Math.ceil(resistance / DetailedList.size());
-//            String.format("%.2f", resistance);
-            resistanceVal = LocalConfig.Getvalue(Avg);
         }
-//        double perimeter = (float) (3.14 * 0.102 * 2);
+
+        if (type == Type.SUBJECT) {
+            resistanceVal = 5;
+        }
 
         if (time > 0) {
-//            double K_index = 30d / (400d / (Math.ceil(Total_mileage) / Math.ceil(time)));//指数K
             Calories = resistanceVal * (time / 60) * average_speed;
         } else {
             Calories = 0;
@@ -305,8 +364,15 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
     public void initClick() {
         binding.btnTest.setOnClickListener(v -> {
-            if (LocalConfig.isControl) {
+            if (type == Type.SUBJECT) {//被动模式直接发送
                 btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                return;
+            }
+
+            if (type == Type.ACTIVE) {//主动模式要判断一下是否可以发送
+                if (LocalConfig.isControl) {
+                    btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                }
             }
 
         });
@@ -321,41 +387,102 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
         });
 
-        binding.activeTitlePress.setOnClickListener(v -> {
-            modelType = 1;
-            ChangeDialog();
-        });
+        binding.stxActiveTitle.setOnClickListener(v -> ChangeDialog(Type.ACTIVE));
 
-        binding.activeTitleIntelligence.setOnClickListener(v -> {
-            modelType = 2;
-            ChangeDialog();
-        });
+        binding.stxPressTitle.setOnClickListener(v -> ChangeDialog(Type.SUBJECT));
+
+        binding.stxIntelligenceTitle.setOnClickListener(v -> ChangeDialog(Type.INTELLIGENT));
 
         binding.activeImgBegin.setOnClickListener(v -> {
-            if (BloodEndState == 1) {
-                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                return;
-            }
             HandlerMessage();
         });
 
         binding.activeImbtnJia.setOnClickListener(v -> {
-            if (isBegin) {
-                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                return;
+            if (type == Type.ACTIVE) {
+                if (isBegin) {
+                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (BloodEndState == 1) {
+                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                resiDta = resiDta + 1;
+                if (resiDta <= 12) {
+                    binding.progressViewResistance.setGraduatedEnabled(true);
+                    binding.activeTxtResistance.setCenterString(resiDta + "");
+                } else {
+                    resiDta = 12;
+                }
             }
-            if (BloodEndState == 1) {
-                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                return;
+
+            if (type == Type.SUBJECT) {
+                if (zhuansu + 1 <= 60) {
+                    if (zhuansu + 1 >= 30) {
+                        if (isOk) {
+                            zhuansu = zhuansu + 1;
+                            binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                            binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                        } else {
+                            DialogLoader.getInstance().showConfirmDialog(
+                                    context,
+                                    getString(R.string.tip_permission),
+                                    getString(R.string.lab_ok),
+                                    (dialog, which) -> {
+                                        dialog.dismiss();
+                                        isOk = true;
+                                        zhuansu = zhuansu + 1;
+                                        binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                                        binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                                    },
+                                    getString(R.string.lab_cancel),
+                                    (dialog, which) -> {
+                                        dialog.dismiss();
+                                        isOk = false;
+                                    }
+                            );
+                        }
+                    } else {
+                        zhuansu = zhuansu + 1;
+                        binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                        binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                    }
+                } else {
+                    zhuansu = 60;
+                }
+
             }
-            resiDta = resiDta + 1;
-            if (resiDta <= 12) {
-                binding.progressViewResistance.setGraduatedEnabled(true);
-                binding.activeTxtResistance.setCenterString(resiDta + "");
-            } else {
-                resiDta = 12;
-            }
+
         });
+
+        if (type == Type.SUBJECT) {
+            binding.passiveTimeJia.setOnClickListener((View.OnClickListener) v -> {
+                nowTime = nowTime + 300000;
+                String text = MyTimeUtils.formatTime(nowTime);
+                if (nowTime <= 3600000) {
+                    binding.passiveTxtDowntimer.setCenterString(text);
+                } else {
+                    nowTime = 3600000;
+                    text = MyTimeUtils.formatTime(nowTime);
+                    binding.passiveTxtDowntimer.setCenterString(text);
+                }
+                activeTime = MyTimeUtils.Getminute(nowTime);
+                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
+            });
+            binding.passiveTimeJian.setOnClickListener((View.OnClickListener) v -> {
+                nowTime = nowTime - 300000;
+                String text1 = MyTimeUtils.formatTime(nowTime);
+                if (nowTime >= 300000) {
+                    binding.passiveTxtDowntimer.setCenterString(text1);
+                } else {
+                    nowTime = 300000;
+                    text1 = MyTimeUtils.formatTime(nowTime);
+                    binding.passiveTxtDowntimer.setCenterString(text1);
+                }
+                activeTime = MyTimeUtils.Getminute(nowTime);
+                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
+            });
+        }
 
         binding.activeImbtnMove.setOnClickListener(v -> {
             if (BloodEndState == 1) {
@@ -384,10 +511,10 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                     if (controlState.equals("00") || controlState.equals("52")) {
                         btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                        btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
+                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "51", false));
                     } else if (controlState.equals("51")) {
                         btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                        btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
+                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "52", false));
                         controlState = "52";
                         binding.activeTxtBlood.setCenterString("点击开始测量血压");
                     }
@@ -402,9 +529,53 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     public void HandlerMessage() {
-        try {
+        if (BloodEndState == 1) {
+            Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (type == Type.ACTIVE) {
+            try {
+                String txts = binding.activeTxtBegin.getCenterString();
+                if (txts.equals("开  始")) {
+
+                    String highblood = binding.activeTxtHigh.getCenterString();
+                    String lowblood = binding.activeTxtLow.getCenterString();
+                    if (highblood.equals("0") && lowblood.equals("0")) {
+                        DialogLoader.getInstance().showConfirmDialog(
+                                context,
+                                getString(R.string.active_blood),
+                                getString(R.string.lab_ok),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "50", true));
+                                    timeCountTool.startCount();
+                                    binding.activeTxtBegin.setCenterString("停  止");
+                                    binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+                                },
+                                getString(R.string.lab_cancel),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                }
+                        );
+
+                    } else {
+                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "50", true));
+                        timeCountTool.startCount();
+                        binding.activeTxtBegin.setCenterString("停  止");
+                        binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+                    }
+                } else {
+                    btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(0, "50", false));
+                }
+            } catch (Exception e) {
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+        if (type == Type.SUBJECT) {
             String txts = binding.activeTxtBegin.getCenterString();
-            if (txts.equals("开  始")) {
+            if (txts.equals("开  始") && nowTime != 0) {
 
                 String highblood = binding.activeTxtHigh.getCenterString();
                 String lowblood = binding.activeTxtLow.getCenterString();
@@ -415,10 +586,18 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                             getString(R.string.lab_ok),
                             (dialog, which) -> {
                                 dialog.dismiss();
-                                btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", true));
-                                timeCountTool.startCount();
-                                binding.activeTxtBegin.setCenterString("停  止");
+                                binding.passiveTimeJia.setEnabled(false);
+                                binding.passiveTimeJian.setEnabled(false);
+
+                                binding.passiveTimeJia.setVisibility(View.INVISIBLE);
+                                binding.passiveTimeJian.setVisibility(View.INVISIBLE);
                                 binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+
+                                binding.activeTxtBegin.setCenterString("停  止");
+                                initCountDownTimer(nowTime);
+                                timeCountTool.startCount();
+                                activeTime = MyTimeUtils.Getminute(nowTime);
+                                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", true, spasmData, zhuansu, activeTime));
                             },
                             getString(R.string.lab_cancel),
                             (dialog, which) -> {
@@ -426,22 +605,33 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                 // timeTask.start();
                             }
                     );
-
                 } else {
-                    btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", true));
-                    timeCountTool.startCount();
-                    binding.activeTxtBegin.setCenterString("停  止");
+                    binding.passiveTimeJia.setEnabled(false);
+                    binding.passiveTimeJian.setEnabled(false);
+
+                    binding.passiveTimeJia.setVisibility(View.INVISIBLE);
+                    binding.passiveTimeJian.setVisibility(View.INVISIBLE);
                     binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+
+                    binding.activeTxtBegin.setCenterString("停  止");
+                    initCountDownTimer(nowTime);
+                    timeCountTool.startCount();
+                    activeTime = MyTimeUtils.Getminute(nowTime);
+                    btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", true, spasmData, zhuansu, activeTime));
+
                 }
+
+
             } else {
-                btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
+                //    stop();
+                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, 5, 1, 0L));
             }
-        } catch (Exception e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
     }
 
-    public void ChangeDialog() {
+    public void ChangeDialog(Type type) {
+        this.type = type;
         if (isBegin) {
             Toast.makeText(context, "运动中，请勿切换模式！", Toast.LENGTH_SHORT).show();
             return;
@@ -450,20 +640,14 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
             return;
         }
-
         DialogLoader.getInstance().showConfirmDialog(
                 context,
                 getString(R.string.active_change),
                 getString(R.string.lab_yes),
                 (dialog, which) -> {
                     dialog.dismiss();
-                    if (modelType == 1) {
-                        LocalConfig.ModType = 1;
-                        Intent in = new Intent(context, PassiveActivity.class);
-                        startActivity(in);
-                        finish();
-                    } else if (modelType == 2) {
-                        LocalConfig.ModType = 2;
+                    initViewType();
+                    if (type == Type.INTELLIGENT) {
                         Intent in = new Intent(context, IntelligenceActivity.class);
                         startActivity(in);
                         finish();
@@ -474,29 +658,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         );
     }
 
-    public String GetCmdCode(int zuli, String blood_measure, boolean isBegin) {
-        String cmd_head = "A88408",              //包头
-                sport_mode = "01",                //运动模式
-                active_direction = "20",          //运动方向
-                spasms_lv = "00",                 //痉挛等级
-                speed_lv = "00",                  //速度设定
-                time_lv = "00",                   //设定时间
-                cmd_end = "ED";                   //结尾
-        String zuliHex = "0" + btDataPro.decToHex(zuli);
-        String avtive_status = "10";
-        if (isBegin) {
-            avtive_status = "11";
-        }
-        String splicingStr = cmd_head + sport_mode + avtive_status + active_direction + zuliHex + spasms_lv
-                + speed_lv + time_lv + blood_measure;
-        String CRC16 = CRC16Util.getCRC16(splicingStr);
-        CMD_CODE = splicingStr + CRC16 + cmd_end;
-        LogUtils.d("GetCmdCode" + "ActiveFragment,获取指令");
-        return CMD_CODE;
-    }
-
     public void DataDisplay(int mark, String ObjectJson) {
-
         switch (mark) {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
@@ -597,9 +759,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                     BloodEndState = 1;
                                     if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                                         if (controlState.equals("00") || controlState.equals("52")) {
-                                            btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
+                                            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "51", false));
                                         } else if (controlState.equals("51")) {
-                                            btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
+                                            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "52", false));
                                             controlState = "52";
                                             binding.activeTxtBlood.setCenterString("点击开始测量血压");
                                         }
@@ -610,7 +772,14 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                 getString(R.string.lab_no),
                                 (dialog, which) -> {
                                     dialog.dismiss();
-                                    BloodEndState = 2;
+                                    if (type == Type.ACTIVE) {
+                                        BloodEndState = 2;
+                                    }
+                                    if (type == Type.SUBJECT) {
+                                        if (spasmCount == 5) {
+                                            BloodEndState = 2;
+                                        }
+                                    }
                                 }
                         );
                     }
@@ -620,6 +789,27 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                     timeCountTool.startCount();
                     binding.activeTxtBegin.setCenterString("停  止");
                     binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+                    if (type == Type.ACTIVE) {//下面是被动操作的所以这里直接弹出方法了
+                        return;
+                    }
+                    isBegin = true;
+                    binding.passiveTimeJia.setEnabled(false);
+                    binding.passiveTimeJian.setEnabled(false);
+
+                    binding.passiveTimeJia.setVisibility(View.INVISIBLE);
+                    binding.passiveTimeJian.setVisibility(View.INVISIBLE);
+                    if (downTimer == null) {
+                        initCountDownTimer(nowTime);
+                        activeTime = MyTimeUtils.Getminute(nowTime);
+                    }
+                }
+
+                if (type == Type.SUBJECT) {//被动模式的获取痉挛状态
+                    if (uploadData.getSpasmState() != -1) {
+                        if (uploadData.getSpasmState() > 0) {
+                            spasmCount = uploadData.getSpasmState();
+                        }
+                    }
                 }
 
                 if (BloodEndState == 2) {
@@ -635,21 +825,19 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
             case 2:
                 try {
+                    if (type == Type.SUBJECT) {
+                        EcgListData = new ArrayList<>();
+                    }
                     ecgData = gson.fromJson(ObjectJson, EcgData.class);
                     binding.activeTxtCoory.setCenterString(ecgData.getHeartrate());
                     EcgListData = ecgData.getEcgCoorY();
                     if (EcgListData == null) {
                         binding.activeTxtEcgstate.setCenterString("心电仪佩戴异常！");
                         OftenListData = new ArrayList<>();
-                        //   binding.activeWaveviewOne.showLine(0f);
                         return;
                     } else {
-                        // Float
                         binding.activeTxtEcgstate.setCenterString("");
-                        for (int i = 0; i < EcgListData.size(); i++) {
-                            Float cooY = EcgListData.get(i);
-                            OftenListData.add(cooY);
-                        }
+                        OftenListData.addAll(EcgListData);
                         EcgListData = null;
                     }
                 } catch (Exception e) {
@@ -659,21 +847,36 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
             case 3:
                 controlState = ObjectJson;
-                if (controlState.equals("51")) {
-                    //   binding.activeTxtBlood.setCenterString("测量中");
-                } else if (controlState.equals("52")) {
-                    //     binding.activeTxtBlood.setCenterString("点击开始测量血压");
-                } else {
-                    //  binding.activeTxtBlood.setCenterString("点击开始测量血压");
-                }
                 break;
         }
+    }
+
+    public void initCountDownTimer(long millisInFuture) {
+        downTimer = new PeterTimeCountRefresh(millisInFuture, 1000);
+        downTimer.setOnTimerProgressListener(timeLong -> {
+            nowTime = timeLong;
+            String text = MyTimeUtils.formatTime(timeLong);
+            binding.passiveTxtDowntimer.setCenterString(text);
+        });
+
+        //时间结束回调
+        downTimer.setOnTimerFinishListener(() -> {
+            binding.passiveTxtDowntimer.setCenterString("00:00:00");
+            nowTime = 300000;
+            stop();
+            binding.activeTxtBegin.setCenterString("开  始");
+            binding.passiveTimeJia.setEnabled(true);
+            binding.passiveTimeJian.setEnabled(true);
+            binding.passiveTimeJia.setVisibility(View.VISIBLE);
+            binding.passiveTimeJian.setVisibility(View.VISIBLE);
+        });
+        downTimer.start();
     }
 
     /**
      * 模拟源源不断的数据源
      */
-    public void UpdatProgress() {
+    public void updatePerogress() {
         try {
             Date date = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
@@ -684,12 +887,17 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             recordDetailed.setActivtType("主动模式");
             recordDetailed.setRecordTime(sim);
             int zhuansu = Integer.parseInt(binding.activeTxtZhuansu.getCenterString());
-            recordDetailed.setSpeed(zhuansu);
             int leftlimb = Integer.parseInt(binding.activeTxtLeft.getCenterString());
-            recordDetailed.setLeftLimb(leftlimb);
             int rightlimb = Integer.parseInt(binding.activeTxtRight.getCenterString());
-            recordDetailed.setRightLimb(rightlimb);
             int resistance = Integer.parseInt(binding.activeTxtResistance.getCenterString());
+            if (type == Type.SUBJECT) {//被动模式
+                leftlimb = 0;
+                rightlimb = 0;
+                resistance = 0;
+            }
+            recordDetailed.setSpeed(zhuansu);
+            recordDetailed.setLeftLimb(leftlimb);
+            recordDetailed.setRightLimb(rightlimb);
             recordDetailed.setResistance(resistance);
 
             int heartRate;
@@ -708,7 +916,11 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
             recordDetailed.setHbo2(Hbo2);
 
-            recordDetailed.setSpasm(0);
+            if (type == Type.ACTIVE) {
+                spasmData = 0;
+            }
+
+            recordDetailed.setSpasm(spasmData);
             recordDetailedDao.insert(recordDetailed);
             //500表示调用schedule方法后等待500ms后调用run方法，50表示以后调用run方法的时间间隔
 
@@ -730,6 +942,18 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             timerTask1 = null;
         }
         binding.activeWaveShowView.resetCanavas();
+
+        if (type == Type.SUBJECT) {
+            OftenListData = new ArrayList<>();
+            binding.activeTxtBegin.setCenterString("开  始");
+            binding.passiveTimeJia.setEnabled(true);
+            binding.passiveTimeJian.setEnabled(true);
+            binding.passiveTimeJia.setVisibility(View.VISIBLE);
+            binding.passiveTimeJian.setVisibility(View.VISIBLE);
+            nowTime = 300000;
+            binding.passiveTxtDowntimer.setCenterString(MyTimeUtils.formatTime(nowTime));
+
+        }
     }
 
     @Override
@@ -743,7 +967,6 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     public void dialogs() {
-        //  timeTask.interrupt();
         DialogLoader.getInstance().showConfirmDialog(
                 context,
                 getString(R.string.active_return),
@@ -751,10 +974,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 (dialog, which) -> {
                     dialog.dismiss();
                     if (isBegin) {
-                        btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
+                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(0, "50", false));
                     } else {
                         Intent in = new Intent(context, AdminMainActivity.class);
-                        // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }
@@ -779,6 +1001,4 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     protected ActivityActiviteXBinding getViewBinding() {
         return ActivityActiviteXBinding.inflate(getLayoutInflater());
     }
-
-
 }
