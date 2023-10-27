@@ -692,7 +692,7 @@ public class PassiveActivity extends XPageActivity {
                     dialog.dismiss();
                     if (modleType == 1) {
                         LocalConfig.ModType = 0;
-                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.ACTIVE);
+//                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.ACTIVE);
                         finish();
                     } else if (modleType == 2) {
                         LocalConfig.ModType = 2;

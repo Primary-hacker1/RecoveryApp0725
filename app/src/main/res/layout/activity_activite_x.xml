@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
 
     </data>
@@ -31,11 +32,11 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/train_btn_return"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:id="@+id/btn_close"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_marginStart="10dp"
-                        android:background="@drawable/left2"
+                        android:background="@drawable/ic_stat_name"
                         tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
@@ -268,6 +269,7 @@
                         tools:ignore="MissingConstraints" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </FrameLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -356,6 +358,7 @@
 
 
                         <LinearLayout
+                            android:id="@+id/ll_rpm_active"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:layout_gravity="center"
@@ -363,7 +366,8 @@
                             android:layout_marginRight="10dp"
                             android:layout_marginBottom="5dp"
                             android:layout_weight="1"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:visibility="invisible">
 
                             <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
                                 android:layout_width="match_parent"
@@ -377,6 +381,50 @@
                                 app:sShapeCornersRadius="20dp"
                                 app:sUseRipple="false"
                                 tools:ignore="MissingConstraints" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ll_rpm_intelligence"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                                android:id="@+id/sb_rpm_up"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="10dp"
+                                android:background="@drawable/jia1"
+                                app:sb_radius="100dp" />
+
+                            <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                app:sCenterTextColor="@color/Progress_bule"
+                                app:sCenterTextIsBold="true"
+                                app:sCenterTextSize="20sp"
+                                app:sCenterTextString="@string/progress_txt_speed"
+                                app:sDividerLineType="none"
+                                app:sShapeCornersRadius="20dp"
+                                app:sUseRipple="false"
+                                tools:ignore="MissingConstraints" />
+
+                            <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                                android:id="@+id/sb_rpm_down"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/jian1"
+                                app:sb_radius="100dp" />
 
                         </LinearLayout>
 
@@ -562,21 +610,33 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
                         <LinearLayout
+                            android:id="@+id/ll_spasm"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_gravity="center"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
                             android:layout_marginBottom="5dp"
                             android:layout_weight="1"
+                            android:gravity="center"
+                            android:visibility="invisible"
                             android:orientation="horizontal">
 
+                            <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                                android:id="@+id/passive_spasm_jia"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="10dp"
+                                android:background="@drawable/jia1"
+                                app:sb_radius="100dp" />
+
                             <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
-                                android:layout_width="match_parent"
+                                android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                app:sCenterTextColor="#e6e6e6"
+                                android:layout_weight="1"
+                                app:sCenterTextColor="@color/Progress_bule"
                                 app:sCenterTextIsBold="true"
                                 app:sCenterTextSize="20sp"
                                 app:sCenterTextString="@string/progress_txt_spasm"
@@ -584,6 +644,14 @@
                                 app:sShapeCornersRadius="20dp"
                                 app:sUseRipple="false"
                                 tools:ignore="MissingConstraints" />
+
+                            <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                                android:id="@+id/passive_spasm_jian"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/jian1"
+                                app:sb_radius="100dp" />
 
                         </LinearLayout>
 
@@ -787,8 +855,8 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="10dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false">
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
                     <com.xuexiang.xui.widget.layout.XUILinearLayout
                         android:id="@+id/active_layout_blood"
@@ -1141,6 +1209,7 @@
                             android:layout_width="70dp"
                             android:layout_height="70dp"
                             android:background="@drawable/begin"
+                            android:padding="@dimen/config_margin_10dp"
                             android:gravity="center"
                             app:sb_radius="100dp"
                             tools:ignore="SpeakableTextPresentCheck" />
@@ -1165,9 +1234,8 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight="1"
                             android:orientation="horizontal">
 
                             <TextView
@@ -1182,9 +1250,9 @@
                                 android:layout_width="0dp"
                                 android:layout_height="0dp"
                                 android:layout_gravity="center"
-                                android:visibility="gone"
                                 android:layout_weight="1"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal"
+                                android:visibility="gone">
 
                                 <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
                                     android:id="@+id/passive_time_jia"

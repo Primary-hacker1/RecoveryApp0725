@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
 
+import com.rick.recoveryapp.activity.serial.SerialPort;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.utils.HideKeyboard;
@@ -110,16 +111,15 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                     }
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
                     if (LocalConfig.ModType == 0) {
-                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.ACTIVE);
+                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);
                         finish();
                     }
                     if (LocalConfig.ModType == 1) {
-                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.SUBJECT);
+                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.SUBJECT);
                         finish();
                     }
                     if (LocalConfig.ModType == 2) {
-                        Intent in = new Intent(context, IntelligenceActivity.class);
-                        startActivity(in);
+                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.INTELLIGENT);
                         finish();
                     }
                     //情景模式入口

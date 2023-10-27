@@ -1,5 +1,6 @@
 package com.rick.recoveryapp.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.activity.serial.SerialBean;
 import com.rick.recoveryapp.activity.serial.SerialPort;
 import com.rick.recoveryapp.activity.serial.SerialPort.Type;
 import com.rick.recoveryapp.base.BaseApplication;
@@ -84,7 +86,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
     int zhuansu = 5;
     int resistance = 1;//智能模式阻力
-    int  spasmData = 1;//运动方向
+    int spasmData = 1;//运动方向
 
     Long activeTime = 0L; //活动时间
 
@@ -93,12 +95,18 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     int spasmCount = 0; //
 
     //智能模式
+    int zhuansuData = 5, spasm = 1;
+
+    //智能模式
     public ActiveTimeTool activeTimeTool = ActiveTimeTool.getInstance();
 
 
+    //通用改革
+    SerialBean serialBean = new SerialBean();
+
     Type type;
 
-    public static void newActiveXActivity(Context context,Type type) {
+    public static void newActiveXActivity(Context context, Type type) {
         Intent intent = new Intent(context, ActiveXActivity.class);
         intent.putExtra("type", type);
         context.startActivity(intent);
@@ -119,22 +127,28 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         initClick();//点击操作
         try {
             initLiveData();
-            if (type == Type.ACTIVE) {
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(1, "53", false));
-                binding.activeTxtResistance.setCenterString("1");
-            }
+
+            serialBean.setType(type);
+
+            serialBean.setZuli(1);
+
+            serialBean.setBlood_measure("53");
+
+            serialBean.setBegin(false);
 
             if (type == Type.SUBJECT) {
-                binding.activeWaveShowView.resetCanavas();
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("53", false, 5, 5, activeTime));
-                binding.activeTxtZhuansu.setCenterString(zhuansu + "");
-                binding.activeTxtSpasm.setCenterString(spasmData + "");
+                serialBean.setSpeed_lv(5);
+                serialBean.setSpasms_lv(5);
             }
 
             if (type == Type.INTELLIGENT) {
-                binding.activeTxtResistance.setCenterString(resistance + "");
+                serialBean.setSpeed_lv(zhuansuData);
+                serialBean.setSpasms_lv(spasm);
             }
 
+            serialBean.setTime_lv(activeTime);
+
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
 
             PassEcg();
         } catch (Exception ex) {
@@ -145,11 +159,12 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     private void initData() {
         Intent intent = getIntent();
         type = (Type) intent.getSerializableExtra("type");//获取点击的模式
+        assert type != null;
         LogUtils.d("type==" + type.name());
         binding = getBinding();
         btDataPro = new BtDataPro();
         binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
-        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber + "");
+        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber);
         BaseApplication myApp = (BaseApplication) getApplication();
         LocalConfig.daoSession = myApp.getDaoSession();
         activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
@@ -159,23 +174,36 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         OftenListData = new ArrayList<>();
         binding.activeWaveShowView.resetCanavas();
         ecgDataDBDao = LocalConfig.daoSession.getEcgDataDBDao();
-
-
     }
 
     public void initViewType() {//不同模式不同界面
+
+        serialBean.clearData();//清空数据
+
         if (type == Type.ACTIVE) {
-            binding.llTimeControl.setVisibility(View.GONE);
+            binding.activeTxtResistance.setCenterString("1");
+
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.VISIBLE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.GONE);
+            binding.llTimeControl.setVisibility(View.GONE);
+            binding.llRpmActive.setVisibility(View.VISIBLE);//运动rpm布局不需要
+            binding.llRpmIntelligence.setVisibility(View.GONE);//智能被动rpm布局也需要
+            binding.llSpasm.setVisibility(View.INVISIBLE);//痉挛等级
         }
 
         if (type == Type.SUBJECT) {
+            binding.activeWaveShowView.resetCanavas();
+            binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+            binding.activeTxtSpasm.setCenterString(spasmData + "");
+
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.VISIBLE);
             binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.GONE);
             binding.llTimeControl.setVisibility(View.VISIBLE);
+            binding.llRpmActive.setVisibility(View.GONE);
+            binding.llRpmIntelligence.setVisibility(View.VISIBLE);
+            binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
 
             nowTime = 300000;
             activeTime = MyTimeUtils.Getminute(nowTime);
@@ -185,9 +213,14 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         }
 
         if (type == Type.INTELLIGENT) {
+            binding.activeTxtResistance.setCenterString(resistance + "");
+
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.VISIBLE);
+            binding.llRpmActive.setVisibility(View.GONE);
+            binding.llRpmIntelligence.setVisibility(View.VISIBLE);
+            binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
         }
 
     }
@@ -199,7 +232,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             public void run() {
                 try {
                     if (OftenListData != null) {
-                        if (OftenListData.size() > 0) {
+                        if (!OftenListData.isEmpty()) {
                             float cooY = OftenListData.get(0);
                             binding.activeWaveShowView.showLine(cooY);
                             OftenListData.remove(0);
@@ -259,10 +292,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         binding.activeTxtBloodstate2.setCenterString("血压仪未连接");
 
                         if (type == Type.INTELLIGENT) {
-                            int left = 0;
-                            int right = 0;
-                            binding.activeTxtLeft.setGraduatedEnabled(true);
-                            binding.activeViewRight.setGraduatedEnabled(true);
+                            binding.progressViewLeft.setGraduatedEnabled(true);
+                            binding.progressViewRight.setGraduatedEnabled(true);
+                            binding.activeTxtLeft.setCenterString("0");
                         }
 
                         if (type == Type.ACTIVE) {
@@ -307,6 +339,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         });
     }
 
+    @SuppressLint("DefaultLocale")
     public void SaveRecord() {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
@@ -356,7 +389,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         RecordDetailedDao.Properties.Speed.notEq("0"),
                         RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID))
                 .list();
-        if (recordList.size() > 0) {
+        if (!recordList.isEmpty()) {
             for (int i = 0; i < recordList.size(); i++) {
                 speed = recordList.get(i).getSpeed() + speed;
             }
@@ -375,7 +408,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                             RecordDetailedDao.Properties.Resistance.notEq(0))
                     .list();
 
-            if (DetailedList.size() > 0) {
+            if (!DetailedList.isEmpty()) {
                 for (int i = 0; i < DetailedList.size(); i++) {
                     resistance = resistance + DetailedList.get(i).getResistance();
                 }
@@ -411,35 +444,129 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
         });
 
-        binding.trainBtnReturn.setOnClickListener(v -> {
+        binding.btnClose.setOnClickListener(v -> {
             if (BloodEndState == 1) {
-                //取消测量运动后血压
-                BloodEndState = 2;
+                BloodEndState = 2;//取消测量运动后血压
             } else if (BloodEndState == 0) {
                 dialogs();
             }
         });
 
+        //切换训练模式
         binding.stxActiveTitle.setOnClickListener(v -> ChangeDialog(Type.ACTIVE));
 
         binding.stxPressTitle.setOnClickListener(v -> ChangeDialog(Type.SUBJECT));
 
         binding.stxIntelligenceTitle.setOnClickListener(v -> ChangeDialog(Type.INTELLIGENT));
 
-        binding.activeImgBegin.setOnClickListener(v -> {
-            HandlerMessage();
+
+        binding.activeImgBegin.setOnClickListener(v -> HandlerMessage());
+
+        //设置Rpm加减
+        binding.sbRpmUp.setOnClickListener(v -> {
+            if (type == Type.ACTIVE) {
+                return;
+            }
+            if (zhuansu + 1 <= 60) {
+                if (zhuansu + 1 >= 30) {
+                    if (isOk) {
+                        zhuansu = zhuansu + 1;
+                        binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                        binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                    } else {
+                        DialogLoader.getInstance().showConfirmDialog(
+                                context,
+                                getString(R.string.tip_permission),
+                                getString(R.string.lab_ok),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = true;
+                                    zhuansu = zhuansu + 1;
+                                    binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                                    binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                                },
+                                getString(R.string.lab_cancel),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = false;
+                                }
+                        );
+                    }
+                } else {
+                    zhuansu = zhuansu + 1;
+                    binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                    binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                }
+            } else {
+                zhuansu = 60;
+            }
+
         });
 
+        binding.sbRpmDown.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            zhuansu = zhuansu - 1;
+            if (zhuansu < 0) {
+                zhuansu = 0;
+            } else {
+                binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+            }
+        });
+
+        //被动模式按钮操作
+        binding.passiveTimeJia.setOnClickListener(v -> {
+            nowTime = nowTime + 300000;
+            String text = MyTimeUtils.formatTime(nowTime);
+            if (nowTime <= 3600000) {
+                binding.passiveTxtDowntimer.setCenterString(text);
+            } else {
+                nowTime = 3600000;
+                text = MyTimeUtils.formatTime(nowTime);
+                binding.passiveTxtDowntimer.setCenterString(text);
+            }
+            activeTime = MyTimeUtils.Getminute(nowTime);
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
+        });
+
+        binding.passiveTimeJian.setOnClickListener(v -> {
+            nowTime = nowTime - 300000;
+            String text1 = MyTimeUtils.formatTime(nowTime);
+            if (nowTime >= 300000) {
+                binding.passiveTxtDowntimer.setCenterString(text1);
+            } else {
+                nowTime = 300000;
+                text1 = MyTimeUtils.formatTime(nowTime);
+                binding.passiveTxtDowntimer.setCenterString(text1);
+            }
+            activeTime = MyTimeUtils.Getminute(nowTime);
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
+        });
+
+
+        //设置阻力加减
         binding.activeImbtnJia.setOnClickListener(v -> {
-            if (type == Type.ACTIVE) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (type == Type.INTELLIGENT) {
                 if (BloodEndState == 1) {
                     Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
+                } else {
+                    resiDta = resiDta + 1;
+                    if (resiDta <= 12) {
+                        binding.progressViewResistance.setGraduatedEnabled(true);
+                        binding.activeTxtResistance.setCenterString(resiDta + "");
+                    } else {
+                        resiDta = 12;
+                    }
                 }
+            } else {
                 resiDta = resiDta + 1;
                 if (resiDta <= 12) {
                     binding.progressViewResistance.setGraduatedEnabled(true);
@@ -448,74 +575,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                     resiDta = 12;
                 }
             }
-
-            if (type == Type.SUBJECT) {
-                if (zhuansu + 1 <= 60) {
-                    if (zhuansu + 1 >= 30) {
-                        if (isOk) {
-                            zhuansu = zhuansu + 1;
-                            binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                            binding.activeTxtZhuansu.setCenterString(zhuansu + "");
-                        } else {
-                            DialogLoader.getInstance().showConfirmDialog(
-                                    context,
-                                    getString(R.string.tip_permission),
-                                    getString(R.string.lab_ok),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = true;
-                                        zhuansu = zhuansu + 1;
-                                        binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                                        binding.activeTxtZhuansu.setCenterString(zhuansu + "");
-                                    },
-                                    getString(R.string.lab_cancel),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = false;
-                                    }
-                            );
-                        }
-                    } else {
-                        zhuansu = zhuansu + 1;
-                        binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                        binding.activeTxtZhuansu.setCenterString(zhuansu + "");
-                    }
-                } else {
-                    zhuansu = 60;
-                }
-
-            }
-
         });
-
-        if (type == Type.SUBJECT) {
-            binding.passiveTimeJia.setOnClickListener((View.OnClickListener) v -> {
-                nowTime = nowTime + 300000;
-                String text = MyTimeUtils.formatTime(nowTime);
-                if (nowTime <= 3600000) {
-                    binding.passiveTxtDowntimer.setCenterString(text);
-                } else {
-                    nowTime = 3600000;
-                    text = MyTimeUtils.formatTime(nowTime);
-                    binding.passiveTxtDowntimer.setCenterString(text);
-                }
-                activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
-            });
-            binding.passiveTimeJian.setOnClickListener((View.OnClickListener) v -> {
-                nowTime = nowTime - 300000;
-                String text1 = MyTimeUtils.formatTime(nowTime);
-                if (nowTime >= 300000) {
-                    binding.passiveTxtDowntimer.setCenterString(text1);
-                } else {
-                    nowTime = 300000;
-                    text1 = MyTimeUtils.formatTime(nowTime);
-                    binding.passiveTxtDowntimer.setCenterString(text1);
-                }
-                activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
-            });
-        }
 
         binding.activeImbtnMove.setOnClickListener(v -> {
             if (BloodEndState == 1) {
@@ -535,29 +595,56 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
         });
 
+        //开始测量血压按钮
         binding.activeImgBlood.setOnClickListener(v -> {
             if (isBegin) {
                 Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
                 return;
             }
-            try {
-                if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                    if (controlState.equals("00") || controlState.equals("52")) {
+            serialBean.clearData();//清空数据
+
+            if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                if (controlState.equals("00") || controlState.equals("52")) {
+
+                    serialBean.setBlood_measure("51");
+
+                    if (type == Type.ACTIVE || type == Type.INTELLIGENT) {
                         btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "51", false));
-                    } else if (controlState.equals("51")) {
-                        btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "52", false));
-                        controlState = "52";
-                        binding.activeTxtBlood.setCenterString("点击开始测量血压");
                     }
-                } else {
-                    Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+
+                } else if (controlState.equals("51")) {
+
+                    serialBean.setBlood_measure("52");
+
+                    binding.activeTxtBlood.setCenterString("点击开始测量血压");
                 }
-                //  isBlood = true;
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                serialBean.setType(type);
+
+                serialBean.setZuli(resiDta);
+
+                serialBean.setBegin(false);
+
+
+                if (type == Type.SUBJECT) {
+                    serialBean.setSpeed_lv(zhuansu);
+                    serialBean.setSpasms_lv(spasmData);
+                }
+
+                if (type == Type.INTELLIGENT) {
+                    serialBean.setSpeed_lv(zhuansuData);
+                    serialBean.setSpasms_lv(spasm);
+                }
+
+                serialBean.setTime_lv(activeTime);
+
+                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
+
+
+            } else {
+                Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
             }
+            //  isBlood = true;
         });
     }
 
@@ -568,15 +655,28 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         }
         String txtBegin = binding.activeTxtBegin.getCenterString();
         if (!txtBegin.equals("开  始")) {
-            if (type == Type.ACTIVE) {
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(0, "50", false));
-            }
+
+            serialBean.clearData();//清空数据
+
+            serialBean.setType(type);
+
+            serialBean.setBlood_measure("50");
+
+            serialBean.setBegin(false);
+
             if (type == Type.SUBJECT) {
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, 5, 1, 0L));
+                serialBean.setSpeed_lv(1);
+                serialBean.setSpasms_lv(5);
             }
+
             if (type == Type.INTELLIGENT) {
-                btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resistance, "50", false, zhuansuData, spasm,0));
+                serialBean.setSpeed_lv(zhuansuData);
+                serialBean.setSpasms_lv(spasm);
             }
+
+            serialBean.setTime_lv(0L);
+
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
             return;
         }
         if (type == Type.SUBJECT && nowTime == 0) {
@@ -613,7 +713,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
             binding.passiveTimeJia.setVisibility(View.INVISIBLE);
             binding.passiveTimeJian.setVisibility(View.INVISIBLE);
-            binding.activeImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
+            binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
         }
     }
 
@@ -741,13 +841,36 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                     dialog.dismiss();
                                     BloodEndState = 1;
                                     if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+
+                                        serialBean.setType(type);
+
+                                        serialBean.setZuli(resiDta);
+
+                                        serialBean.setBlood_measure("53");
+
+                                        serialBean.setBegin(false);
+
+                                        if (type == Type.SUBJECT) {
+                                            serialBean.setSpeed_lv(zhuansu);
+                                            serialBean.setSpasms_lv(spasmData);
+                                        }
+
+                                        if (type == Type.INTELLIGENT) {
+                                            serialBean.setSpeed_lv(zhuansuData);
+                                            serialBean.setSpasms_lv(spasm);
+                                        }
+
+                                        serialBean.setTime_lv(activeTime);
+
                                         if (controlState.equals("00") || controlState.equals("52")) {
-                                            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "51", false));
+                                            serialBean.setBlood_measure("51");
+
                                         } else if (controlState.equals("51")) {
-                                            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "52", false));
-                                            controlState = "52";
+                                            serialBean.setBlood_measure("52");
                                             binding.activeTxtBlood.setCenterString("点击开始测量血压");
                                         }
+
+                                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
                                     } else {
                                         Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                                     }
@@ -867,13 +990,13 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
             RecordDetailed recordDetailed = new RecordDetailed();
             recordDetailed.setRecordID(LocalConfig.UserID);
-            if(type==Type.ACTIVE){
+            if (type == Type.ACTIVE) {
                 recordDetailed.setActivtType("主动模式");
             }
-            if(type==Type.SUBJECT){
+            if (type == Type.SUBJECT) {
                 recordDetailed.setActivtType("被动模式");
             }
-            if(type==Type.INTELLIGENT){
+            if (type == Type.INTELLIGENT) {
                 recordDetailed.setActivtType("智能模式");
             }
             recordDetailed.setRecordTime(sim);
@@ -966,7 +1089,28 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 (dialog, which) -> {
                     dialog.dismiss();
                     if (isBegin) {
-                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(0, "50", false));
+                        serialBean.clearData();//恢复默认值
+
+                        serialBean.setType(type);
+
+                        serialBean.setBlood_measure("50");
+
+                        serialBean.setBegin(false);
+
+                        if (type == Type.SUBJECT) {
+                            serialBean.setSpeed_lv(1);
+                            serialBean.setSpasms_lv(5);
+                        }
+
+                        if (type == Type.INTELLIGENT) {
+                            serialBean.setSpeed_lv(zhuansuData);
+                            serialBean.setSpasms_lv(spasm);
+                        }
+
+                        serialBean.setTime_lv(activeTime);
+
+                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
+
                     } else {
                         Intent in = new Intent(context, AdminMainActivity.class);
                         startActivity(in);
@@ -986,7 +1130,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         LocalConfig.BloodHight = "0";
         LocalConfig.BloodLow = "0";
         TimeCountTool.setClean();
-        if(type==Type.INTELLIGENT){
+        if (type == Type.INTELLIGENT) {
             ActiveTimeTool.setClean();
         }
     }
