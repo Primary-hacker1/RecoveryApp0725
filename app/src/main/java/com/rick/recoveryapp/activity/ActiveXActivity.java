@@ -182,6 +182,8 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
         if (type == Type.ACTIVE) {
             binding.activeTxtResistance.setCenterString("1");
+            binding.activeTxtZhuansu.setCenterString("0");
+            binding.activeTxtSpasm.setCenterString("0");
 
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.VISIBLE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
@@ -190,6 +192,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             binding.llRpmActive.setVisibility(View.VISIBLE);//运动rpm布局不需要
             binding.llRpmIntelligence.setVisibility(View.GONE);//智能被动rpm布局也需要
             binding.llSpasm.setVisibility(View.INVISIBLE);//痉挛等级
+            binding.llResistance.setVisibility(View.VISIBLE);//阻力等级
         }
 
         if (type == Type.SUBJECT) {
@@ -204,6 +207,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             binding.llRpmActive.setVisibility(View.GONE);
             binding.llRpmIntelligence.setVisibility(View.VISIBLE);
             binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
+            binding.llResistance.setVisibility(View.INVISIBLE);
 
             nowTime = 300000;
             activeTime = MyTimeUtils.Getminute(nowTime);
@@ -214,6 +218,8 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
         if (type == Type.INTELLIGENT) {
             binding.activeTxtResistance.setCenterString(resistance + "");
+            binding.activeTxtZhuansu.setCenterString("0");
+            binding.activeTxtSpasm.setCenterString("0");
 
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
@@ -221,6 +227,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             binding.llRpmActive.setVisibility(View.GONE);
             binding.llRpmIntelligence.setVisibility(View.VISIBLE);
             binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
+            binding.llResistance.setVisibility(View.VISIBLE);
         }
 
     }
