@@ -76,7 +76,6 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     String Active_B_Diastole_Shrink = "0/0", Active_L_Diastole_Shrink = "0/0";//主动模式被动模式都有
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
 
-
     //被动模式
     ArrayList<Integer> countList;
 
@@ -95,7 +94,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     int spasmCount = 0; //
 
     //智能模式
-    int zhuansuData = 5, spasm = 1;
+    int spasm = 1;//痉挛等级
 
     //智能模式
     public ActiveTimeTool activeTimeTool = ActiveTimeTool.getInstance();
@@ -142,7 +141,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
 
             if (type == Type.INTELLIGENT) {
-                serialBean.setSpeed_lv(zhuansuData);
+                serialBean.setSpeed_lv(zhuansu);
                 serialBean.setSpasms_lv(spasm);
             }
 
@@ -179,6 +178,8 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     public void initViewType() {//不同模式不同界面
 
         serialBean.clearData();//清空数据
+        zhuansu = 5;
+        spasm = 1;
 
         if (type == Type.ACTIVE) {
             binding.activeTxtResistance.setCenterString("1");
@@ -193,12 +194,45 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             binding.llRpmIntelligence.setVisibility(View.GONE);//智能被动rpm布局也需要
             binding.llSpasm.setVisibility(View.INVISIBLE);//痉挛等级
             binding.llResistance.setVisibility(View.VISIBLE);//阻力等级
+
+            binding.activeTxtZhuansu.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtResistance.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtSpasm.setCenterTextColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.activeTxtLeft.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//左肢
+            binding.activeTxtRight.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//右肢
+            binding.stxLeftLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.stxRightLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+
+            binding.progressViewZhuansuActicve.setEndColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewZhuansuActicve.setProgressTextColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewZhuansuActicve.setStartColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewZhuansuActicve.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewResistance.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewResistance.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewResistance.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewResistance.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewSpasm.setEndColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewSpasm.setProgressTextColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewSpasm.setStartColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewSpasm.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
+
+            binding.progressViewLeft.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewLeft.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewLeft.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewLeft.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewRight.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewRight.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewRight.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewRight.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
         }
 
         if (type == Type.SUBJECT) {
             binding.activeWaveShowView.resetCanavas();
-            binding.activeTxtZhuansu.setCenterString(zhuansu + "");
-            binding.activeTxtSpasm.setCenterString(spasmData + "");
+            binding.activeTxtZhuansu.setCenterString("5");
+            binding.activeTxtSpasm.setCenterString("1");
 
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.VISIBLE);
@@ -214,12 +248,45 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             String text1 = MyTimeUtils.formatTime(nowTime);
             binding.passiveTxtDowntimer.setCenterString(text1);
             countList = new ArrayList<>();
+
+            binding.activeTxtZhuansu.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtResistance.setCenterTextColor(ContextCompat.getColor(this, R.color.white));
+            binding.activeTxtSpasm.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtLeft.setCenterTextColor(ContextCompat.getColor(this, R.color.white));//左肢
+            binding.activeTxtRight.setCenterTextColor(ContextCompat.getColor(this, R.color.white));//右肢
+            binding.stxLeftLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.white));
+            binding.stxRightLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.white));
+
+            binding.progressViewZhuansuActicve.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewZhuansuActicve.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewZhuansuActicve.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewZhuansuActicve.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewResistance.setEndColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewResistance.setProgressTextColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewResistance.setStartColor(ContextCompat.getColor(this, R.color.white));
+            binding.progressViewResistance.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
+
+            binding.progressViewSpasm.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewSpasm.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewSpasm.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewSpasm.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewLeft.setEndColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.progressViewLeft.setProgressTextColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.progressViewLeft.setStartColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.progressViewLeft.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
+
+            binding.progressViewRight.setEndColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.progressViewRight.setProgressTextColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.progressViewRight.setStartColor(ContextCompat.getColor(this, R.color.progressLightGray));
+            binding.progressViewRight.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
         }
 
         if (type == Type.INTELLIGENT) {
             binding.activeTxtResistance.setCenterString(resistance + "");
-            binding.activeTxtZhuansu.setCenterString("0");
-            binding.activeTxtSpasm.setCenterString("0");
+            binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+            binding.activeTxtSpasm.setCenterString(spasm + "");
 
             binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
             binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
@@ -228,8 +295,40 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             binding.llRpmIntelligence.setVisibility(View.VISIBLE);
             binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
             binding.llResistance.setVisibility(View.VISIBLE);
-        }
 
+            binding.activeTxtZhuansu.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtResistance.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtSpasm.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.activeTxtLeft.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//左肢
+            binding.activeTxtRight.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//右肢
+            binding.stxLeftLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.stxRightLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+
+            binding.progressViewZhuansuActicve.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewZhuansuActicve.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewZhuansuActicve.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewZhuansuActicve.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewResistance.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewResistance.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewResistance.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewResistance.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewSpasm.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewSpasm.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewSpasm.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewSpasm.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewLeft.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewLeft.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewLeft.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewLeft.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+
+            binding.progressViewRight.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewRight.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewRight.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
+            binding.progressViewRight.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+        }
     }
 
     public void PassEcg() {
@@ -524,7 +623,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
         });
 
-        //被动模式按钮操作
+        //被动模式右下角按钮操作
         binding.passiveTimeJia.setOnClickListener(v -> {
             nowTime = nowTime + 300000;
             String text = MyTimeUtils.formatTime(nowTime);
@@ -602,6 +701,35 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
         });
 
+        //痉挛等级
+        binding.passiveSpasmJia.setOnClickListener((View.OnClickListener) v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            spasm = spasm + 1;
+            if (spasm <= 12) {
+                binding.progressViewSpasm.setGraduatedEnabled(true);
+                binding.activeTxtSpasm.setCenterString(spasm + "");
+            } else {
+                spasm = 12;
+            }
+        });
+
+        binding.passiveSpasmJian.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            spasm = spasm - 1;
+            if (spasm < 1) {
+                spasm = 1;
+            } else {
+                binding.progressViewSpasm.setGraduatedEnabled(true);
+                binding.activeTxtSpasm.setCenterString(spasm + "");
+            }
+        });
+
         //开始测量血压按钮
         binding.activeImgBlood.setOnClickListener(v -> {
             if (isBegin) {
@@ -639,7 +767,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 }
 
                 if (type == Type.INTELLIGENT) {
-                    serialBean.setSpeed_lv(zhuansuData);
+                    serialBean.setSpeed_lv(zhuansu);
                     serialBean.setSpasms_lv(spasm);
                 }
 
@@ -677,7 +805,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
 
             if (type == Type.INTELLIGENT) {
-                serialBean.setSpeed_lv(zhuansuData);
+                serialBean.setSpeed_lv(zhuansu);
                 serialBean.setSpasms_lv(spasm);
             }
 
@@ -863,7 +991,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                         }
 
                                         if (type == Type.INTELLIGENT) {
-                                            serialBean.setSpeed_lv(zhuansuData);
+                                            serialBean.setSpeed_lv(zhuansu);
                                             serialBean.setSpasms_lv(spasm);
                                         }
 
@@ -1110,7 +1238,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         }
 
                         if (type == Type.INTELLIGENT) {
-                            serialBean.setSpeed_lv(zhuansuData);
+                            serialBean.setSpeed_lv(zhuansu);
                             serialBean.setSpasms_lv(spasm);
                         }
 

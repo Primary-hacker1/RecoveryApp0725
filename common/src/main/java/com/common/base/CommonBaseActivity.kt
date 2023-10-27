@@ -3,14 +3,15 @@ package com.common.base
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.ViewDataBinding
-import androidx.viewbinding.ViewBinding
 
 /**
  * create by 2021/3/2
  *
  * @author zt
  */
-abstract class CommonBaseActivity<VB : ViewBinding> : AppCompatActivity() {
+abstract class CommonBaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
+
+    protected val TAG = CommonBaseActivity::class.java.simpleName
 
     private lateinit var _binding: VB
 

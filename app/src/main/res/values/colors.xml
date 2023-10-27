@@ -54,6 +54,8 @@
     <color name="train_txt_bule">#16a6fb</color>
     <color name="train_qj_bule">#37b4fe</color>
     <color name="Progress_bule">#139ff8</color>
+    <color name="progressLightBlue">#e6f4fe</color>
+    <color name="progressLightGray">#e6e6e6</color>
 
     <color name="black">#000000</color><!--黑色 -->
     <color name="white">#FFFFFF</color><!--白色-->
