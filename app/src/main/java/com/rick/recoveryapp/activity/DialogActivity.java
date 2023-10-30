@@ -111,21 +111,21 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                     }
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
                     if (LocalConfig.ModType == 0) {
-//                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);
-                        Intent intent = new Intent(this,ActiveActivity.class);
-                        startActivity(intent);
+                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);
+//                        Intent intent = new Intent(this,ActiveActivity.class);
+//                        startActivity(intent);
                         finish();
                     }
                     if (LocalConfig.ModType == 1) {
-//                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.SUBJECT);
-                        Intent intent = new Intent(this,PassiveActivity.class);
-                        startActivity(intent);
+                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.SUBJECT);
+//                        Intent intent = new Intent(this,PassiveActivity.class);
+//                        startActivity(intent);
                         finish();
                     }
                     if (LocalConfig.ModType == 2) {
-//                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.INTELLIGENT);
-                        Intent intent = new Intent(this,IntelligenceActivity.class);
-                        startActivity(intent);
+                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.INTELLIGENT);
+//                        Intent intent = new Intent(this,IntelligenceActivity.class);
+//                        startActivity(intent);
                         finish();
                     }
                     //情景模式入口

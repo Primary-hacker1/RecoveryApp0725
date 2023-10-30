@@ -439,12 +439,12 @@ public class ActiveActivity extends XPageActivity {
                 try {
                     if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                         if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                            //  btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                            //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
+//                              btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                            btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
                         } else if (ContorlState.equals("51")) {
                             // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                            //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
-                            ContorlState = "52";
+                            btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
+//                            ContorlState = "52";
                             binding.activeTxtBlood.setCenterString("点击开始测量血压");
                         }
                     } else {
