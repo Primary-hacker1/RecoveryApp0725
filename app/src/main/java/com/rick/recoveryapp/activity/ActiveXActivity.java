@@ -63,14 +63,14 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     UploadData uploadData;
     EcgData ecgData;
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-    String controlState = "52";
+    String controlState = "52";//0x50：默认状态；0x51：启动血压测量；0x52：停止血压测量； 0x53: 清除当前血压测试数据
     BtDataPro btDataPro;
     private Timer timer1;
     private TimerTask timerTask1;
     boolean isBegin = false;
     Context context;
-    ActivitRecordDao activitRecordDao;
-    public TimeCountTool timeCountTool = TimeCountTool.getInstance();
+    ActivitRecordDao activitRecordDao;//数据库操作
+    public TimeCountTool timeCountTool = TimeCountTool.getInstance();//操作时间
     String timeCount = "";
     double Total_mileage, Calories;
     String Active_B_Diastole_Shrink = "0/0", Active_L_Diastole_Shrink = "0/0";//主动模式被动模式都有
@@ -124,6 +124,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         initData();//初始化数据
         initViewType();//不同模式不同界面
         initClick();//点击操作
+
+        ActiveManager activeManager = new ActiveManager(this);
+
         try {
             initLiveData();
 

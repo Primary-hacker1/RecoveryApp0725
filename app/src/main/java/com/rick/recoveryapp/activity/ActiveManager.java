@@ -7,9 +7,12 @@ import androidx.annotation.NonNull;
 
 import com.common.base.BaseFrameLayout;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.databinding.ActivityManagerBinding;
 
 
-public class ActiveManager extends BaseFrameLayout{
+public class ActiveManager extends BaseFrameLayout<ActivityManagerBinding> {
+
+    public ActivityManagerBinding binding;
 
     public ActiveManager(@NonNull Context context) {
         super(context);
@@ -25,6 +28,7 @@ public class ActiveManager extends BaseFrameLayout{
 
     @Override
     public void initView() {
+        binding = baseBinding;
 
 
     }

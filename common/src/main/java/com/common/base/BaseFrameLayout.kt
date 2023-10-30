@@ -13,20 +13,21 @@ abstract class BaseFrameLayout<Vb : ViewDataBinding> : FrameLayout {
 
     protected val TAG = BaseFrameLayout::class.java.simpleName
 
-    lateinit var binding: Vb
+    lateinit var baseBinding: Vb
     lateinit var mContext: Context
 
+    protected val _binding get() = baseBinding
     constructor(context: Context) : super(context) {
         mContext = context
         var layoutInflater = LayoutInflater.from(context)
-        binding = DataBindingUtil.inflate(layoutInflater, getLayout(), this, true)
+        baseBinding = DataBindingUtil.inflate(layoutInflater, getLayout(), this, true)
         initView()
     }
 
     constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {
         mContext = context
         var layoutInflater = LayoutInflater.from(context)
-        binding = DataBindingUtil.inflate(layoutInflater, getLayout(), this, true)
+        baseBinding = DataBindingUtil.inflate(layoutInflater, getLayout(), this, true)
         initView()
     }
 
@@ -37,7 +38,7 @@ abstract class BaseFrameLayout<Vb : ViewDataBinding> : FrameLayout {
     ) {
         mContext = context
         var layoutInflater = LayoutInflater.from(context)
-        binding = DataBindingUtil.inflate(layoutInflater, getLayout(), this, true)
+        baseBinding = DataBindingUtil.inflate(layoutInflater, getLayout(), this, true)
         initView()
     }
 
