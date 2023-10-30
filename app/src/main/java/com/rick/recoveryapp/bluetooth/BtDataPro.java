@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class BtDataPro {
 
@@ -64,30 +65,26 @@ public class BtDataPro {
         return CMD_CODE;
     }
 
-    //重写发送函数，参数不同。
-    public void sendBTMessage(String message) {
+    public void sendBTMessage(String message) {//重写发送函数，参数不同。
         // 确保已连接
-//        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-//            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
-//                    .show();
-//            return;
-//        }
-        // 检测是否有字符串发送
-        if (message.length() > 0) {
-            // 获取 字符串并告诉BluetoothChatService发送
-            byte[] send = new byte[0];
+        //        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
+        //            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
+        //                    .show();
+        //            return;
+        //        }
+        if (!message.isEmpty()) {
+            byte[] send = new byte[0];// 获取 字符串并告诉BluetoothChatService发送
             try {
                 send = hexStr2Bytes(message);
             } catch (Exception e) {
-                Log.d("hexStr2Bytes", e.getMessage());
+                Log.d("hexStr2Bytes", Objects.requireNonNull(e.getMessage()));
             }
             BaseApplication.mConnectService.write(send);//回调service
             // 清空输出缓冲区
             //     mOutStringBuffer.setLength(0);
-        } else {
-//            Toast.makeText(this,"发送内容不能为空",
-//                    Toast.LENGTH_SHORT).show();
-        }
+        }   //            Toast.makeText(this,"发送内容不能为空",
+            //                    Toast.LENGTH_SHORT).show();
+
     }
 
     // 将16进制字符串转化为字节数组

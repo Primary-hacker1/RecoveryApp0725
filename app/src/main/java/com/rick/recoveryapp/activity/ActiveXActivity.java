@@ -25,6 +25,7 @@ import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteXBinding;
+import com.rick.recoveryapp.databinding.ActivityManagerBinding;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
@@ -54,8 +55,7 @@ import java.util.TimerTask;
  * "主动模式需要重构界面冗余"
  * */
 public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding> {
-    ActivityActiviteXBinding binding;
-    int resiDta = 1;
+    ActivityManagerBinding managerBinding;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
     RecordDetailedDao recordDetailedDao;
@@ -82,28 +82,30 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     static PeterTimeCountRefresh downTimer;//向下定时器
 
     static long nowTime = 300000;//现在时间
+    int resistance = 1;//阻力
 
-    int zhuansu = 5;
-    int resistance = 1;//智能模式阻力
+    int rotateSpeed = 5;//转速
+
     int spasmData = 1;//运动方向
 
     Long activeTime = 0L; //活动时间
 
     boolean isOk = false; //是否确认
 
-    int spasmCount = 0; //
+    int spasmCount = 0; //痉挛等级
 
     //智能模式
     int spasm = 1;//痉挛等级
 
-    //智能模式
     public ActiveTimeTool activeTimeTool = ActiveTimeTool.getInstance();
 
 
     //通用改革
-    SerialBean serialBean = new SerialBean();
+    SerialBean serialBean = new SerialBean();//串口参数
 
-    Type type;
+    ActiveManager activeManager;//布局管理器
+
+    Type type;//进入的模式
 
     public static void newActiveXActivity(Context context, Type type) {
         Intent intent = new Intent(context, ActiveXActivity.class);
@@ -121,36 +123,22 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
     @Override
     protected void initView() {
-        initData();//初始化数据
-        initViewType();//不同模式不同界面
-        initClick();//点击操作
+        activeManager = new ActiveManager(this);//自定义layout
 
-        ActiveManager activeManager = new ActiveManager(this);
+        managerBinding = getBinding().acManager.binding;
+
+        activeManager.setManagerBinding(managerBinding);
+
+        initData();//初始化数据
+
+        initViewType();//不同模式不同界面
+
+        initClick();//点击操作
 
         try {
             initLiveData();
 
-            serialBean.setType(type);
-
-            serialBean.setZuli(1);
-
-            serialBean.setBlood_measure("53");
-
-            serialBean.setBegin(false);
-
-            if (type == Type.SUBJECT) {
-                serialBean.setSpeed_lv(5);
-                serialBean.setSpasms_lv(5);
-            }
-
-            if (type == Type.INTELLIGENT) {
-                serialBean.setSpeed_lv(zhuansu);
-                serialBean.setSpasms_lv(spasm);
-            }
-
-            serialBean.setTime_lv(activeTime);
-
-            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
+            initSerial();
 
             PassEcg();
         } catch (Exception ex) {
@@ -158,15 +146,39 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         }
     }
 
+    private void initSerial() {
+
+        serialBean.setType(type);
+
+        serialBean.setZuli(1);
+
+        serialBean.setBlood_measure("53");
+
+        serialBean.setBegin(false);
+
+        if (type == Type.SUBJECT) {
+            serialBean.setSpeed_lv(5);
+            serialBean.setSpasms_lv(5);
+        }
+
+        if (type == Type.INTELLIGENT) {
+            serialBean.setSpeed_lv(rotateSpeed);
+            serialBean.setSpasms_lv(spasm);
+        }
+
+        serialBean.setTime_lv(activeTime);
+
+        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
+    }
+
     private void initData() {
         Intent intent = getIntent();
         type = (Type) intent.getSerializableExtra("type");//获取点击的模式
         assert type != null;
         LogUtils.d("type==" + type.name());
-        binding = getBinding();
         btDataPro = new BtDataPro();
-        binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
-        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber);
+        managerBinding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
+        managerBinding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber);
         BaseApplication myApp = (BaseApplication) getApplication();
         LocalConfig.daoSession = myApp.getDaoSession();
         activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
@@ -174,163 +186,36 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
         EcgListData = new ArrayList<>();
         OftenListData = new ArrayList<>();
-        binding.activeWaveShowView.resetCanavas();
+        managerBinding.activeWaveShowView.resetCanavas();
         ecgDataDBDao = LocalConfig.daoSession.getEcgDataDBDao();
     }
 
     public void initViewType() {//不同模式不同界面
 
         serialBean.clearData();//清空数据
-        zhuansu = 5;
-        spasm = 1;
 
-        if (type == Type.ACTIVE) {
-            binding.activeTxtResistance.setCenterString("1");
-            binding.activeTxtZhuansu.setCenterString("0");
-            binding.activeTxtSpasm.setCenterString("0");
+        BloodEndState = 0;
 
-            binding.stxActiveTitle.setBottomDividerLineVisibility(View.VISIBLE);
-            binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
-            binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.GONE);
-            binding.llTimeControl.setVisibility(View.GONE);
-            binding.llRpmActive.setVisibility(View.VISIBLE);//运动rpm布局不需要
-            binding.llRpmIntelligence.setVisibility(View.GONE);//智能被动rpm布局也需要
-            binding.llSpasm.setVisibility(View.INVISIBLE);//痉挛等级
-            binding.llResistance.setVisibility(View.VISIBLE);//阻力等级
+        rotateSpeed = 5;//转速
 
-            binding.activeTxtZhuansu.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtResistance.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtSpasm.setCenterTextColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.activeTxtLeft.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//左肢
-            binding.activeTxtRight.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//右肢
-            binding.stxLeftLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.stxRightLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
+        resistance = 1;//阻力
 
-            binding.progressViewZhuansuActicve.setEndColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewZhuansuActicve.setProgressTextColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewZhuansuActicve.setStartColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewZhuansuActicve.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+        spasm = 1;//痉挛
 
-            binding.progressViewResistance.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewResistance.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewResistance.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewResistance.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewSpasm.setEndColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewSpasm.setProgressTextColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewSpasm.setStartColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewSpasm.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
-
-            binding.progressViewLeft.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewLeft.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewLeft.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewLeft.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewRight.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewRight.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewRight.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewRight.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-        }
+        activeManager.initViewType(type);
 
         if (type == Type.SUBJECT) {
-            binding.activeWaveShowView.resetCanavas();
-            binding.activeTxtZhuansu.setCenterString("5");
-            binding.activeTxtSpasm.setCenterString("1");
-
-            binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
-            binding.stxPressTitle.setBottomDividerLineVisibility(View.VISIBLE);
-            binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.GONE);
-            binding.llTimeControl.setVisibility(View.VISIBLE);
-            binding.llRpmActive.setVisibility(View.GONE);
-            binding.llRpmIntelligence.setVisibility(View.VISIBLE);
-            binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
-            binding.llResistance.setVisibility(View.INVISIBLE);
-
             nowTime = 300000;
             activeTime = MyTimeUtils.Getminute(nowTime);
             String text1 = MyTimeUtils.formatTime(nowTime);
-            binding.passiveTxtDowntimer.setCenterString(text1);
+            managerBinding.passiveTxtDowntimer.setCenterString(text1);
             countList = new ArrayList<>();
-
-            binding.activeTxtZhuansu.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtResistance.setCenterTextColor(ContextCompat.getColor(this, R.color.white));
-            binding.activeTxtSpasm.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtLeft.setCenterTextColor(ContextCompat.getColor(this, R.color.white));//左肢
-            binding.activeTxtRight.setCenterTextColor(ContextCompat.getColor(this, R.color.white));//右肢
-            binding.stxLeftLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.white));
-            binding.stxRightLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.white));
-
-            binding.progressViewZhuansuActicve.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewZhuansuActicve.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewZhuansuActicve.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewZhuansuActicve.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewResistance.setEndColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewResistance.setProgressTextColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewResistance.setStartColor(ContextCompat.getColor(this, R.color.white));
-            binding.progressViewResistance.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
-
-            binding.progressViewSpasm.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewSpasm.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewSpasm.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewSpasm.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewLeft.setEndColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.progressViewLeft.setProgressTextColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.progressViewLeft.setStartColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.progressViewLeft.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
-
-            binding.progressViewRight.setEndColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.progressViewRight.setProgressTextColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.progressViewRight.setStartColor(ContextCompat.getColor(this, R.color.progressLightGray));
-            binding.progressViewRight.setTrackColor(ContextCompat.getColor(this, R.color.progressLightGray));
         }
 
         if (type == Type.INTELLIGENT) {
-            binding.activeTxtResistance.setCenterString(resistance + "");
-            binding.activeTxtZhuansu.setCenterString(zhuansu + "");
-            binding.activeTxtSpasm.setCenterString(spasm + "");
-
-            binding.stxActiveTitle.setBottomDividerLineVisibility(View.GONE);
-            binding.stxPressTitle.setBottomDividerLineVisibility(View.GONE);
-            binding.stxIntelligenceTitle.setBottomDividerLineVisibility(View.VISIBLE);
-            binding.llRpmActive.setVisibility(View.GONE);
-            binding.llRpmIntelligence.setVisibility(View.VISIBLE);
-            binding.llSpasm.setVisibility(View.VISIBLE);//痉挛等级
-            binding.llResistance.setVisibility(View.VISIBLE);
-
-            binding.activeTxtZhuansu.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtResistance.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtSpasm.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.activeTxtLeft.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//左肢
-            binding.activeTxtRight.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));//右肢
-            binding.stxLeftLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.stxRightLimb.setCenterTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-
-            binding.progressViewZhuansuActicve.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewZhuansuActicve.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewZhuansuActicve.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewZhuansuActicve.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewResistance.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewResistance.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewResistance.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewResistance.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewSpasm.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewSpasm.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewSpasm.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewSpasm.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewLeft.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewLeft.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewLeft.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewLeft.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
-
-            binding.progressViewRight.setEndColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewRight.setProgressTextColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewRight.setStartColor(ContextCompat.getColor(this, R.color.Progress_bule));
-            binding.progressViewRight.setTrackColor(ContextCompat.getColor(this, R.color.progressLightBlue));
+            managerBinding.activeTxtZhuansu.setCenterString(rotateSpeed + "");
+            managerBinding.activeTxtResistance.setCenterString(resistance + "");
+            managerBinding.activeTxtSpasm.setCenterString(spasm + "");
         }
     }
 
@@ -343,7 +228,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                     if (OftenListData != null) {
                         if (!OftenListData.isEmpty()) {
                             float cooY = OftenListData.get(0);
-                            binding.activeWaveShowView.showLine(cooY);
+                            managerBinding.activeWaveShowView.showLine(cooY);
                             OftenListData.remove(0);
                         }
                     }
@@ -360,25 +245,25 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 .get("BT_PROTOCOL", PoolMessage.class)
                 .observe(this, msg -> {
                     if (msg.isState()) {
-                        Log.d("BT", msg.getObjectName());
+//                        Log.d("BT", msg.getObjectName());
                         if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
                             UploadData uploadData;
                             uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
-                            //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
+//                            LogUtils.d("BTBlood"+ uploadData.getBlood_oxy());
                             if (uploadData.getECG().equals("已连接")) {
-                                binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
+                                managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
                             } else {
-                                binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                                managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
                             }
                             if (uploadData.getBlood().equals("已连接")) {
-                                binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
+                                managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
                             } else {
-                                binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                                managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
                             }
                             if (uploadData.getBlood_oxy().equals("已连接")) {
-                                binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
+                                managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
                             } else {
-                                binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                                managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_no);
                             }
                         }
                     } else {
@@ -391,38 +276,36 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 .observe(this, msg -> {
                     if (!msg.getIsConnt()) {//未连接
 
-                        binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                        binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                        binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                        managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                        managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                        managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_no);
 
-                        binding.activeTxtBoxygen.setCenterString("0");
-                        binding.activeTxtO2State.setCenterString("血氧仪未连接");
-                        binding.activeTxtBloodstate1.setCenterString("血压仪未连接");
-                        binding.activeTxtBloodstate2.setCenterString("血压仪未连接");
+                        managerBinding.activeTxtBoxygen.setCenterString("0");
+                        managerBinding.activeTxtO2State.setCenterString("血氧仪未连接");
+                        managerBinding.activeTxtBloodstate1.setCenterString("血压仪未连接");
+                        managerBinding.activeTxtBloodstate2.setCenterString("血压仪未连接");
 
                         if (type == Type.INTELLIGENT) {
-                            binding.progressViewLeft.setGraduatedEnabled(true);
-                            binding.progressViewRight.setGraduatedEnabled(true);
-                            binding.activeTxtLeft.setCenterString("0");
+                            managerBinding.progressViewLeft.setGraduatedEnabled(true);
+                            managerBinding.progressViewRight.setGraduatedEnabled(true);
+                            managerBinding.activeTxtLeft.setCenterString("0");
                         }
 
                         if (type == Type.ACTIVE) {
                             int left = 0;
-                            binding.progressViewLeft.setGraduatedEnabled(true);
-                            binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
-                            binding.activeTxtLeft.setCenterString("0");
+                            managerBinding.progressViewLeft.setGraduatedEnabled(true);
+                            managerBinding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
+                            managerBinding.activeTxtLeft.setCenterString("0");
 
                             int right = 0;
-                            binding.progressViewRight.setGraduatedEnabled(true);
-                            binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
-                            binding.activeTxtRight.setCenterString("0");
+                            managerBinding.progressViewRight.setGraduatedEnabled(true);
+                            managerBinding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
+                            managerBinding.activeTxtRight.setCenterString("0");
                         }
 
-                        binding.activeTxtCoory.setCenterString("--");
-                        binding.activeTxtEcgstate.setCenterString("心电仪未连接");
+                        managerBinding.activeTxtCoory.setCenterString("--");
+                        managerBinding.activeTxtEcgstate.setCenterString("心电仪未连接");
                         OftenListData.clear();
-
-
                     }
                 });
         LiveEventBus
@@ -538,8 +421,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         }
     }
 
+
     public void initClick() {
-        binding.btnTest.setOnClickListener(v -> {
+        managerBinding.btnTest.setOnClickListener(v -> {
             if (type == Type.SUBJECT) {//被动模式直接发送
                 btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
                 return;
@@ -553,7 +437,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
         });
 
-        binding.btnClose.setOnClickListener(v -> {
+        managerBinding.btnClose.setOnClickListener(v -> {
             if (BloodEndState == 1) {
                 BloodEndState = 2;//取消测量运动后血压
             } else if (BloodEndState == 0) {
@@ -562,26 +446,26 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         });
 
         //切换训练模式
-        binding.stxActiveTitle.setOnClickListener(v -> ChangeDialog(Type.ACTIVE));
+        managerBinding.stxActiveTitle.setOnClickListener(v -> ChangeDialog(Type.ACTIVE));
 
-        binding.stxPressTitle.setOnClickListener(v -> ChangeDialog(Type.SUBJECT));
+        managerBinding.stxPressTitle.setOnClickListener(v -> ChangeDialog(Type.SUBJECT));
 
-        binding.stxIntelligenceTitle.setOnClickListener(v -> ChangeDialog(Type.INTELLIGENT));
+        managerBinding.stxIntelligenceTitle.setOnClickListener(v -> ChangeDialog(Type.INTELLIGENT));
 
-
-        binding.activeImgBegin.setOnClickListener(v -> HandlerMessage());
+        //开始按钮
+        managerBinding.activeImgBegin.setOnClickListener(v -> HandlerMessage());
 
         //设置Rpm加减
-        binding.sbRpmUp.setOnClickListener(v -> {
+        managerBinding.sbRpmUp.setOnClickListener(v -> {
             if (type == Type.ACTIVE) {
                 return;
             }
-            if (zhuansu + 1 <= 60) {
-                if (zhuansu + 1 >= 30) {
+            if (rotateSpeed + 1 <= 60) {
+                if (rotateSpeed + 1 >= 30) {
                     if (isOk) {
-                        zhuansu = zhuansu + 1;
-                        binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                        binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                        rotateSpeed = rotateSpeed + 1;
+                        managerBinding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                        managerBinding.activeTxtZhuansu.setCenterString(rotateSpeed + "");
                     } else {
                         DialogLoader.getInstance().showConfirmDialog(
                                 context,
@@ -590,9 +474,9 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                                 (dialog, which) -> {
                                     dialog.dismiss();
                                     isOk = true;
-                                    zhuansu = zhuansu + 1;
-                                    binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                                    binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                                    rotateSpeed = rotateSpeed + 1;
+                                    managerBinding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                                    managerBinding.activeTxtZhuansu.setCenterString(rotateSpeed + "");
                                 },
                                 getString(R.string.lab_cancel),
                                 (dialog, which) -> {
@@ -602,62 +486,65 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         );
                     }
                 } else {
-                    zhuansu = zhuansu + 1;
-                    binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                    binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                    rotateSpeed = rotateSpeed + 1;
+                    managerBinding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                    managerBinding.activeTxtZhuansu.setCenterString(rotateSpeed + "");
                 }
             } else {
-                zhuansu = 60;
+                rotateSpeed = 60;
             }
 
         });
 
-        binding.sbRpmDown.setOnClickListener(v -> {
+        managerBinding.sbRpmDown.setOnClickListener(v -> {
             if (isBegin) {
                 Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
                 return;
             }
-            zhuansu = zhuansu - 1;
-            if (zhuansu < 0) {
-                zhuansu = 0;
+            rotateSpeed = rotateSpeed - 1;
+            if (rotateSpeed < 0) {
+                rotateSpeed = 0;
             } else {
-                binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                binding.activeTxtZhuansu.setCenterString(zhuansu + "");
+                managerBinding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                managerBinding.activeTxtZhuansu.setCenterString(rotateSpeed + "");
             }
         });
 
         //被动模式右下角按钮操作
-        binding.passiveTimeJia.setOnClickListener(v -> {
+        managerBinding.passiveTimeJia.setOnClickListener(v -> {
             nowTime = nowTime + 300000;
             String text = MyTimeUtils.formatTime(nowTime);
             if (nowTime <= 3600000) {
-                binding.passiveTxtDowntimer.setCenterString(text);
+                managerBinding.passiveTxtDowntimer.setCenterString(text);
             } else {
                 nowTime = 3600000;
                 text = MyTimeUtils.formatTime(nowTime);
-                binding.passiveTxtDowntimer.setCenterString(text);
+                managerBinding.passiveTxtDowntimer.setCenterString(text);
             }
             activeTime = MyTimeUtils.Getminute(nowTime);
-            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
+
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(
+                    new SerialBean(type,resistance,"50",false,rotateSpeed,spasmData,activeTime)));
         });
 
-        binding.passiveTimeJian.setOnClickListener(v -> {
+        managerBinding.passiveTimeJian.setOnClickListener(v -> {
             nowTime = nowTime - 300000;
             String text1 = MyTimeUtils.formatTime(nowTime);
             if (nowTime >= 300000) {
-                binding.passiveTxtDowntimer.setCenterString(text1);
+                managerBinding.passiveTxtDowntimer.setCenterString(text1);
             } else {
                 nowTime = 300000;
                 text1 = MyTimeUtils.formatTime(nowTime);
-                binding.passiveTxtDowntimer.setCenterString(text1);
+                managerBinding.passiveTxtDowntimer.setCenterString(text1);
             }
             activeTime = MyTimeUtils.Getminute(nowTime);
-            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode("50", false, spasmData, zhuansu, activeTime));
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(
+                    new SerialBean(type,resistance,"50",false,rotateSpeed,spasmData,activeTime)));
         });
 
 
         //设置阻力加减
-        binding.activeImbtnJia.setOnClickListener(v -> {
+        managerBinding.activeImbtnJia.setOnClickListener(v -> {
             if (isBegin) {
                 Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
                 return;
@@ -667,26 +554,26 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 if (BloodEndState == 1) {
                     Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
                 } else {
-                    resiDta = resiDta + 1;
-                    if (resiDta <= 12) {
-                        binding.progressViewResistance.setGraduatedEnabled(true);
-                        binding.activeTxtResistance.setCenterString(resiDta + "");
+                    resistance = resistance + 1;
+                    if (resistance <= 12) {
+                        managerBinding.progressViewResistance.setGraduatedEnabled(true);
+                        managerBinding.activeTxtResistance.setCenterString(resistance + "");
                     } else {
-                        resiDta = 12;
+                        resistance = 12;
                     }
                 }
             } else {
-                resiDta = resiDta + 1;
-                if (resiDta <= 12) {
-                    binding.progressViewResistance.setGraduatedEnabled(true);
-                    binding.activeTxtResistance.setCenterString(resiDta + "");
+                resistance = resistance + 1;
+                if (resistance <= 12) {
+                    managerBinding.progressViewResistance.setGraduatedEnabled(true);
+                    managerBinding.activeTxtResistance.setCenterString(resistance + "");
                 } else {
-                    resiDta = 12;
+                    resistance = 12;
                 }
             }
         });
 
-        binding.activeImbtnMove.setOnClickListener(v -> {
+        managerBinding.activeImbtnMove.setOnClickListener(v -> {
             if (BloodEndState == 1) {
                 Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
                 return;
@@ -695,31 +582,31 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
                 return;
             }
-            resiDta = resiDta - 1;
-            if (resiDta < 1) {
-                resiDta = 1;
+            resistance = resistance - 1;
+            if (resistance < 1) {
+                resistance = 1;
             } else {
-                binding.progressViewResistance.setGraduatedEnabled(true);
-                binding.activeTxtResistance.setCenterString(resiDta + "");
+                managerBinding.progressViewResistance.setGraduatedEnabled(true);
+                managerBinding.activeTxtResistance.setCenterString(resistance + "");
             }
         });
 
         //痉挛等级
-        binding.passiveSpasmJia.setOnClickListener((View.OnClickListener) v -> {
+        managerBinding.passiveSpasmJia.setOnClickListener(v -> {
             if (isBegin) {
                 Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
                 return;
             }
             spasm = spasm + 1;
             if (spasm <= 12) {
-                binding.progressViewSpasm.setGraduatedEnabled(true);
-                binding.activeTxtSpasm.setCenterString(spasm + "");
+                managerBinding.progressViewSpasm.setGraduatedEnabled(true);
+                managerBinding.activeTxtSpasm.setCenterString(spasm + "");
             } else {
                 spasm = 12;
             }
         });
 
-        binding.passiveSpasmJian.setOnClickListener(v -> {
+        managerBinding.passiveSpasmJian.setOnClickListener(v -> {
             if (isBegin) {
                 Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
                 return;
@@ -728,13 +615,13 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             if (spasm < 1) {
                 spasm = 1;
             } else {
-                binding.progressViewSpasm.setGraduatedEnabled(true);
-                binding.activeTxtSpasm.setCenterString(spasm + "");
+                managerBinding.progressViewSpasm.setGraduatedEnabled(true);
+                managerBinding.activeTxtSpasm.setCenterString(spasm + "");
             }
         });
 
         //开始测量血压按钮
-        binding.activeImgBlood.setOnClickListener(v -> {
+        managerBinding.activeImgBlood.setOnClickListener(v -> {
             if (isBegin) {
                 Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
                 return;
@@ -754,23 +641,23 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
                     serialBean.setBlood_measure("52");
 
-                    binding.activeTxtBlood.setCenterString("点击开始测量血压");
+                    managerBinding.activeTxtBlood.setCenterString("点击开始测量血压");
                 }
 
                 serialBean.setType(type);
 
-                serialBean.setZuli(resiDta);
+                serialBean.setZuli(resistance);
 
                 serialBean.setBegin(false);
 
 
                 if (type == Type.SUBJECT) {
-                    serialBean.setSpeed_lv(zhuansu);
+                    serialBean.setSpeed_lv(rotateSpeed);
                     serialBean.setSpasms_lv(spasmData);
                 }
 
                 if (type == Type.INTELLIGENT) {
-                    serialBean.setSpeed_lv(zhuansu);
+                    serialBean.setSpeed_lv(rotateSpeed);
                     serialBean.setSpasms_lv(spasm);
                 }
 
@@ -791,7 +678,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
             return;
         }
-        String txtBegin = binding.activeTxtBegin.getCenterString();
+        String txtBegin = managerBinding.activeTxtBegin.getCenterString();
         if (!txtBegin.equals("开  始")) {
 
             serialBean.clearData();//清空数据
@@ -808,7 +695,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
 
             if (type == Type.INTELLIGENT) {
-                serialBean.setSpeed_lv(zhuansu);
+                serialBean.setSpeed_lv(rotateSpeed);
                 serialBean.setSpasms_lv(spasm);
             }
 
@@ -821,8 +708,8 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             return;
         }
 
-        String hightBlood = binding.activeTxtHigh.getCenterString();
-        String lowBlood = binding.activeTxtLow.getCenterString();
+        String hightBlood = managerBinding.activeTxtHigh.getCenterString();
+        String lowBlood = managerBinding.activeTxtLow.getCenterString();
         if (hightBlood.equals("0") && lowBlood.equals("0")) {
             DialogLoader.getInstance().showConfirmDialog(
                     context,
@@ -830,28 +717,78 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                     getString(R.string.lab_ok),
                     (dialog, which) -> {
                         dialog.dismiss();
-                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "50", true));
+                        serialBean.setType(type);
+
+                        serialBean.setZuli(resistance);
+
+                        serialBean.setBlood_measure("50");
+
+                        serialBean.setBegin(true);
+
+                        if (type == Type.SUBJECT) {
+
+                            serialBean.setSpeed_lv(rotateSpeed);
+
+                            serialBean.setSpasms_lv(spasmData);
+                        }
+
+                        if (type == Type.INTELLIGENT) {
+
+                            serialBean.setSpeed_lv(rotateSpeed);
+
+                            serialBean.setSpasms_lv(spasm);
+                        }
+
+                        serialBean.setTime_lv(activeTime);
+
+                        btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
+
                         timeCountTool.startCount();
-                        binding.activeTxtBegin.setCenterString("停  止");
-                        binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+
+                        managerBinding.activeTxtBegin.setCenterString("停  止");
+
+                        managerBinding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
                     },
                     getString(R.string.lab_cancel),
                     (dialog, which) -> dialog.dismiss()
             );
 
         } else {
-            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(resiDta, "50", true));
+            serialBean.setType(type);
+
+            serialBean.setZuli(resistance);
+
+            serialBean.setBlood_measure("50");
+
+            serialBean.setBegin(true);
+
+            if (type == Type.SUBJECT) {
+                serialBean.setSpeed_lv(rotateSpeed);
+                serialBean.setSpasms_lv(spasmData);
+            }
+
+            if (type == Type.INTELLIGENT) {
+                serialBean.setSpeed_lv(rotateSpeed);
+                serialBean.setSpasms_lv(spasm);
+            }
+
+            serialBean.setTime_lv(activeTime);
+
+            btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
+
             timeCountTool.startCount();
-            binding.activeTxtBegin.setCenterString("停  止");
-            binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+
+            managerBinding.activeTxtBegin.setCenterString("停  止");
+
+            managerBinding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
         }
         if (type == Type.SUBJECT) {
-            binding.passiveTimeJia.setEnabled(false);
-            binding.passiveTimeJian.setEnabled(false);
+            managerBinding.passiveTimeJia.setEnabled(false);
+            managerBinding.passiveTimeJian.setEnabled(false);
 
-            binding.passiveTimeJia.setVisibility(View.INVISIBLE);
-            binding.passiveTimeJian.setVisibility(View.INVISIBLE);
-            binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+            managerBinding.passiveTimeJia.setVisibility(View.INVISIBLE);
+            managerBinding.passiveTimeJian.setVisibility(View.INVISIBLE);
+            managerBinding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
         }
     }
 
@@ -862,10 +799,10 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             Toast.makeText(context, "运动中，请勿切换模式！", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (BloodEndState == 1) {
-            Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if (BloodEndState == 1 && type == Type.ACTIVE) {
+//            Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
         DialogLoader.getInstance().showConfirmDialog(
                 context,
                 getString(R.string.active_change),
@@ -887,26 +824,26 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                     if (uploadData.getOxy_vaulestr().equals("手指未插入")
                             || uploadData.getOxy_vaulestr().equals("探头脱落")
                             || uploadData.getOxy_vaulestr().equals("127")) {
-                        binding.activeTxtBoxygen.setCenterString("--");
+                        managerBinding.activeTxtBoxygen.setCenterString("--");
                         if (uploadData.getOxy_vaulestr().equals("127")) {
-                            binding.activeTxtO2State.setCenterString("检测中..");
+                            managerBinding.activeTxtO2State.setCenterString("检测中..");
                         } else {
-                            binding.activeTxtO2State.setCenterString(uploadData.getOxy_vaulestr());
+                            managerBinding.activeTxtO2State.setCenterString(uploadData.getOxy_vaulestr());
                         }
                     } else {
-                        binding.activeTxtBoxygen.setCenterString(uploadData.getOxy_vaulestr());
-                        binding.activeTxtO2State.setCenterString("");
+                        managerBinding.activeTxtBoxygen.setCenterString(uploadData.getOxy_vaulestr());
+                        managerBinding.activeTxtO2State.setCenterString("");
                     }
                 } else {
-                    binding.activeTxtBoxygen.setCenterString("--");
-                    binding.activeTxtO2State.setCenterString(uploadData.getBlood_oxy());
+                    managerBinding.activeTxtBoxygen.setCenterString("--");
+                    managerBinding.activeTxtO2State.setCenterString(uploadData.getBlood_oxy());
                 }
                 if (uploadData.getBlood().equals("已连接")) {
                     if (uploadData.getHigh().equals("255") || uploadData.getLow().equals("255")) {
-                        binding.activeTxtHigh.setCenterString("0");
-                        binding.activeTxtLow.setCenterString("0");
-                        binding.activeTxtBloodstate1.setCenterString("测量错误");
-                        binding.activeTxtBloodstate2.setCenterString("测量错误");
+                        managerBinding.activeTxtHigh.setCenterString("0");
+                        managerBinding.activeTxtLow.setCenterString("0");
+                        managerBinding.activeTxtBloodstate1.setCenterString("测量错误");
+                        managerBinding.activeTxtBloodstate2.setCenterString("测量错误");
                     } else {
                         if (BloodEndState == 1) {
                             //运动后血压
@@ -921,46 +858,46 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                             Active_B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                         }
 
-                        binding.activeTxtHigh.setCenterString(uploadData.getHigh());
-                        binding.activeTxtLow.setCenterString(uploadData.getLow());
+                        managerBinding.activeTxtHigh.setCenterString(uploadData.getHigh());
+                        managerBinding.activeTxtLow.setCenterString(uploadData.getLow());
                         if (!uploadData.getHigh().equals("0")) {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
                         }
-                        binding.activeTxtBloodstate1.setCenterString("");
-                        binding.activeTxtBloodstate2.setCenterString("");
+                        managerBinding.activeTxtBloodstate1.setCenterString("");
+                        managerBinding.activeTxtBloodstate2.setCenterString("");
                     }
                 } else {
-                    binding.activeTxtHigh.setCenterString(LocalConfig.BloodHight);
-                    binding.activeTxtLow.setCenterString(LocalConfig.BloodLow);
-                    binding.activeTxtBloodstate1.setCenterString(uploadData.getBlood());
-                    binding.activeTxtBloodstate2.setCenterString(uploadData.getBlood());
+                    managerBinding.activeTxtHigh.setCenterString(LocalConfig.BloodHight);
+                    managerBinding.activeTxtLow.setCenterString(LocalConfig.BloodLow);
+                    managerBinding.activeTxtBloodstate1.setCenterString(uploadData.getBlood());
+                    managerBinding.activeTxtBloodstate2.setCenterString(uploadData.getBlood());
                     Active_B_Diastole_Shrink = "0/0";
                     Active_L_Diastole_Shrink = "0/0";
                 }
 
                 if (uploadData.getECG().equals("已连接")) {
-                    binding.activeTxtEcgstate.setCenterString("");
+                    managerBinding.activeTxtEcgstate.setCenterString("");
                 } else {
-                    binding.activeTxtCoory.setCenterString("--");
-                    binding.activeTxtEcgstate.setCenterString(uploadData.getECG());
+                    managerBinding.activeTxtCoory.setCenterString("--");
+                    managerBinding.activeTxtEcgstate.setCenterString(uploadData.getECG());
                 }
                 if (isBegin) {
-                    binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-                    binding.activeTxtZhuansu.setCenterString(uploadData.getSpeed());
+                    managerBinding.progressViewZhuansuActicve.setGraduatedEnabled(true);
+                    managerBinding.activeTxtZhuansu.setCenterString(uploadData.getSpeed());
 
-                    binding.progressViewLeft.setGraduatedEnabled(true);
-                    binding.activeTxtLeft.setCenterString(uploadData.getLeft());
+                    managerBinding.progressViewLeft.setGraduatedEnabled(true);
+                    managerBinding.activeTxtLeft.setCenterString(uploadData.getLeft());
 
-                    binding.progressViewRight.setGraduatedEnabled(true);
-                    binding.activeTxtRight.setCenterString(uploadData.getRight());
+                    managerBinding.progressViewRight.setGraduatedEnabled(true);
+                    managerBinding.activeTxtRight.setCenterString(uploadData.getRight());
 
-                    binding.progressViewResistance.setGraduatedEnabled(true);
-                    binding.activeTxtResistance.setCenterString(uploadData.getSTresistance());
+                    managerBinding.progressViewResistance.setGraduatedEnabled(true);
+                    managerBinding.activeTxtResistance.setCenterString(uploadData.getSTresistance());
                 }
                 if (uploadData.getActiveState().equals("停机状态")) {
-                    binding.activeTxtBegin.setCenterString("开  始");
-                    binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.begin));
+                    managerBinding.activeTxtBegin.setCenterString("开  始");
+                    managerBinding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.begin));
                     //判断是否在运动中
                     if (isBegin) {
                         isBegin = false;
@@ -982,19 +919,19 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
                                         serialBean.setType(type);
 
-                                        serialBean.setZuli(resiDta);
+                                        serialBean.setZuli(resistance);
 
                                         serialBean.setBlood_measure("53");
 
                                         serialBean.setBegin(false);
 
                                         if (type == Type.SUBJECT) {
-                                            serialBean.setSpeed_lv(zhuansu);
+                                            serialBean.setSpeed_lv(rotateSpeed);
                                             serialBean.setSpasms_lv(spasmData);
                                         }
 
                                         if (type == Type.INTELLIGENT) {
-                                            serialBean.setSpeed_lv(zhuansu);
+                                            serialBean.setSpeed_lv(rotateSpeed);
                                             serialBean.setSpasms_lv(spasm);
                                         }
 
@@ -1005,7 +942,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
 
                                         } else if (controlState.equals("51")) {
                                             serialBean.setBlood_measure("52");
-                                            binding.activeTxtBlood.setCenterString("点击开始测量血压");
+                                            managerBinding.activeTxtBlood.setCenterString("点击开始测量血压");
                                         }
 
                                         btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(serialBean));
@@ -1031,17 +968,17 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 } else if (uploadData.getActiveState().equals("运行状态")) {
                     isBegin = true;
                     timeCountTool.startCount();
-                    binding.activeTxtBegin.setCenterString("停  止");
-                    binding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
+                    managerBinding.activeTxtBegin.setCenterString("停  止");
+                    managerBinding.activeImgBegin.setBackground(ContextCompat.getDrawable(this, R.drawable.stop));
                     if (type == Type.ACTIVE) {//下面是被动操作的所以这里直接弹出方法了
                         return;
                     }
                     isBegin = true;
-                    binding.passiveTimeJia.setEnabled(false);
-                    binding.passiveTimeJian.setEnabled(false);
+                    managerBinding.passiveTimeJia.setEnabled(false);
+                    managerBinding.passiveTimeJian.setEnabled(false);
 
-                    binding.passiveTimeJia.setVisibility(View.INVISIBLE);
-                    binding.passiveTimeJian.setVisibility(View.INVISIBLE);
+                    managerBinding.passiveTimeJia.setVisibility(View.INVISIBLE);
+                    managerBinding.passiveTimeJian.setVisibility(View.INVISIBLE);
                     if (downTimer == null) {
                         initCountDownTimer(nowTime);
                         activeTime = MyTimeUtils.Getminute(nowTime);
@@ -1073,14 +1010,14 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         EcgListData = new ArrayList<>();
                     }
                     ecgData = gson.fromJson(ObjectJson, EcgData.class);
-                    binding.activeTxtCoory.setCenterString(ecgData.getHeartrate());
+                    managerBinding.activeTxtCoory.setCenterString(ecgData.getHeartrate());
                     EcgListData = ecgData.getEcgCoorY();
                     if (EcgListData == null) {
-                        binding.activeTxtEcgstate.setCenterString("心电仪佩戴异常！");
+                        managerBinding.activeTxtEcgstate.setCenterString("心电仪佩戴异常！");
                         OftenListData = new ArrayList<>();
                         return;
                     } else {
-                        binding.activeTxtEcgstate.setCenterString("");
+                        managerBinding.activeTxtEcgstate.setCenterString("");
                         OftenListData.addAll(EcgListData);
                         EcgListData = null;
                     }
@@ -1100,19 +1037,19 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         downTimer.setOnTimerProgressListener(timeLong -> {
             nowTime = timeLong;
             String text = MyTimeUtils.formatTime(timeLong);
-            binding.passiveTxtDowntimer.setCenterString(text);
+            managerBinding.passiveTxtDowntimer.setCenterString(text);
         });
 
         //时间结束回调
         downTimer.setOnTimerFinishListener(() -> {
-            binding.passiveTxtDowntimer.setCenterString("00:00:00");
+            managerBinding.passiveTxtDowntimer.setCenterString("00:00:00");
             nowTime = 300000;
             stop();
-            binding.activeTxtBegin.setCenterString("开  始");
-            binding.passiveTimeJia.setEnabled(true);
-            binding.passiveTimeJian.setEnabled(true);
-            binding.passiveTimeJia.setVisibility(View.VISIBLE);
-            binding.passiveTimeJian.setVisibility(View.VISIBLE);
+            managerBinding.activeTxtBegin.setCenterString("开  始");
+            managerBinding.passiveTimeJia.setEnabled(true);
+            managerBinding.passiveTimeJian.setEnabled(true);
+            managerBinding.passiveTimeJia.setVisibility(View.VISIBLE);
+            managerBinding.passiveTimeJian.setVisibility(View.VISIBLE);
         });
         downTimer.start();
     }
@@ -1138,10 +1075,10 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 recordDetailed.setActivtType("智能模式");
             }
             recordDetailed.setRecordTime(sim);
-            int zhuansu = Integer.parseInt(binding.activeTxtZhuansu.getCenterString());
-            int leftlimb = Integer.parseInt(binding.activeTxtLeft.getCenterString());
-            int rightlimb = Integer.parseInt(binding.activeTxtRight.getCenterString());
-            int resistance = Integer.parseInt(binding.activeTxtResistance.getCenterString());
+            int zhuansu = Integer.parseInt(managerBinding.activeTxtZhuansu.getCenterString());
+            int leftlimb = Integer.parseInt(managerBinding.activeTxtLeft.getCenterString());
+            int rightlimb = Integer.parseInt(managerBinding.activeTxtRight.getCenterString());
+            int resistance = Integer.parseInt(managerBinding.activeTxtResistance.getCenterString());
             if (type == Type.SUBJECT) {//被动模式
                 leftlimb = 0;
                 rightlimb = 0;
@@ -1153,18 +1090,18 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             recordDetailed.setResistance(resistance);
 
             int heartRate;
-            if (binding.activeTxtCoory.getCenterString().equals("--")) {
+            if (managerBinding.activeTxtCoory.getCenterString().equals("--")) {
                 heartRate = 0;
             } else {
-                heartRate = Integer.parseInt(binding.activeTxtCoory.getCenterString());
+                heartRate = Integer.parseInt(managerBinding.activeTxtCoory.getCenterString());
             }
             recordDetailed.setHeartRate(heartRate);
 
             int Hbo2;
-            if (binding.activeTxtBoxygen.getCenterString().equals("--")) {
+            if (managerBinding.activeTxtBoxygen.getCenterString().equals("--")) {
                 Hbo2 = 0;
             } else {
-                Hbo2 = Integer.parseInt(binding.activeTxtBoxygen.getCenterString());
+                Hbo2 = Integer.parseInt(managerBinding.activeTxtBoxygen.getCenterString());
             }
             recordDetailed.setHbo2(Hbo2);
 
@@ -1194,17 +1131,17 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             timerTask1.cancel();
             timerTask1 = null;
         }
-        binding.activeWaveShowView.resetCanavas();
+        managerBinding.activeWaveShowView.resetCanavas();
 
         if (type == Type.SUBJECT) {
             OftenListData = new ArrayList<>();
-            binding.activeTxtBegin.setCenterString("开  始");
-            binding.passiveTimeJia.setEnabled(true);
-            binding.passiveTimeJian.setEnabled(true);
-            binding.passiveTimeJia.setVisibility(View.VISIBLE);
-            binding.passiveTimeJian.setVisibility(View.VISIBLE);
+            managerBinding.activeTxtBegin.setCenterString("开  始");
+            managerBinding.passiveTimeJia.setEnabled(true);
+            managerBinding.passiveTimeJian.setEnabled(true);
+            managerBinding.passiveTimeJia.setVisibility(View.VISIBLE);
+            managerBinding.passiveTimeJian.setVisibility(View.VISIBLE);
             nowTime = 300000;
-            binding.passiveTxtDowntimer.setCenterString(MyTimeUtils.formatTime(nowTime));
+            managerBinding.passiveTxtDowntimer.setCenterString(MyTimeUtils.formatTime(nowTime));
 
         }
     }
@@ -1241,7 +1178,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         }
 
                         if (type == Type.INTELLIGENT) {
-                            serialBean.setSpeed_lv(zhuansu);
+                            serialBean.setSpeed_lv(rotateSpeed);
                             serialBean.setSpasms_lv(spasm);
                         }
 

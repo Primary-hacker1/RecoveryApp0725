@@ -11,6 +11,9 @@ class SerialPort {
     }
 
     companion object {
+
+        val tag: String = SerialBean::class.java.name
+
         //主动模式串口消息
         fun getCmdCode(zuli: Int, blood_measure: String, isBegin: Boolean): String {
             val cmd_head = "A88408"
@@ -122,6 +125,8 @@ class SerialPort {
         fun getCmdCode(//前面太复杂要一直判断type，这里自动判断
                 serialBean: SerialBean
         ): String {
+            LogUtils.d(tag + serialBean.toStringRun())
+
             var getCmdCode = ""
             if (serialBean.type == Type.ACTIVE) {
                 val cmd_head = "A88408"
@@ -146,7 +151,6 @@ class SerialPort {
                         (cmd_head + sport_mode + avtive_status + active_direction + zuliHex + spasms_lv
                                 + speed_lv + time_lv + serialBean.blood_measure)
                 val CRC16 = CRC16Util.getCRC16(splicingStr)
-                LogUtils.d("GetCmdCode" + "ActiveFragemt,获取指令")
                 getCmdCode = splicingStr + CRC16 + cmd_end
             }
             if (serialBean.type == Type.SUBJECT) {
@@ -180,7 +184,6 @@ class SerialPort {
                         (cmd_head + sport_mode + avtive_status + active_direction + zuliHex + spasmsHex
                                 + speedHex + timeHex + serialBean.blood_measure)
                 val CRC16 = CRC16Util.getCRC16(splicingStr)
-                Log.d("GetCmdCode", "PassiveFragment,获取指令")
                 getCmdCode = splicingStr + CRC16 + cmd_end
             }
             if (serialBean.type == Type.INTELLIGENT) {
