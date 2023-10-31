@@ -28,9 +28,9 @@ import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
 
+import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.activity.serial.SerialPort;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
-import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -63,6 +63,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
         dialog_userid = findViewById(R.id.dialog_userid);
         dialog_name = findViewById(R.id.dialog_name);
         dialog_medicalNumber = findViewById(R.id.dialog_medicalNumber);
+
         if(UriConfig.test){
             dialog_name.setText("test");
             dialog_medicalNumber.setText("123");

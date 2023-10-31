@@ -30,7 +30,11 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * 结算页面
+ * */
 public class DataResultsActivity extends XPageActivity {
 
     Context context;
@@ -61,7 +65,7 @@ public class DataResultsActivity extends XPageActivity {
             SuperMain();
 
         } catch (Exception ex) {
-            Log.d("DataResultsActivity", ex.getMessage());
+            Log.d("DataResultsActivity", Objects.requireNonNull(ex.getMessage()));
         }
     }
 
@@ -81,7 +85,7 @@ public class DataResultsActivity extends XPageActivity {
         getDetailed();
         activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
         RecordList = activitRecordDao.queryBuilder().where(ActivitRecordDao.Properties.ID.eq(RecordID)).list();
-        if (RecordList.size() > 0) {
+        if (!RecordList.isEmpty()) {
             activitRecord = new ActivitRecord();
             activitRecord.setActivtType(RecordList.get(0).getActivtType());
             activitRecord.setRecordID(RecordList.get(0).getID());
@@ -104,7 +108,7 @@ public class DataResultsActivity extends XPageActivity {
         chartStyle.initChartStyle();
         powerAVGDao = LocalConfig.daoSession.getPowerAVGDao();
         List<PowerAVG> avgList = powerAVGDao.queryBuilder().where(PowerAVGDao.Properties.RecordID.eq(RecordID)).list();
-        if (avgList.size() > 0) {
+        if (!avgList.isEmpty()) {
             for (int i = 0; i < avgList.size(); i++) {
                 left.add(new Entry(i, Float.parseFloat(avgList.get(i).getLeftAvg() + "")));
                 right.add(new Entry(i, Float.parseFloat(avgList.get(i).getRightAvg() + "")));
@@ -123,7 +127,7 @@ public class DataResultsActivity extends XPageActivity {
                 ).orderDesc(RecordDetailedDao.Properties.RecordTime)
                 .list();
 
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
             resistance = DetailedList.get(0).getResistance();
             //平均阻力
 
@@ -238,47 +242,44 @@ public class DataResultsActivity extends XPageActivity {
 
     public void initClick() {
 
-        binding.dataBtnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (LocalConfig.Model.equals("U3D")) {
-                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-                        finish();
-                    } else {
-                        String remarks = binding.logger.getContentText();
-                        if (remarks.equals("")) {
-                            dialogLoader();
-                        } else {
-                            activitRecord.setRemark(remarks);
-                            activitRecordDao.update(activitRecord);
+        binding.dataBtnSave.setOnClickListener(v -> {
 
-                            Intent in = new Intent(context, AdminMainActivity.class);
-                            // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(in);
-                            finish();
-                        }
+            LocalConfig.userName = null;//保存后主界面要重新登陆患者信息
+
+            try {
+                if (LocalConfig.Model.equals("U3D")) {
+                    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                    finish();
+                } else {
+                    String remarks = binding.logger.getContentText();
+                    if (remarks.isEmpty()) {
+                        dialogLoader();
+                    } else {
+                        activitRecord.setRemark(remarks);
+                        activitRecordDao.update(activitRecord);
+
+                        Intent in = new Intent(context, AdminMainActivity.class);
+                        // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(in);
+                        finish();
                     }
-                } catch (Exception e) {
-                    Log.d("Data_db", e.getMessage());
                 }
+            } catch (Exception e) {
+                Log.d("Data_db", e.getMessage());
             }
         });
 
-        binding.dataBtnAgain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.dataBtnAgain.setOnClickListener(v -> {
 
-                if (LocalConfig.Model.equals("U3D")) {
-                    finish();
-                } else {
+            if (LocalConfig.Model.equals("U3D")) {
+                finish();
+            } else {
 
 
-                    Intent in = new Intent(context, AdminMainActivity.class);
-                    //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(in);
-                    finish();
-                }
+                Intent in = new Intent(context, AdminMainActivity.class);
+                //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(in);
+                finish();
             }
         });
     }

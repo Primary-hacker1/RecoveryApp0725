@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.jeremyliao.liveeventbus.LiveEventBus;
+import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.entity.LiveMessage;
@@ -30,7 +31,6 @@ import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
-import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.utils.LocalConfig;
