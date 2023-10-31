@@ -311,7 +311,7 @@ public class IntelligenceActivity extends XPageActivity {
                         RecordDetailedDao.Properties.Resistance.notEq(0))
                 .list();
 
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
             for (int i = 0; i < DetailedList.size(); i++) {
                 resistance = resistance + DetailedList.get(i).getResistance();
             }
@@ -427,6 +427,7 @@ public class IntelligenceActivity extends XPageActivity {
                             binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
 //                            binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
 //                            binding.progressViewZhuansuIntelligence.startProgressAnimation();
+                            binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
 
                         } else {
                             DialogLoader.getInstance().showConfirmDialog(
