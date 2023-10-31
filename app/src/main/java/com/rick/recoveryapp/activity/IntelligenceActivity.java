@@ -144,74 +144,72 @@ public class IntelligenceActivity extends XPageActivity {
     public void initLiveData() {
         LiveEventBus
                 .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, new Observer<PoolMessage>() {
-                    @Override
-                    public void onChanged(@Nullable PoolMessage msg) {
-                        if (msg.isState()) {
-                            Log.d("BT", msg.getObjectName());
-                            if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                                UploadData uploadData = new UploadData();
-                                uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
-                                //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
-                                if (uploadData.getECG().equals("已连接")) {
-                                    binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
-                                } else {
-                                    binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                                }
-                                if (uploadData.getBlood().equals("已连接")) {
-                                    binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
-                                } else {
-                                    binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                                }
-                                if (uploadData.getBlood_oxy().equals("已连接")) {
-                                    binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
-                                } else {
-                                    binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
-                                }
+                .observe(this, msg -> {
+                    if (msg.isState()) {
+                        Log.d("BT", msg.getObjectName());
+                        if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                            UploadData uploadData = new UploadData();
+                            uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
+                            //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
+                            if (uploadData.getECG().equals("已连接")) {
+                                binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
+                            } else {
+                                binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
                             }
-                        } else {
-                            Log.d("BT", "没有任何数据");
+                            if (uploadData.getBlood().equals("已连接")) {
+                                binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
+                            } else {
+                                binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                            }
+                            if (uploadData.getBlood_oxy().equals("已连接")) {
+                                binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
+                            } else {
+                                binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                            }
                         }
+                    } else {
+                        Log.d("BT", "没有任何数据");
                     }
                 });
 
         LiveEventBus
                 .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, new Observer<LiveMessage>() {
-                    @Override
-                    public void onChanged(@Nullable LiveMessage msg) {
-                        if (!msg.getIsConnt()) {
-                            //未连接
-                            binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                            binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                .observe(this, msg -> {
+                    if (msg.getState().equals("蓝牙设备未连接")) {
+                        isBegin = false;//恢复不然退出不了界面
+                    }
 
-                            binding.inteTxtBoxygen.setCenterString("0");
-                            binding.inteTxtO2State.setCenterString("血氧仪未连接");
+                    if (!msg.getIsConnt()) {
+                        //未连接
+                        binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                        binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                        binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+
+                        binding.inteTxtBoxygen.setCenterString("0");
+                        binding.inteTxtO2State.setCenterString("血氧仪未连接");
 //                            binding.inteTxtHigh.setCenterString(LocalConfig.B_Diastole_Shrink);
 //                            binding.inteTxtLow.setCenterString(LocalConfig.L_Diastole_Shrink);
-                            binding.inteTxtBloodstate1.setCenterString("血压仪未连接");
-                            binding.inteTxtBloodstate1.setCenterString("血压仪未连接");
+                        binding.inteTxtBloodstate1.setCenterString("血压仪未连接");
+                        binding.inteTxtBloodstate1.setCenterString("血压仪未连接");
 
 //                            LocalConfig.B_Diastole_Shrink = "0/0";
 //                            LocalConfig.L_Diastole_Shrink = "0/0";
 
-                            int left = 0;
-                            binding.progressViewLeft.setGraduatedEnabled(true);
-                            //   binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
-                            //  binding.progressViewLeft.startProgressAnimation();
-                            binding.intelligenceTxtLeft.setCenterString("0");
+                        int left = 0;
+                        binding.progressViewLeft.setGraduatedEnabled(true);
+                        //   binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
+                        //  binding.progressViewLeft.startProgressAnimation();
+                        binding.intelligenceTxtLeft.setCenterString("0");
 
-                            int right = 0;
-                            binding.progressViewRight.setGraduatedEnabled(true);
-                            //binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
-                            //  binding.progressViewRight.startProgressAnimation();
-                            binding.intelligenceTxtLeft.setCenterString("0");
+                        int right = 0;
+                        binding.progressViewRight.setGraduatedEnabled(true);
+                        //binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
+                        //  binding.progressViewRight.startProgressAnimation();
+                        binding.intelligenceTxtLeft.setCenterString("0");
 
-                            binding.inteTxtCoory.setCenterString("0");
-                            binding.inteTxtEcgstate.setCenterString("心电仪未连接");
-                            OftenListData.clear();
-                        }
+                        binding.inteTxtCoory.setCenterString("0");
+                        binding.inteTxtEcgstate.setCenterString("心电仪未连接");
+                        OftenListData.clear();
                     }
                 });
 
@@ -346,7 +344,7 @@ public class IntelligenceActivity extends XPageActivity {
                     //取消测量运动后血压
                     BloodEndState = 2;
                 } else if (BloodEndState == 0) {
-                    dialogs();
+                    dialogs(true);
                 }
 
             }
@@ -1017,13 +1015,14 @@ public class IntelligenceActivity extends XPageActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            dialogs();
+            dialogs(false);
             return false;
         }
         return true;
     }
 
-    public void dialogs() {
+
+    public void dialogs(boolean isReturn) {
         //  timeTask.interrupt();
         DialogLoader.getInstance().showConfirmDialog(
                 context,
@@ -1033,13 +1032,14 @@ public class IntelligenceActivity extends XPageActivity {
                     dialog.dismiss();
                     if (isBegin) {
                         btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    } else {
+                    }
+
+                    if (!isBegin) {
                         Intent in = new Intent(context, AdminMainActivity.class);
                         //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }
-
                 },
                 getString(R.string.lab_no),
                 (dialog, which) -> {

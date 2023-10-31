@@ -343,7 +343,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                 case MESSAGE_TOAST:
                     liveMessage = new LiveMessage();
                     liveMessage.setIsConnt(false);
-                    liveMessage.setState("蓝牙未连接");
+                    liveMessage.setState("蓝牙设备未连接");
 //                    LiveEventBus.get("BT_CONNECTED")
 //                            .post(liveMessage); liveMessage.setMessage("与" + mConnectedDeviceName +
 //                                msg.getData().getString(TOAST));

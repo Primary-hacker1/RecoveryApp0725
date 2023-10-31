@@ -105,10 +105,8 @@ public class BtReceiver extends BroadcastReceiver {
                 Log.i(TAG, "CONN_STATE: " + intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, 0));
                 break;
             case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
-                Log.i(TAG, "CONN_STATE: " + intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, 0));
-                break;
             case BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED:
-                Log.i(TAG, "CONN_STATE: " + intent.getIntExtra(BluetoothA2dp.EXTRA_STATE, 0));
+                Log.i(TAG, "CONN_STATE: " + intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, 0));
                 break;
         }
     }

@@ -50,8 +50,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /*
-* "被动模式需要重构界面冗余"
-* */
+ * "被动模式需要重构界面冗余"
+ * */
 @Deprecated()
 public class PassiveActivity extends XPageActivity {
     private boolean isCloseDialog = false;//如果是运动后停止
@@ -69,7 +69,7 @@ public class PassiveActivity extends XPageActivity {
     String CMD_CODE = "";
     private Timer timer1;
     private TimerTask timerTask1;
-    boolean isBegin = false;
+    boolean isBegin = false;//是否在测量血压
     Context context;
     ActivitRecordDao activitRecordDao;
     public TimeCountTool timeCountTool = TimeCountTool.getInstance();
@@ -189,29 +189,31 @@ public class PassiveActivity extends XPageActivity {
 
         LiveEventBus
                 .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, new Observer<LiveMessage>() {
-                    @Override
-                    public void onChanged(@Nullable LiveMessage msg) {
-                        if (!msg.getIsConnt()) {
-                            //未连接
-                            binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                            binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                .observe(this, msg -> {
+                    assert msg != null;
+                    if (msg.getState().equals("蓝牙设备未连接")) {
+                        isBegin = false;//恢复不然退出不了界面
+                    }
 
-                            //未连接
-                            binding.passiveTxtO2State.setCenterString("血氧仪未连接");
-                            binding.passiveTxtBoxygen.setCenterString("0");
+                    if (!msg.getIsConnt()) {
+                        //未连接
+                        binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                        binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                        binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
 
-                            binding.passiveTxtBloodstate1.setCenterString("血压仪未连接");
-                            binding.passiveTxtBloodstate2.setCenterString("血压仪未连接");
+                        //未连接
+                        binding.passiveTxtO2State.setCenterString("血氧仪未连接");
+                        binding.passiveTxtBoxygen.setCenterString("0");
+
+                        binding.passiveTxtBloodstate1.setCenterString("血压仪未连接");
+                        binding.passiveTxtBloodstate2.setCenterString("血压仪未连接");
 
 //                            LocalConfig.B_Diastole_Shrink = "0/0";
 //                            LocalConfig.L_Diastole_Shrink = "0/0";
 
-                            binding.passiveTxtCoory.setCenterString("0");
-                            binding.passiveTxtEcgstate.setCenterString("心电仪未连接");
-                            OftenListData.clear();
-                        }
+                        binding.passiveTxtCoory.setCenterString("0");
+                        binding.passiveTxtEcgstate.setCenterString("心电仪未连接");
+                        OftenListData.clear();
                     }
                 });
 
@@ -323,154 +325,128 @@ public class PassiveActivity extends XPageActivity {
 
     public void itinClick() {
 
-        binding.btnTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+        binding.btnTest.setOnClickListener(v -> btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac)));
+
+        binding.trainBtnReturn.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                //取消测量运动后血压
+                BloodEndState = 2;
+            } else if (BloodEndState == 0) {
+                dialogs(true);
             }
         });
 
-        binding.trainBtnReturn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    //取消测量运动后血压
-                    BloodEndState = 2;
-                } else if (BloodEndState == 0) {
-                    dialogs();
-                }
+        binding.passiveTitleActive.setOnClickListener(v -> {
+            modleType = 1;
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
             }
+            ChangeDialog();
         });
 
-        binding.passiveTitleActive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                modleType = 1;
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ChangeDialog();
+        binding.passiveTitleIntelligence.setOnClickListener(v -> {
+            modleType = 2;
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
             }
+            ChangeDialog();
         });
 
-        binding.passiveTitleIntelligence.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                modleType = 2;
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ChangeDialog();
+        binding.passiveImgBegin.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
             }
+            HandlerMessage();
         });
 
-        binding.passiveImgBegin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                HandlerMessage();
+        binding.passiveZhuansuJia.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
-
-        binding.passiveZhuansuJia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (zhuansu + 1 <= 60) {
-                    if (zhuansu + 1 >= 30) {
-                        if (isOk) {
-                            zhuansu = zhuansu + 1;
-                            binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                            binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                            binding.progressViewZhuansuPassive.startProgressAnimation();
-                            binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                        } else {
-                            DialogLoader.getInstance().showConfirmDialog(
-                                    context,
-                                    getString(R.string.tip_permission),
-                                    getString(R.string.lab_ok),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = true;
-                                        zhuansu = zhuansu + 1;
-                                        binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                                        binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                                        binding.progressViewZhuansuPassive.startProgressAnimation();
-                                        binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                                        //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                                    },
-                                    getString(R.string.lab_cancel),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = false;
-                                    }
-                            );
-                        }
-                    } else {
+            if (zhuansu + 1 <= 60) {
+                if (zhuansu + 1 >= 30) {
+                    if (isOk) {
                         zhuansu = zhuansu + 1;
                         binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                        binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                        binding.progressViewZhuansuPassive.startProgressAnimation();
+//                            binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
+//                            binding.progressViewZhuansuPassive.startProgressAnimation();
                         binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                        //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                    } else {
+                        DialogLoader.getInstance().showConfirmDialog(
+                                context,
+                                getString(R.string.tip_permission),
+                                getString(R.string.lab_ok),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = true;
+                                    zhuansu = zhuansu + 1;
+                                    binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
+//                                        binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
+//                                        binding.progressViewZhuansuPassive.startProgressAnimation();
+                                    binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
+                                    //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                                },
+                                getString(R.string.lab_cancel),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = false;
+                                }
+                        );
                     }
                 } else {
-                    zhuansu = 60;
-                    //   btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                    return;
+                    zhuansu = zhuansu + 1;
+                    binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
+//                        binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
+//                        binding.progressViewZhuansuPassive.startProgressAnimation();
+                    binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
+                    //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
                 }
+            } else {
+                zhuansu = 60;
+                //   btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                return;
             }
         });
 
-        binding.passiveZhuansuJian.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                zhuansu = zhuansu - 1;
-                if (zhuansu < 0) {
-                    zhuansu = 0;
-                    //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                    return;
-                } else {
-                    binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
+        binding.passiveZhuansuJian.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            zhuansu = zhuansu - 1;
+            if (zhuansu < 0) {
+                zhuansu = 0;
+                //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                return;
+            } else {
+                binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
 //                    binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
 //                    binding.progressViewZhuansuPassive.startProgressAnimation();
-                    binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                    //   btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                }
+                binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
+                //   btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
             }
         });
 
-        binding.passiveSpasmJia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spasmData = spasmData + 1;
-                if (spasmData <= 12) {
-                    binding.progressViewSpasm.setGraduatedEnabled(true);
+        binding.passiveSpasmJia.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            spasmData = spasmData + 1;
+            if (spasmData <= 12) {
+                binding.progressViewSpasm.setGraduatedEnabled(true);
 //                    binding.progressViewSpasm.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) spasmData, (float) 12)));
 //                    binding.progressViewSpasm.startProgressAnimation();
-                    binding.passiveTxtSpasm.setCenterString(spasmData + "");
-                    //    btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                } else {
-                    spasmData = 12;
-                    //    btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                    return;
-                }
+                binding.passiveTxtSpasm.setCenterString(spasmData + "");
+                //    btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+            } else {
+                spasmData = 12;
+                //    btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                return;
             }
         });
 
@@ -763,7 +739,7 @@ public class PassiveActivity extends XPageActivity {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 
-                if(UriConfig.test){
+                if (UriConfig.test) {
                     uploadData.setBlood("已连接");
                     uploadData.setHigh("120");
                     uploadData.setLow("60");
@@ -818,7 +794,7 @@ public class PassiveActivity extends XPageActivity {
                         if (!uploadData.getHigh().equals("0")) {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
-                            if(isCloseDialog){//运动测量后的血压，自动修改成测量完成，然后关闭界面
+                            if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
                                 BloodEndState = 2;
                             }
                         }
@@ -1030,13 +1006,13 @@ public class PassiveActivity extends XPageActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            dialogs();
+            dialogs(true);
             return false;
         }
         return true;
     }
 
-    public void dialogs() {
+    public void dialogs(boolean isReturn) {
         //  timeTask.interrupt();
         DialogLoader.getInstance().showConfirmDialog(
                 context,
@@ -1046,9 +1022,10 @@ public class PassiveActivity extends XPageActivity {
                     dialog.dismiss();
                     if (isBegin) {
                         btDataPro.sendBTMessage(GetCmdCode("50", false, 5, 1, 0L));
-                    } else {
+                    }
+                    if (!isBegin) {
                         Intent in = new Intent(context, AdminMainActivity.class);
-                        // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }

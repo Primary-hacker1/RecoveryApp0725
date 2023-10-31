@@ -181,6 +181,11 @@ public class ActiveActivity extends XPageActivity {
                 .observe(this, new Observer<LiveMessage>() {
                     @Override
                     public void onChanged(@Nullable LiveMessage msg) {
+                        assert msg != null;
+                        if (msg.getState().equals("蓝牙设备未连接")) {
+                            isBegin = false;//恢复不然退出不了界面
+                        }
+
                         if (!msg.getIsConnt()) {
                             //未连接
                             binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
@@ -340,7 +345,7 @@ public class ActiveActivity extends XPageActivity {
                 //取消测量运动后血压
                 BloodEndState = 2;
             } else if (BloodEndState == 0) {
-                dialogs();
+                dialogs(true);
             }
         });
 
@@ -863,13 +868,13 @@ public class ActiveActivity extends XPageActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            dialogs();
+            dialogs(false);
             return false;
         }
         return true;
     }
 
-    public void dialogs() {
+    public void dialogs(boolean isReturn) {
         //  timeTask.interrupt();
         DialogLoader.getInstance().showConfirmDialog(
                 context,
@@ -879,7 +884,9 @@ public class ActiveActivity extends XPageActivity {
                     dialog.dismiss();
                     if (isBegin) {
                         btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
-                    } else {
+                    }
+
+                    if (!isBegin) {
                         Intent in = new Intent(context, AdminMainActivity.class);
                         // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
