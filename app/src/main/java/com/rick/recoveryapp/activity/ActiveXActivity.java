@@ -55,6 +55,7 @@ import java.util.TimerTask;
  * "主动模式需要重构界面冗余"
  * */
 public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding> {
+
     ActivityManagerBinding managerBinding;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -524,7 +525,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             activeTime = MyTimeUtils.Getminute(nowTime);
 
             btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(
-                    new SerialBean(type,resistance,"50",false,rotateSpeed,spasmData,activeTime)));
+                    new SerialBean(type, resistance, "50", false, rotateSpeed, spasmData, activeTime)));
         });
 
         managerBinding.passiveTimeJian.setOnClickListener(v -> {
@@ -539,7 +540,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
             activeTime = MyTimeUtils.Getminute(nowTime);
             btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(
-                    new SerialBean(type,resistance,"50",false,rotateSpeed,spasmData,activeTime)));
+                    new SerialBean(type, resistance, "50", false, rotateSpeed, spasmData, activeTime)));
         });
 
 
@@ -640,6 +641,8 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 } else if (controlState.equals("51")) {
 
                     serialBean.setBlood_measure("52");
+
+//                    controlState = "52";
 
                     managerBinding.activeTxtBlood.setCenterString("点击开始测量血压");
                 }
@@ -817,6 +820,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     public void DataDisplay(int mark, String ObjectJson) {
+
         switch (mark) {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
@@ -868,6 +872,11 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                         managerBinding.activeTxtBloodstate2.setCenterString("");
                     }
                 } else {
+
+                    LogUtils.e(getTAG() + ObjectJson);
+
+                    LogUtils.e(getTAG() + uploadData.toString());
+
                     managerBinding.activeTxtHigh.setCenterString(LocalConfig.BloodHight);
                     managerBinding.activeTxtLow.setCenterString(LocalConfig.BloodLow);
                     managerBinding.activeTxtBloodstate1.setCenterString(uploadData.getBlood());

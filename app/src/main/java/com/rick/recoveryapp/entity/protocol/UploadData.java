@@ -11,10 +11,10 @@ public class UploadData {
     private String left;
     private String right;
     private String ECG;
-    private String blood;
+    private String blood;//是否连接血压仪
     private String blood_oxy;
-    private String high;
-    private String low;
+    private String high;//最高血压
+    private String low;//最低血压
 
     private String STresistance;
     private String STspasm;
@@ -170,4 +170,27 @@ public class UploadData {
 //    public void setOxy_vaule(String oxy_vaule) {
 //        this.oxy_vaule = oxy_vaule;
 //    }
+
+    @Override
+    public String toString() {
+        return "UploadData{" +
+                "oxy_vaulestr='" + oxy_vaulestr + '\'' +
+                ", ActiveType='" + ActiveType + '\'' +
+                ", ActiveState='" + ActiveState + '\'' +
+                ", SpasmState=" + SpasmState +
+                ", time='" + time + '\'' +
+                ", speed='" + speed + '\'' +
+                ", left='" + left + '\'' +
+                ", right='" + right + '\'' +
+                ", ECG='" + ECG + '\'' +
+                ", blood='" + blood + '\'' +
+                ", blood_oxy='" + blood_oxy + '\'' +
+                ", high='" + high + '\'' +
+                ", low='" + low + '\'' +
+                ", STresistance='" + STresistance + '\'' +
+                ", STspasm='" + STspasm + '\'' +
+                ", STspeed='" + STspeed + '\'' +
+                ", STtime='" + STtime + '\'' +
+                '}';
+    }
 }

@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
@@ -762,6 +763,12 @@ public class PassiveActivity extends XPageActivity {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 
+                if(UriConfig.test){
+                    uploadData.setBlood("已连接");//模拟血压测试完成
+                    uploadData.setHigh("150");
+                    uploadData.setLow("80");
+                }
+
                 if (isBegin) {
                     spasmData = Integer.parseInt(uploadData.getSTspasm());
                     binding.progressViewSpasm.setGraduatedEnabled(true);
@@ -867,6 +874,7 @@ public class PassiveActivity extends XPageActivity {
                                         getString(R.string.lab_no),
                                         (dialog, which) -> {
                                             dialog.dismiss();
+                                            BloodEndState = 2;
                                         }
                                 );
                             } else {

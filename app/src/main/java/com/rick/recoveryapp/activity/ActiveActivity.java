@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.viewpager.widget.ViewPager;
 
+import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
@@ -56,6 +57,7 @@ import java.util.TimerTask;
 @Deprecated
 public class ActiveActivity extends XPageActivity {
 
+    private String tag = ActiveXActivity.class.getName();
     int resiDta = 1, modletype = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -634,6 +636,7 @@ public class ActiveActivity extends XPageActivity {
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 //                String stresistance = uploadData.getSTresistance();
 //                 binding.activeTxtResistance.setCenterString(stresistance);
+                ObjectJson = "{\"ActiveState\":\"运行状态\",\"ActiveType\":\"主动模式\",\"ECG\":\"心电仪未连接\",\"STresistance\":\"1\",\"STspasm\":\"0\",\"STspeed\":\"0\",\"STtime\":\"0\",\"SpasmState\":0,\"blood\":\"已连接\",\"blood_oxy\":\"血氧仪未连接\",\"high\":\"120\",\"left\":\"0\",\"low\":\"60\",\"oxy_vaulestr\":\"0\",\"right\":\"0\",\"speed\":\"0\",\"time\":\"1970-01-01 08:00:00\"}";
                 if (uploadData.getBlood_oxy().equals("已连接")) {
                     if (uploadData.getOxy_vaulestr().equals("手指未插入")
                             || uploadData.getOxy_vaulestr().equals("探头脱落")
@@ -682,6 +685,10 @@ public class ActiveActivity extends XPageActivity {
                         binding.activeTxtBloodstate2.setCenterString("");
                     }
                 } else {
+
+//                    LogUtils.e(tag + ObjectJson);
+//                    LogUtils.e(tag + uploadData.toString());
+
                     binding.activeTxtHigh.setCenterString(LocalConfig.BloodHight);
                     binding.activeTxtLow.setCenterString(LocalConfig.BloodLow);
                     binding.activeTxtBloodstate1.setCenterString(uploadData.getBlood());

@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.helper;
+package com.rick.recoveryapp.activity.helper;
 
 /**
  *create by 2020/6/19
