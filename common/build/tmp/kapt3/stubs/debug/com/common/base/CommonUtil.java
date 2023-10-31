@@ -9,13 +9,13 @@ import java.lang.System;
  */
 @kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000@\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\t\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\u0011\n\u0002\b\u0004\b\u00c6\u0002\u0018\u00002\u00020\u0001:\u0001!B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002J\"\u0010\u0014\u001a\u00020\u0015\"\u0004\b\u0000\u0010\u00162\u0006\u0010\u0014\u001a\u00020\u00172\f\u0010\u0018\u001a\b\u0012\u0004\u0012\u0002H\u00160\u0019J\u001a\u0010\u001a\u001a\u00020\u0015\"\u0004\b\u0000\u0010\u00162\f\u0010\u0018\u001a\b\u0012\u0004\u0012\u0002H\u00160\u0019J\u001a\u0010\u001b\u001a\u00020\u0015\"\u0004\b\u0000\u0010\u00162\f\u0010\u0018\u001a\b\u0012\u0004\u0012\u0002H\u00160\u0019J\u001b\u0010\u001c\u001a\u00020\u00042\u000e\u0010\u001d\u001a\n\u0012\u0006\b\u0001\u0012\u00020\u00010\u001e\u00a2\u0006\u0002\u0010\u001fJ\u001a\u0010 \u001a\u00020\u0015\"\u0004\b\u0000\u0010\u00162\f\u0010\u0018\u001a\b\u0012\u0004\u0012\u0002H\u00160\u0019R\u001a\u0010\u0003\u001a\u00020\u0004X\u0086\u000e\u00a2\u0006\u000e\n\u0000\u001a\u0004\b\u0005\u0010\u0006\"\u0004\b\u0007\u0010\bR\u001b\u0010\t\u001a\u00020\n8BX\u0082\u0084\u0002\u00a2\u0006\f\n\u0004\b\r\u0010\u000e\u001a\u0004\b\u000b\u0010\fR\u001b\u0010\u000f\u001a\u00020\u00108BX\u0082\u0084\u0002\u00a2\u0006\f\n\u0004\b\u0013\u0010\u000e\u001a\u0004\b\u0011\u0010\u0012\u00a8\u0006\""}, d2 = {"Lcom/common/base/CommonUtil;", "", "()V", "logTag", "", "getLogTag", "()Ljava/lang/String;", "setLogTag", "(Ljava/lang/String;)V", "mainThread", "Landroid/os/Handler;", "getMainThread", "()Landroid/os/Handler;", "mainThread$delegate", "Lkotlin/Lazy;", "threadPool", "Ljava/util/concurrent/Executor;", "getThreadPool", "()Ljava/util/concurrent/Executor;", "threadPool$delegate", "delay", "", "T", "", "task", "Lcom/common/base/CommonUtil$Task;", "doAsync", "onUI", "print", "value", "", "([Ljava/lang/Object;)Ljava/lang/String;", "remove", "Task", "common_debug"})
 public final class CommonUtil {
-    @org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
     public static final com.common.base.CommonUtil INSTANCE = null;
     
     /**
      * 全局的打印日志的关键字
      */
-    @org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
     private static java.lang.String logTag = "WindowsLauncher";
     
     /**
@@ -32,12 +32,12 @@ public final class CommonUtil {
         super();
     }
     
-    @org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
     public final java.lang.String getLogTag() {
         return null;
     }
     
-    public final void setLogTag(@org.jetbrains.annotations.NotNull()
+    public final void setLogTag(@org.jetbrains.annotations.NotNull
     java.lang.String p0) {
     }
     
@@ -58,36 +58,36 @@ public final class CommonUtil {
     /**
      * 异步任务
      */
-    public final <T extends java.lang.Object>void doAsync(@org.jetbrains.annotations.NotNull()
+    public final <T extends java.lang.Object>void doAsync(@org.jetbrains.annotations.NotNull
     com.common.base.CommonUtil.Task<T> task) {
     }
     
     /**
      * 主线程
      */
-    public final <T extends java.lang.Object>void onUI(@org.jetbrains.annotations.NotNull()
+    public final <T extends java.lang.Object>void onUI(@org.jetbrains.annotations.NotNull
     com.common.base.CommonUtil.Task<T> task) {
     }
     
     /**
      * 延迟任务
      */
-    public final <T extends java.lang.Object>void delay(long delay, @org.jetbrains.annotations.NotNull()
+    public final <T extends java.lang.Object>void delay(long delay, @org.jetbrains.annotations.NotNull
     com.common.base.CommonUtil.Task<T> task) {
     }
     
     /**
      * 移除任务
      */
-    public final <T extends java.lang.Object>void remove(@org.jetbrains.annotations.NotNull()
+    public final <T extends java.lang.Object>void remove(@org.jetbrains.annotations.NotNull
     com.common.base.CommonUtil.Task<T> task) {
     }
     
     /**
      * 将一组对象打印合并为一个字符串
      */
-    @org.jetbrains.annotations.NotNull()
-    public final java.lang.String print(@org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
+    public final java.lang.String print(@org.jetbrains.annotations.NotNull
     java.lang.Object[] value) {
         return null;
     }
@@ -104,16 +104,16 @@ public final class CommonUtil {
         private final T target = null;
         private final kotlin.jvm.functions.Function1<java.lang.Throwable, kotlin.Unit> err = null;
         private final kotlin.jvm.functions.Function1<T, kotlin.Unit> run = null;
-        @org.jetbrains.annotations.NotNull()
+        @org.jetbrains.annotations.NotNull
         private final java.lang.Runnable runnable = null;
         
-        public Task(T target, @org.jetbrains.annotations.NotNull()
-        kotlin.jvm.functions.Function1<? super java.lang.Throwable, kotlin.Unit> err, @org.jetbrains.annotations.NotNull()
+        public Task(T target, @org.jetbrains.annotations.NotNull
+        kotlin.jvm.functions.Function1<? super java.lang.Throwable, kotlin.Unit> err, @org.jetbrains.annotations.NotNull
         kotlin.jvm.functions.Function1<? super T, kotlin.Unit> run) {
             super();
         }
         
-        @org.jetbrains.annotations.NotNull()
+        @org.jetbrains.annotations.NotNull
         public final java.lang.Runnable getRunnable() {
             return null;
         }

@@ -199,37 +199,16 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:sb_shape_type="round" />
 
-            <LinearLayout
+            <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
                 android:id="@+id/btn_test"
-                android:layout_width="130dp"
-                android:layout_height="45dp"
+                android:layout_width="100dp"
+                android:layout_height="33dp"
+                android:layout_margin="16dp"
+                android:background="@drawable/changeqj"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center"
-                app:sb_radius="20dp"
-                android:background="@mipmap/bg_type"
-                android:layout_margin="5dp"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_margin="8dp"
-                    android:src="@drawable/click_qj_type" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="情景模式"
-                    android:textColor="@color/white"
-                    android:layout_marginEnd="@dimen/config_margin_10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:sb_radius="20dp"
-                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck,TouchTargetSizeCheck" />
-            </LinearLayout>
+                app:sb_radius="20dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

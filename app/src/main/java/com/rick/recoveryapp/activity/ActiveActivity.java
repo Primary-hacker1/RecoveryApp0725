@@ -3,7 +3,6 @@ package com.rick.recoveryapp.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -14,12 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.viewpager.widget.ViewPager;
 
-import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
@@ -58,6 +55,7 @@ import java.util.TimerTask;
 
 @Deprecated
 public class ActiveActivity extends XPageActivity {
+
     int resiDta = 1, modletype = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -326,137 +324,112 @@ public class ActiveActivity extends XPageActivity {
 
     public void itinClick() {
 
-        binding.btnTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.btnTest.setOnClickListener(v -> {
 
-                if (!LocalConfig.isControl) {
+            if (!LocalConfig.isControl) {
 
-                } else {
-                    btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
-                }
+            } else {
+                btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+            }
 
+        });
+
+        binding.trainBtnReturn.setOnClickListener(v -> {
+
+            if (BloodEndState == 1) {
+                //取消测量运动后血压
+                BloodEndState = 2;
+            } else if (BloodEndState == 0) {
+                dialogs();
             }
         });
 
-        binding.trainBtnReturn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.activeTitlePress.setOnClickListener(v -> {
+            modletype = 1;
+            ChangeDialog();
+        });
 
-                if (BloodEndState == 1) {
-                    //取消测量运动后血压
-                    BloodEndState = 2;
-                } else if (BloodEndState == 0) {
-                    dialogs();
-                }
+        binding.activeTitleIntelligence.setOnClickListener(v -> {
+            modletype = 2;
+            ChangeDialog();
+        });
+
+        binding.activeImgBegin.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            HandlerMessage();
+        });
+
+        binding.activeImbtnJia.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resiDta = resiDta + 1;
+            if (resiDta <= 12) {
+                binding.progressViewResistance.setGraduatedEnabled(true);
+                //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
+                //    binding.progressViewResistance.startProgressAnimation();
+                binding.activeTxtResistance.setCenterString(resiDta + "");
+                //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
+            } else {
+                resiDta = 12;
+                //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
+                return;
             }
         });
 
-        binding.activeTitlePress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                modletype = 1;
-                ChangeDialog();
+        binding.activeImbtnMove.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resiDta = resiDta - 1;
+            if (resiDta < 1) {
+                resiDta = 1;
+                //  btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
+                return;
+            } else {
+                binding.progressViewResistance.setGraduatedEnabled(true);
+                // binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
+                //   binding.progressViewResistance.startProgressAnimation();
+                binding.activeTxtResistance.setCenterString(resiDta + "");
+                //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
             }
         });
 
-        binding.activeTitleIntelligence.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                modletype = 2;
-                ChangeDialog();
+        binding.activeImgBlood.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
-
-        binding.activeImgBegin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                HandlerMessage();
-            }
-        });
-
-        binding.activeImbtnJia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                resiDta = resiDta + 1;
-                if (resiDta <= 12) {
-                    binding.progressViewResistance.setGraduatedEnabled(true);
-                    //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
-                    //    binding.progressViewResistance.startProgressAnimation();
-                    binding.activeTxtResistance.setCenterString(resiDta + "");
-                    //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
-                } else {
-                    resiDta = 12;
-                    //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
-                    return;
-                }
-            }
-        });
-
-        binding.activeImbtnMove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                resiDta = resiDta - 1;
-                if (resiDta < 1) {
-                    resiDta = 1;
-                    //  btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
-                    return;
-                } else {
-                    binding.progressViewResistance.setGraduatedEnabled(true);
-                    // binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
-                    //   binding.progressViewResistance.startProgressAnimation();
-                    binding.activeTxtResistance.setCenterString(resiDta + "");
-                    //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
-                }
-            }
-        });
-
-        binding.activeImgBlood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                try {
-                    if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                        if (ContorlState.equals("00") || ContorlState.equals("52")) {
+            try {
+                if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                    if (ContorlState.equals("00") || ContorlState.equals("52")) {
 //                              btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                            btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
-                        } else if (ContorlState.equals("51")) {
-                            // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                            btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
+                        btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
+                    } else if (ContorlState.equals("51")) {
+                        // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
+                        btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
 //                            ContorlState = "52";
-                            binding.activeTxtBlood.setCenterString("点击开始测量血压");
-                        }
-                    } else {
-                        Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+                        binding.activeTxtBlood.setCenterString("点击开始测量血压");
                     }
-                    //  isBlood = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                 }
+                //  isBlood = true;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 //                binding.tabSegment.setOnTabClickListener(new TabSegment.OnTabClickListener() {
@@ -495,6 +468,7 @@ public class ActiveActivity extends XPageActivity {
 
     public void HandlerMessage() {
         try {
+
             String txts = binding.activeTxtBegin.getCenterString();
             if (txts.equals("开  始")) {
 
@@ -630,18 +604,12 @@ public class ActiveActivity extends XPageActivity {
     }
 
     public void DataDisplay(int mark, String ObjectJson) {
+
         switch (mark) {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
-
-                if (UriConfig.test) {
-                    uploadData.setBlood("已连接");//模拟血压测试完成
-                    uploadData.setHigh("150");
-                    uploadData.setLow("80");
-                }
 //                String stresistance = uploadData.getSTresistance();
 //                 binding.activeTxtResistance.setCenterString(stresistance);
-                ObjectJson = "{\"ActiveState\":\"运行状态\",\"ActiveType\":\"主动模式\",\"ECG\":\"心电仪未连接\",\"STresistance\":\"1\",\"STspasm\":\"0\",\"STspeed\":\"0\",\"STtime\":\"0\",\"SpasmState\":0,\"blood\":\"已连接\",\"blood_oxy\":\"血氧仪未连接\",\"high\":\"120\",\"left\":\"0\",\"low\":\"60\",\"oxy_vaulestr\":\"0\",\"right\":\"0\",\"speed\":\"0\",\"time\":\"1970-01-01 08:00:00\"}";
                 if (uploadData.getBlood_oxy().equals("已连接")) {
                     if (uploadData.getOxy_vaulestr().equals("手指未插入")
                             || uploadData.getOxy_vaulestr().equals("探头脱落")
@@ -690,10 +658,6 @@ public class ActiveActivity extends XPageActivity {
                         binding.activeTxtBloodstate2.setCenterString("");
                     }
                 } else {
-
-//                    LogUtils.e(tag + ObjectJson);
-//                    LogUtils.e(tag + uploadData.toString());
-
                     binding.activeTxtHigh.setCenterString(LocalConfig.BloodHight);
                     binding.activeTxtLow.setCenterString(LocalConfig.BloodLow);
                     binding.activeTxtBloodstate1.setCenterString(uploadData.getBlood());

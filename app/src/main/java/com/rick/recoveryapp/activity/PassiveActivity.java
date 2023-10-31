@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 
-import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
@@ -51,13 +50,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /*
- * "被动模式需要重构界面冗余"
- * */
+* "被动模式需要重构界面冗余"
+* */
 @Deprecated()
 public class PassiveActivity extends XPageActivity {
-
-    protected static boolean testBoold = false;//运动完测量完成要自动测完血压自动跳转结算界面
-
+    private boolean isCloseDialog = false;//如果是运动后停止
     int modleType = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -544,11 +541,6 @@ public class PassiveActivity extends XPageActivity {
                 Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            if (UriConfig.test) {
-                testBoold = !testBoold;
-            }
-
             try {
                 if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                     if (ContorlState.equals("00") || ContorlState.equals("52")) {
@@ -771,13 +763,11 @@ public class PassiveActivity extends XPageActivity {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 
-                if (testBoold) {
-                    uploadData.setBlood("已连接");//模拟血压测试完成
-                    uploadData.setHigh("150");
-                    uploadData.setLow("80");
+                if(UriConfig.test){
+                    uploadData.setBlood("已连接");
+                    uploadData.setHigh("120");
+                    uploadData.setLow("60");
                 }
-
-                LogUtils.e(tag + uploadData.toString());
 
                 if (isBegin) {
                     spasmData = Integer.parseInt(uploadData.getSTspasm());
@@ -828,20 +818,20 @@ public class PassiveActivity extends XPageActivity {
                         if (!uploadData.getHigh().equals("0")) {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
+                            if(isCloseDialog){//运动测量后的血压，自动修改成测量完成，然后关闭界面
+                                BloodEndState = 2;
+                            }
                         }
                         binding.passiveTxtBloodstate1.setCenterString("");
                         binding.passiveTxtBloodstate2.setCenterString("");
+
                     }
                 } else {
-                    LogUtils.e(tag + ObjectJson);
 
                     binding.passiveTxtHigh.setCenterString(LocalConfig.BloodHight);
                     binding.passiveTxtLow.setCenterString(LocalConfig.BloodLow);
                     binding.passiveTxtBloodstate1.setCenterString(uploadData.getBlood());
                     binding.passiveTxtBloodstate2.setCenterString(uploadData.getBlood());
-                    if (testBoold) {
-                        BloodEndState = 2;
-                    }
                 }
 
                 if (uploadData.getECG().equals("已连接")) {
@@ -888,7 +878,6 @@ public class PassiveActivity extends XPageActivity {
                                         getString(R.string.lab_no),
                                         (dialog, which) -> {
                                             dialog.dismiss();
-                                            BloodEndState = 2;
                                         }
                                 );
                             } else {
@@ -899,13 +888,11 @@ public class PassiveActivity extends XPageActivity {
                                         (dialog, which) -> {
                                             dialog.dismiss();
                                             BloodEndState = 1;
-
-
+                                            isCloseDialog = true;
                                             if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                                                 if (ContorlState.equals("00") || ContorlState.equals("52")) {
                                                     btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
                                                 } else if (ContorlState.equals("51")) {
-                                                    testBoold = !testBoold;
                                                     btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
                                                     ContorlState = "52";
                                                     binding.passiveTxtBlood.setCenterString("点击开始测量血压");

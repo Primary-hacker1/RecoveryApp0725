@@ -11,57 +11,57 @@ import java.lang.System;
 public final class BasePageAdapter extends androidx.fragment.app.FragmentPagerAdapter {
     private java.util.List<? extends androidx.fragment.app.Fragment> fragmentList;
     private final java.util.List<java.lang.String> title = null;
-    @org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
     private androidx.fragment.app.FragmentManager fm;
     
-    public BasePageAdapter(@org.jetbrains.annotations.NotNull()
-    androidx.fragment.app.FragmentManager fm, @org.jetbrains.annotations.NotNull()
-    java.util.List<? extends androidx.fragment.app.Fragment> fragments, @org.jetbrains.annotations.NotNull()
+    public BasePageAdapter(@org.jetbrains.annotations.NotNull
+    androidx.fragment.app.FragmentManager fm, @org.jetbrains.annotations.NotNull
+    java.util.List<? extends androidx.fragment.app.Fragment> fragments, @org.jetbrains.annotations.NotNull
     java.util.List<java.lang.String> titles) {
         super(null);
     }
     
-    @org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
     public final androidx.fragment.app.FragmentManager getFm() {
         return null;
     }
     
-    public final void setFm(@org.jetbrains.annotations.NotNull()
+    public final void setFm(@org.jetbrains.annotations.NotNull
     androidx.fragment.app.FragmentManager p0) {
     }
     
-    @org.jetbrains.annotations.NotNull()
-    @java.lang.Override()
+    @org.jetbrains.annotations.NotNull
+    @java.lang.Override
     public androidx.fragment.app.Fragment getItem(int i) {
         return null;
     }
     
-    @java.lang.Override()
+    @java.lang.Override
     public int getCount() {
         return 0;
     }
     
-    @org.jetbrains.annotations.Nullable()
-    @java.lang.Override()
+    @org.jetbrains.annotations.Nullable
+    @java.lang.Override
     public java.lang.CharSequence getPageTitle(int position) {
         return null;
     }
     
-    @org.jetbrains.annotations.NotNull()
-    @java.lang.Override()
-    public java.lang.Object instantiateItem(@org.jetbrains.annotations.NotNull()
+    @org.jetbrains.annotations.NotNull
+    @java.lang.Override
+    public java.lang.Object instantiateItem(@org.jetbrains.annotations.NotNull
     android.view.ViewGroup container, int position) {
         return null;
     }
     
-    @java.lang.Override()
-    public void destroyItem(@org.jetbrains.annotations.NotNull()
-    android.view.ViewGroup container, int position, @org.jetbrains.annotations.NotNull()
+    @java.lang.Override
+    public void destroyItem(@org.jetbrains.annotations.NotNull
+    android.view.ViewGroup container, int position, @org.jetbrains.annotations.NotNull
     java.lang.Object object) {
     }
     
-    @java.lang.Override()
-    public void finishUpdate(@org.jetbrains.annotations.NotNull()
+    @java.lang.Override
+    public void finishUpdate(@org.jetbrains.annotations.NotNull
     android.view.ViewGroup container) {
     }
     

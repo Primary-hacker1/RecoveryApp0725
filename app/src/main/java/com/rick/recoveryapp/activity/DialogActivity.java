@@ -30,7 +30,7 @@ import com.rick.recoveryapp.R;
 
 import com.rick.recoveryapp.activity.serial.SerialPort;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
-import com.rick.recoveryapp.activity.helper.UriConfig;
+import com.rick.recoveryapp.helper.UriConfig;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
