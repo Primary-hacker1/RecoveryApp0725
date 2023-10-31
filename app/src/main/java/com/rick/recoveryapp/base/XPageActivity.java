@@ -50,6 +50,7 @@ import java.util.List;
 public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
 
 
+    protected String tag = XPageActivity.class.getSimpleName();
 
     /**
      * 应用中所有XPageActivity的引用

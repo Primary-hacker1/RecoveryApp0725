@@ -3,6 +3,7 @@ package com.rick.recoveryapp.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
@@ -56,8 +58,6 @@ import java.util.TimerTask;
 
 @Deprecated
 public class ActiveActivity extends XPageActivity {
-
-    private String tag = ActiveXActivity.class.getName();
     int resiDta = 1, modletype = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -438,6 +438,7 @@ public class ActiveActivity extends XPageActivity {
                     Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 try {
                     if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                         if (ContorlState.equals("00") || ContorlState.equals("52")) {
@@ -494,7 +495,6 @@ public class ActiveActivity extends XPageActivity {
 
     public void HandlerMessage() {
         try {
-
             String txts = binding.activeTxtBegin.getCenterString();
             if (txts.equals("开  始")) {
 
@@ -630,10 +630,15 @@ public class ActiveActivity extends XPageActivity {
     }
 
     public void DataDisplay(int mark, String ObjectJson) {
-
         switch (mark) {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
+
+                if (UriConfig.test) {
+                    uploadData.setBlood("已连接");//模拟血压测试完成
+                    uploadData.setHigh("150");
+                    uploadData.setLow("80");
+                }
 //                String stresistance = uploadData.getSTresistance();
 //                 binding.activeTxtResistance.setCenterString(stresistance);
                 ObjectJson = "{\"ActiveState\":\"运行状态\",\"ActiveType\":\"主动模式\",\"ECG\":\"心电仪未连接\",\"STresistance\":\"1\",\"STspasm\":\"0\",\"STspeed\":\"0\",\"STtime\":\"0\",\"SpasmState\":0,\"blood\":\"已连接\",\"blood_oxy\":\"血氧仪未连接\",\"high\":\"120\",\"left\":\"0\",\"low\":\"60\",\"oxy_vaulestr\":\"0\",\"right\":\"0\",\"speed\":\"0\",\"time\":\"1970-01-01 08:00:00\"}";
