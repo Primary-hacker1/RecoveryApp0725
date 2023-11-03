@@ -81,7 +81,7 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_marginLeft="10dp"
-                            android:src="@drawable/user" />
+                            android:src="@drawable/user1" />
 
                         <EditText
                             android:id="@+id/settinglogin_etxt_user"

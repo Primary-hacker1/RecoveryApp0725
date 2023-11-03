@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/left2"
+                    android:background="@drawable/step_back"
                     app:sb_shape_type="round"
                     tools:ignore="MissingConstraints" />
 
@@ -61,7 +61,7 @@
                     app:sLeftBottomTextColor="@color/white"
                     app:sLeftBottomTextSize="12sp"
                     app:sLeftIconMarginLeft="10dp"
-                    app:sLeftIconRes="@drawable/people"
+                    app:sLeftIconRes="@drawable/user"
                     app:sLeftTextColor="@color/white"
                     app:sLeftTextSize="12sp"
                     app:sLeftTextString=""
