@@ -21,8 +21,8 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.just.agentweb.utils.LogUtils;
 import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
@@ -57,7 +57,7 @@ import java.util.Objects;
 
 public class BaseApplication extends Application implements BtReceiver.Listener {
 
-    private static String TAG = BaseApplication.class.getName();
+    private static String tag = BaseApplication.class.getName();
     private static DaoSession daoSession;
     private static Context context;
     // 来自BluetoothChatService Handler的消息类型
@@ -422,12 +422,12 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                 // 连接设备
                 mConnectService.connect(device);
             }
-            Log.d("11223344", "地址获取失败！");
+            LogUtils.e(tag + "地址获取失败！");
 
         } catch (Exception e) {
             //  Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
             //java.lang.NullPointerException: Attempt to invoke virtual method 'void com.example.bluetooth.BluetoothService.connect(android.bluetooth.BluetoothDevice)' on a null object reference
-            Log.d("11223344", Objects.requireNonNull(e.getMessage()));
+            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
         }
 //java.lang.NullPointerException: Attempt to invoke virtual method 'boolean java.lang.String.equals(java.lang.Object)' on a null object reference
     }
