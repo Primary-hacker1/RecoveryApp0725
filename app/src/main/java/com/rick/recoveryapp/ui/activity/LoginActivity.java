@@ -61,6 +61,7 @@ import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.EcgDataDB;
 import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
+import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.view.WaveUtil;
@@ -528,6 +529,9 @@ public class LoginActivity extends XPageActivity {
     }
 
     public void SetMac() {
+        if(!UriConfig.test){
+            return;
+        }
         try {
             //先查询数据库是否有Mac地址记录
             List<MacDr> macDrList = macDrDao.loadAll();
@@ -539,7 +543,7 @@ public class LoginActivity extends XPageActivity {
 
 //                String bluethmac = "001B10F04B5E";
 //                String ecgmac = "D208AABB37AE";
-//                String bloodmac = "A4C13844160C";
+//                String bloodmac = "A4C13844160C";s
 //                String oxygen = "00A0503BCBAC";
 
                 // My E76B581B5164  A4C138402A4D 00A0503D0264
@@ -548,7 +552,7 @@ public class LoginActivity extends XPageActivity {
 //                String bloodmac = "A4C138402A4D";
 //                String oxygen = "00A0503D0264";
 
-                String bluethmac = "001B10F1EE79";
+                String bluethmac = "001B10F04B60";
                 String ecgmac = "E76B581B5164";
                 String bloodmac = "A4C13844160C";
                 String oxygen = "00A0503BCBAC";

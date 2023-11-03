@@ -422,7 +422,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                 // 连接设备
                 mConnectService.connect(device);
             }
-            LogUtils.e(tag + "地址获取失败！");
+            LogUtils.e(tag + address + "--" + "地址获取失败！");
 
         } catch (Exception e) {
             //  Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
