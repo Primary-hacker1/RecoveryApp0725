@@ -306,13 +306,13 @@ public class LoginActivity extends XPageActivity {
 
         binding.imageView.setOnClickListener(v -> {
             if (isHideFirst) {
-                binding.imageView.setImageResource(R.drawable.eyeb);
+                binding.imageView.setImageResource(R.drawable.visible_click);
                 //密文
                 HideReturnsTransformationMethod method1 = HideReturnsTransformationMethod.getInstance();
                 binding.loginEtxtPassword.setTransformationMethod(method1);
                 isHideFirst = false;
             } else {
-                binding.imageView.setImageResource(R.drawable.eyeg);
+                binding.imageView.setImageResource(R.drawable.visible);
                 //密文
                 TransformationMethod method = PasswordTransformationMethod.getInstance();
                 binding.loginEtxtPassword.setTransformationMethod(method);

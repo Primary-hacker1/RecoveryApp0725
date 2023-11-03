@@ -207,14 +207,14 @@
                 android:id="@+id/btn_test"
                 android:layout_width="130dp"
                 android:layout_height="45dp"
+                android:layout_margin="5dp"
+                android:background="@mipmap/bg_type"
+                android:gravity="center"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center"
-                app:sb_radius="20dp"
-                android:background="@mipmap/bg_type"
-                android:layout_margin="5dp"
-                android:orientation="horizontal">
+                app:sb_radius="20dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="35dp"
@@ -225,9 +225,9 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/config_margin_10dp"
                     android:text="情景模式"
                     android:textColor="@color/white"
-                    android:layout_marginEnd="@dimen/config_margin_10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -396,6 +396,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="5dp"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
@@ -403,7 +404,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:background="@drawable/jia1"
+                        android:background="@drawable/baseline_add_circle"
                         app:sb_radius="100dp" />
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
@@ -425,7 +426,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:background="@drawable/jian1"
+                        android:background="@drawable/baseline_do_not"
                         app:sb_radius="100dp" />
 
                 </LinearLayout>
@@ -511,6 +512,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="5dp"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
@@ -518,7 +520,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:background="@drawable/jia1"
+                        android:background="@drawable/baseline_add_circle"
                         app:sb_radius="100dp" />
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
@@ -540,7 +542,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:background="@drawable/jian1"
+                        android:background="@drawable/baseline_do_not"
                         app:sb_radius="100dp" />
 
                 </LinearLayout>
@@ -625,6 +627,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="5dp"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
@@ -632,7 +635,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:background="@drawable/jia1"
+                        android:background="@drawable/baseline_add_circle"
                         app:sb_radius="100dp" />
 
                     <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
@@ -652,9 +655,9 @@
                     <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
                         android:id="@+id/inte_jian_spasm"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
-                        android:background="@drawable/jian1"
+                        android:background="@drawable/baseline_do_not"
                         app:sb_radius="100dp" />
 
                 </LinearLayout>

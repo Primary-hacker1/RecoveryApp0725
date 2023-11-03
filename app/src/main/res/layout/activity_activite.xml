@@ -568,7 +568,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="10dp"
-                            android:background="@drawable/jia1"
+                            android:background="@drawable/baseline_add_circle"
                             app:sb_radius="100dp" />
 
                         <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
@@ -590,7 +590,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:background="@drawable/jian1"
+                            android:background="@drawable/baseline_do_not"
                             app:sb_radius="100dp" />
 
                     </LinearLayout>
