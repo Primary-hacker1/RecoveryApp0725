@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,6 @@ import android.view.WindowManager;
 
 import com.github.mikephil.charting.data.Entry;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.activity.u3d.U3DActivity;
-import com.rick.recoveryapp.activity.u3d.U3DFactory;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.ChartStyle;
 import com.rick.recoveryapp.databinding.ActivityDataresultsBinding;
@@ -25,10 +23,7 @@ import com.xuexiang.xpage.base.XPageActivity;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 
-import org.greenrobot.greendao.query.QueryBuilder;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 

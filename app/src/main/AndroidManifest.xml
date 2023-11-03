@@ -42,7 +42,7 @@
         android:windowSoftInputMode="adjustPan|stateHidden">
 
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".ui.activity.LoginActivity"
             android:exported="true"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme_welcome">
@@ -70,12 +70,12 @@
             android:process=":keepLife" />
 
         <activity
-            android:name=".activity.MacDrDialog"
+            android:name=".ui.activity.MacDrDialog"
             android:screenOrientation="landscape"
             android:theme="@style/DialogTheme" />
 
         <activity
-            android:name=".activity.u3d.U3DActivity"
+            android:name=".ui.activity.u3d.U3DActivity"
             android:launchMode="singleTask"
             android:screenOrientation="landscape" />
 
@@ -97,7 +97,7 @@
         <!--            android:screenOrientation="landscape" />-->
 
         <activity
-            android:name=".activity.AdminMainActivity"
+            android:name=".ui.activity.AdminMainActivity"
             android:screenOrientation="landscape" />
 
         <!--        android:theme="@style/AppTheme.Launch.App"-->
@@ -105,7 +105,7 @@
         <!--        android:theme="@style/AppTheme.Launch.App"-->
 
         <activity
-            android:name=".activity.u3d.U3DdataActivity"
+            android:name=".ui.activity.u3d.U3DdataActivity"
             android:screenOrientation="landscape"
             android:theme="@style/U3dDialogTheme" />
 
@@ -113,23 +113,23 @@
         <!--        android:theme="@style/XUITheme.Launch.Demo"-->
 
         <activity
-            android:name=".activity.DataResultsActivity"
+            android:name=".ui.activity.DataResultsActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.HistoryActivity"
+            android:name=".ui.activity.HistoryActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.SettingActivity"
+            android:name=".ui.activity.SettingActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.SelectRolesActivity"
+            android:name=".ui.activity.SelectRolesActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.u3d.U3DDialogActivity"
+            android:name=".ui.activity.u3d.U3DDialogActivity"
             android:screenOrientation="landscape"
             android:theme="@style/DialogTheme" />
 
@@ -140,24 +140,24 @@
         <!--            />-->
 
         <activity
-            android:name=".activity.DialogActivity"
+            android:name=".ui.activity.DialogActivity"
             android:screenOrientation="landscape"
             android:theme="@style/DialogTheme" />
 
         <activity
-            android:name=".activity.ActiveActivity"
+            android:name=".ui.activity.ActiveActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.ActiveXActivity"
+            android:name=".ui.activity.ActiveXActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.PassiveActivity"
+            android:name=".ui.activity.PassiveActivity"
             android:screenOrientation="landscape" />
 
         <activity
-            android:name=".activity.IntelligenceActivity"
+            android:name=".ui.activity.IntelligenceActivity"
             android:screenOrientation="landscape" />
 
         <!--        &lt;!&ndash;fragment的页面容器&ndash;&gt;-->

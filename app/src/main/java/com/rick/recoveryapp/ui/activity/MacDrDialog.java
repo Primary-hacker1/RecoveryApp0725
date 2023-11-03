@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,21 +13,15 @@ import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
-import com.rick.recoveryapp.bluetooth.BtDataPro;
-import com.rick.recoveryapp.databinding.ActivityMacdialogBinding;
-import com.rick.recoveryapp.databinding.ActivityMainBinding;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
-import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.button.ButtonView;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xutil.XUtil;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class MacDrDialog extends XPageActivity {

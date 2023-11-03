@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity.serial
+package com.rick.recoveryapp.ui.activity.serial
 
 import android.util.Log
 import com.common.network.LogUtils

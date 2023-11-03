@@ -14,10 +14,9 @@
  * limitations under the License.
  *
  */
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.just.agentweb.action.ActionActivity.REQUEST_CODE;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,14 +26,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.text.InputType;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
@@ -55,7 +52,6 @@ import com.google.gson.JsonParser;
 
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
-import com.rick.recoveryapp.base.MyService;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.databinding.ActivityLoginBinding;
 import com.rick.recoveryapp.entity.EcgData;
@@ -67,15 +63,9 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
-import com.rick.recoveryapp.utils.XToastUtils;
 import com.rick.recoveryapp.utils.view.WaveUtil;
-import com.xuexiang.xui.utils.KeyboardUtils;
 import com.xuexiang.xui.utils.StatusBarUtils;
-import com.xuexiang.xui.utils.WidgetUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
-import com.xuexiang.xui.widget.dialog.MiniLoadingDialog;
-import com.xuexiang.xui.widget.dialog.materialdialog.MaterialDialog;
-import com.xuexiang.xui.widget.dialog.strategy.InputInfo;
 import com.xuexiang.xutil.XUtil;
 
 import java.io.BufferedReader;

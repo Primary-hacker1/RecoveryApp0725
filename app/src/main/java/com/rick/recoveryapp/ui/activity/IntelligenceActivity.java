@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +21,6 @@ import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityIntelligenceBinding;
-import com.rick.recoveryapp.databinding.ActivityPassiveBinding;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
@@ -34,12 +33,10 @@ import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.ActiveTimeTool;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LocalConfig;
-import com.rick.recoveryapp.utils.MyTimeUtils;
 import com.rick.recoveryapp.utils.PeterTimeCountRefresh;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
-import com.xuexiang.xui.widget.dialog.materialdialog.MaterialDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

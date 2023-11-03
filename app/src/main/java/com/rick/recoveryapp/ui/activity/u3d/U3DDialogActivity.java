@@ -15,7 +15,7 @@
  *
  */
 
-package com.rick.recoveryapp.activity.u3d;
+package com.rick.recoveryapp.ui.activity.u3d;
 
 import android.app.Activity;
 import android.content.Context;

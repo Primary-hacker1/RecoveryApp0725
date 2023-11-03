@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -9,14 +9,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.rick.recoveryapp.activity.u3d.U3DActivity;
-import com.rick.recoveryapp.activity.u3d.U3DDialogActivity;
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
+import com.rick.recoveryapp.ui.activity.u3d.U3DDialogActivity;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
-import com.rick.recoveryapp.bluetooth.BtKeepService;
 import com.rick.recoveryapp.databinding.ActivitySelectrolesBinding;
 import com.rick.recoveryapp.utils.APKVersionInfoUtils;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -24,7 +20,6 @@ import com.xuexiang.xhttp2.XHttp;
 import com.xuexiang.xhttp2.callback.SimpleCallBack;
 import com.xuexiang.xhttp2.exception.ApiException;
 import com.xuexiang.xui.utils.StatusBarUtils;
-import com.xuexiang.xui.widget.dialog.MiniLoadingDialog;
 
 public class SelectRolesActivity extends XPageActivity {
 

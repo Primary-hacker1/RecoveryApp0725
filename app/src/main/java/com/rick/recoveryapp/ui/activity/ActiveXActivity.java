@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,9 +18,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.activity.serial.SerialBean;
-import com.rick.recoveryapp.activity.serial.SerialPort;
-import com.rick.recoveryapp.activity.serial.SerialPort.Type;
+import com.rick.recoveryapp.ui.activity.serial.SerialBean;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort.Type;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;

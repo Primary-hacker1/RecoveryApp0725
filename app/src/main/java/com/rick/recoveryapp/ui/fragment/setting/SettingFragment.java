@@ -17,43 +17,31 @@
 
 package com.rick.recoveryapp.ui.fragment.setting;
 
-import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.text.InputType;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.efs.sdk.base.core.util.Log;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.activity.MacDrDialog;
+import com.rick.recoveryapp.ui.activity.MacDrDialog;
 import com.rick.recoveryapp.adapter.BtDevAdapter;
-import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
-import com.rick.recoveryapp.databinding.ActivityTestBinding;
 import com.rick.recoveryapp.databinding.FragmentSettingBinding;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
-import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.XToastUtils;
 import com.xuexiang.xui.utils.KeyboardUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
-import com.xuexiang.xui.widget.dialog.bottomsheet.BottomSheet;
 import com.xuexiang.xui.widget.dialog.materialdialog.MaterialDialog;
 import com.xuexiang.xui.widget.dialog.materialdialog.simplelist.MaterialSimpleListAdapter;
 import com.xuexiang.xui.widget.dialog.materialdialog.simplelist.MaterialSimpleListItem;

@@ -14,23 +14,18 @@
  * limitations under the License.
  *
  */
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 
-import androidx.fragment.app.Fragment;
-
 import com.rick.recoveryapp.adapter.HistoryAdpater;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.databinding.ActivitySettingBinding;
 import com.rick.recoveryapp.databinding.FragmentHistoryBinding;
 import com.rick.recoveryapp.entity.HistoryData;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;

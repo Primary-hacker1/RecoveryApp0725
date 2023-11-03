@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity.u3d;
+package com.rick.recoveryapp.ui.activity.u3d;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

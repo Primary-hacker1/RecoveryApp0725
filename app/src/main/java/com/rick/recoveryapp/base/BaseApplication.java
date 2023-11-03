@@ -23,7 +23,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.rick.recoveryapp.activity.helper.UriConfig;
+import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.entity.LiveMessage;

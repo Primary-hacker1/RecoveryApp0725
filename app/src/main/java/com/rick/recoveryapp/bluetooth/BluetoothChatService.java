@@ -5,14 +5,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
 
-import com.rick.recoveryapp.activity.BluetoothChat;
+import com.rick.recoveryapp.ui.activity.BluetoothChat;
 
 import java.io.IOException;
 import java.io.InputStream;

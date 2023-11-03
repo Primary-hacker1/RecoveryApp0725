@@ -1,10 +1,9 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.animation.FloatEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,14 +12,9 @@ import android.view.WindowManager;
 
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.bluetooth.KeepLifeService;
 import com.rick.recoveryapp.databinding.ActivityWelcomeBinding;
 import com.xuexiang.xui.utils.StatusBarUtils;
-import com.xuexiang.xutil.common.logger.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.Calendar;
 
 public class WelcomeActivity extends XPageActivity {

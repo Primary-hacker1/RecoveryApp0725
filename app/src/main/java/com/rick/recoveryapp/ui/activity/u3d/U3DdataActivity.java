@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity.u3d;
+package com.rick.recoveryapp.ui.activity.u3d;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.rick.recoveryapp.databinding.ActivityMainBinding;
 import com.rick.recoveryapp.databinding.ActivityU3ddataBinding;
 import com.xuexiang.xpage.base.XPageActivity;
 import com.xuexiang.xui.utils.StatusBarUtils;

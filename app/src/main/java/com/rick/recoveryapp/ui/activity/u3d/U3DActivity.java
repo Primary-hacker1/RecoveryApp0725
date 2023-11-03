@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity.u3d;
+package com.rick.recoveryapp.ui.activity.u3d;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.activity.AdminMainActivity;
-import com.rick.recoveryapp.activity.DataResultsActivity;
+import com.rick.recoveryapp.ui.activity.AdminMainActivity;
+import com.rick.recoveryapp.ui.activity.DataResultsActivity;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtKeepService;
 import com.rick.recoveryapp.chart.MyAVG;

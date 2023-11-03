@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import com.common.base.BaseFrameLayout;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.activity.serial.SerialPort;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.databinding.ActivityManagerBinding;
 
 

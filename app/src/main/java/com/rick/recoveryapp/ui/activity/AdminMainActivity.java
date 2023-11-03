@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package com.rick.recoveryapp.activity;
+package com.rick.recoveryapp.ui.activity;
 
 import static com.rick.recoveryapp.R.*;
 
@@ -38,7 +38,7 @@ import androidx.core.content.ContextCompat;
 
 
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.rick.recoveryapp.activity.u3d.U3DActivity;
+import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
