@@ -1,6 +1,7 @@
 package com.rick.recoveryapp.bluetooth;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,6 +13,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.entity.LiveMessage;
@@ -57,40 +59,62 @@ public class BtReceiver extends BroadcastReceiver {
         switch (action) {
             case BluetoothAdapter.ACTION_STATE_CHANGED:
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                Log.i(TAG, "STATE: " + state);
+                if(state==10){
+                    liveMessage = new LiveMessage();
+                    liveMessage.setIsConnt(false);
+                    liveMessage.setState("蓝牙设备未连接");
+                    BaseApplication.mConnectedDeviceName = null;
+                    LocalConfig.isControl = false;
+                    LiveEventBus.get("BT_CONNECTED")
+                            .post(liveMessage);
+                }
+
+                if(state==12){
+                    BaseApplication.AutoConnect();
+                    LogUtils.e(TAG + "重新连接mac");
+                }
+
+
+                LogUtils.e(TAG + "STATE:  " + "BluetoothAdapter.ACTION_STATE_CHANGED");
                 break;
             case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_DISCOVERY_STARTED");
                 break;
             case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_DISCOVERY_FINISHED");
                 break;
 
             case BluetoothDevice.ACTION_FOUND:
                 short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MAX_VALUE);
                 Log.i(TAG, "EXTRA_RSSI:" + rssi);
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_FOUND");
                 mListener.foundDev(dev);
                 break;
             case BluetoothDevice.ACTION_PAIRING_REQUEST: //在系统弹出配对框之前，实现自动配对，取消系统配对框
                 try {
                     abortBroadcast();//终止配对广播，取消系统配对框
+                    assert dev != null;
                     boolean ret = dev.setPin("1234".getBytes()); //设置PIN配对码(必须是固定的)
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_PAIRING_REQUEST");
                 break;
             case BluetoothDevice.ACTION_BOND_STATE_CHANGED:
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_BOND_STATE_CHANGED");
                 Log.i(TAG, "BOND_STATE: " + intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, 0));
                 break;
             case BluetoothDevice.ACTION_ACL_CONNECTED:
+                LogUtils.e(TAG + "已连接到 " + BluetoothDevice.ACTION_ACL_CONNECTED);
                 LocalConfig.isControl = true;
+
+
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                 liveMessage = new LiveMessage();
                 liveMessage.setIsConnt(false);
                 liveMessage.setState("蓝牙设备未连接");
-//                    LiveEventBus.get("BT_CONNECTED")
-//                            .post(liveMessage); liveMessage.setMessage("与" + mConnectedDeviceName +
-//                                msg.getData().getString(TOAST));
-               BaseApplication.mConnectedDeviceName=null;
+                BaseApplication.mConnectedDeviceName = null;
                 LocalConfig.isControl = false;
                 LiveEventBus.get("BT_CONNECTED")
                         .post(liveMessage);
@@ -102,10 +126,12 @@ public class BtReceiver extends BroadcastReceiver {
                 break;
 
             case BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED:
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED");
                 Log.i(TAG, "CONN_STATE: " + intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, 0));
                 break;
             case BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED:
             case BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED:
+                LogUtils.e(TAG + "BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED+ACTION_CONNECTION_STATE_CHANGED");
                 Log.i(TAG, "CONN_STATE: " + intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, 0));
                 break;
         }

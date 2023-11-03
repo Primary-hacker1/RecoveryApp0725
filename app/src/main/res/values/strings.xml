@@ -114,4 +114,5 @@
     <string name="lab_ecg">心电蓝牙</string>
     <string name="lab_blood">血压蓝牙</string>
     <string name="lab_oxygen">血氧蓝牙</string>
+    <string name="bluetoothIsNotConnected">mac蓝牙未连接</string>
 </resources>

@@ -230,6 +230,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             //  LocalConfig.bluetoothstate=true;
                             LiveEventBus.get("BT_CONNECTED")
                                     .post(liveMessage);
+                            LogUtils.e(tag+"已连接到 " + mConnectedDeviceName);
 //                            liveMessage = new LiveMessage();
 //                            liveMessage.setIsConnt(true);
 //                            liveMessage.setMessage("已连接到 " + mConnectedDeviceName);
@@ -246,6 +247,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             liveMessage.setState("");
                             LiveEventBus.get("BT_CONNECTED")
                                     .post(liveMessage);
+                            LogUtils.e(tag+"正在连接。。。 ");
                             break;
 
                         case BluetoothChatService.STATE_LISTEN:
