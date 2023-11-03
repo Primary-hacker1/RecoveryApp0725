@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.jeremyliao.liveeventbus.LiveEventBus;
+import com.just.agentweb.utils.LogUtils;
 import com.rick.recoveryapp.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
@@ -47,6 +49,7 @@ import com.xuexiang.xutil.tip.ToastUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Administrator on 2017/4/5.
@@ -69,17 +72,13 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     // 来自BluetoothChatService Handler的关键名
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
-    public static String TagStr = "";
     // Intent请求代码
-    private static final int REQUEST_CONNECT_DEVICE = 1;
-
     public static LiveMessage liveMessage = null;
     public static BluetoothChatService mConnectService = null;
     // 已连接设备的名字
     public static String mConnectedDeviceName = null;
     public static BluetoothAdapter mBluetoothAdapter = null;
 
-    private static String target_device_name = null;
     static BtDataPro btDataPro;
     static ArrayList<String> FirstList = new ArrayList<>();
     static ArrayList<String> SecondList = new ArrayList<>();
@@ -133,14 +132,11 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                 .param("versionCode", UpdateUtils.getVersionCode(this))
                 .param("appKey", getPackageName())
                 //设置版本更新出错的监听
-                .setOnUpdateFailureListener(new OnUpdateFailureListener() {
-                    @Override
-                    public void onFailure(UpdateError error) {
-                        error.printStackTrace();
-                        //对不同错误进行处理
-                        if (error.getCode() != CHECK_NO_NEW_VERSION) {
-                            ToastUtils.toast(error.toString());
-                        }
+                .setOnUpdateFailureListener(error -> {
+                    error.printStackTrace();
+                    //对不同错误进行处理
+                    if (error.getCode() != CHECK_NO_NEW_VERSION) {
+                        ToastUtils.toast(error.toString());
                     }
                 })
                 //设置是否支持静默，默认是true
@@ -211,16 +207,14 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     }
 
     /**
-     * 获取 DaoSession
-     *
-     * @return
+     * @return 获取 DaoSession
      */
     public DaoSession getDaoSession() {
         return daoSession;
     }
 
     // 该Handler从BluetoothChatService中获取信息
-    private static final Handler mHandler = new Handler() {
+    private static final Handler mHandler = new Handler(Objects.requireNonNull(Looper.myLooper())) {
         @SuppressLint("HandlerLeak")
         @Override
         public void handleMessage(Message msg) {
@@ -313,12 +307,12 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                     }
                     if (FirstList.size() > 4) {
                         //解析“数据长度”
-                        int Datalength = Integer.valueOf(btDataPro.covert16to10(FirstList.get(3)));
+                        int Datalength = btDataPro.covert16to10(FirstList.get(3));
                         //判断（包头,功能码，包序号，数据长度）+数据实体=总数据长度-数据包尾长度
                         if (FirstList.size() == Datalength + 8) {
                             //前22个数据为非心电数据，第22个开始才是心电数据
                             for (int i = 0; i < 22; i++) {
-                                if (FirstList.size() > 0) {
+                                if (!FirstList.isEmpty()) {
                                     SecondList.add(FirstList.get(0));
                                     FirstList.remove(0);
                                 } else {
@@ -347,9 +341,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 //                    LiveEventBus.get("BT_CONNECTED")
 //                            .post(liveMessage); liveMessage.setMessage("与" + mConnectedDeviceName +
 //                                msg.getData().getString(TOAST));
-                    if (mConnectedDeviceName != null) {
-
-                    } else {
+                    if (mConnectedDeviceName == null) {
                         //     liveMessage.setMessage("蓝牙连接失败！");
                         liveMessage.setMessage(msg.getData().getString(TOAST));
                         //     liveMessage.setMessage("无法连接到设备");
@@ -370,7 +362,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     public static void GetMac() {
         macDrDao = daoSession.getMacDrDao();
         List<MacDr> macDrList = macDrDao.loadAll();
-        if (macDrList.size() > 0) {
+        if (!macDrList.isEmpty()) {
             for (int i = 0; i < macDrList.size(); i++) {
                 LocalConfig.bluemac = deleteCharString(macDrList.get(0).getBlueThMac());
                 LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
@@ -388,19 +380,20 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     }
 
     public static String deleteCharString(String sourceString) {
-        String deleteString = "";
+        StringBuilder deleteString = new StringBuilder();
         for (int i = 0; i < sourceString.length(); i++) {
 
-            if (0 < i && i < 11 && i % 2 == 1) {
-                deleteString += sourceString.charAt(i) + ":";
+
+            if (i < 11 && i % 2 == 1) {
+                deleteString.append(sourceString.charAt(i)).append(":");
             } else {
-                deleteString += sourceString.charAt(i);
+                deleteString.append(sourceString.charAt(i));
             }
 //            if (sourceString.charAt(i) != chElemData) {
 //                deleteString += sourceString.charAt(i);
 //            }
         }
-        return deleteString;
+        return deleteString.toString();
     }
 
     //自动连接
@@ -409,18 +402,17 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         mConnectService = new BluetoothChatService(mHandler);
         try {
             //        String address = data.getExtras().getString(DeviceListActivity.DEVICE_ADDRESS);
-            //             我的    String address ="00:1B:10:F1:EE:68";
-
+            //        我的    String address ="00:1B:10:F1:EE:68";
 
             //   String address = "00:1B:10:F1:EE:68";
             //   String address = "00:1B:10:F1:EE:88";
             GetMac();
             String address = LocalConfig.bluemac;
             // ZXJ_BL_006  00:1B:10:F1:EE:7E
-            // 获取设备
-            if (!address.equals("")) {
+            // 获取设备F
+            if (!address.isEmpty()) {
                 BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-                target_device_name = device.getName();
+                String target_device_name = device.getName();
                 if (target_device_name.equals(mConnectedDeviceName)) {
                     //  Toast.makeText(this, "已连接" + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     return;
@@ -435,7 +427,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         } catch (Exception e) {
             //  Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
             //java.lang.NullPointerException: Attempt to invoke virtual method 'void com.example.bluetooth.BluetoothService.connect(android.bluetooth.BluetoothDevice)' on a null object reference
-            Log.d("11223344", e.getMessage());
+            Log.d("11223344", Objects.requireNonNull(e.getMessage()));
         }
 //java.lang.NullPointerException: Attempt to invoke virtual method 'boolean java.lang.String.equals(java.lang.Object)' on a null object reference
     }
@@ -453,9 +445,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
             mPermissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-        if (mPermissionList.size() > 0) {
-            ActivityCompat.requestPermissions(getActivity(), mPermissionList.toArray(new String[0]), 1001);
-        }
+        ActivityCompat.requestPermissions(getActivity(), mPermissionList.toArray(new String[0]), 1001);
     }
 
     @Override

@@ -20,7 +20,6 @@ import static com.rick.recoveryapp.R.*;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,44 +27,28 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 
 
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.base.BaseApplication;
-import com.rick.recoveryapp.base.MyService;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.bluetooth.BtKeepService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
-import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityMainBinding;
 import com.rick.recoveryapp.entity.LiveMessage;
-import com.rick.recoveryapp.fragment.setting.SettingFragment;
-import com.rick.recoveryapp.greendao.EcgDataDBDao;
-import com.rick.recoveryapp.greendao.MacDrDao;
-import com.rick.recoveryapp.greendao.entity.EcgDataDB;
-import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.utils.DateUtil;
 import com.rick.recoveryapp.utils.LocalConfig;
-import com.rick.recoveryapp.utils.XToastUtils;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xutil.XUtil;
 import com.xuexiang.xutil.common.ClickUtils;
@@ -73,9 +56,6 @@ import com.xuexiang.xutil.tip.ToastUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class AdminMainActivity extends XPageActivity implements ClickUtils.OnClick2ExitListener, BtReceiver.Listener {
 

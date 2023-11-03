@@ -24,17 +24,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.rick.recoveryapp.fragment.setting.HistoryFragment;
-import com.rick.recoveryapp.fragment.setting.SettingFragment;
-import com.rick.recoveryapp.fragment.setting.SettingLoginFragement;
+import com.rick.recoveryapp.ui.fragment.setting.SettingFragment;
+import com.rick.recoveryapp.ui.fragment.setting.SettingLoginFragement;
 
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
     private final int PAGER_COUNT = 2;//page页数量
     // private HistoryFragment historyFragment = null;
-    private SettingFragment settingFragment = null;
-    private SettingLoginFragement settingLoginFragement = null;
+    private SettingFragment settingFragment;
+    private SettingLoginFragement settingLoginFragement;
 
     public MyFragmentPagerAdapter(@NonNull FragmentManager fm) {
         super(fm);
@@ -60,13 +59,14 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         return fragment;
     }
 
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup vg, int position) {
         return super.instantiateItem(vg, position);
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, Object object) {
         System.out.println("position Destory" + position);
         super.destroyItem(container, position, object);
     }

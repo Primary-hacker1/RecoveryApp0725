@@ -85,6 +85,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 登录页面
@@ -98,7 +99,7 @@ public class LoginActivity extends XPageActivity {
     private boolean isHideFirst = true;  // 输入框密码是否是隐藏的，默认为true
     Context context;
     ActivityLoginBinding binding;
-    private List<String> mPermissionList = new ArrayList<>();
+    private final List<String> mPermissionList = new ArrayList<>();
     private static final int REQUEST_COARSE_LOCATION = 0;
     // MiniLoadingDialog mMiniLoadingDialog;
     LocationManager locationManager;
@@ -245,9 +246,7 @@ public class LoginActivity extends XPageActivity {
     }
 
     /**
-     * 获取当前进程名称
-     *
-     * @return
+     * @return 获取当前进程名称
      */
     public static String getProcessName() {
         try {
@@ -266,14 +265,11 @@ public class LoginActivity extends XPageActivity {
     public static int getPackageUid(Context context, String packageName) {
         try {
             ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(packageName, 0);
-            if (applicationInfo != null) {
                 //   Logger.d(applicationInfo.uid);
                 return applicationInfo.uid;
-            }
         } catch (Exception e) {
             return -1;
         }
-        return -1;
     }
 
     public void initClick() {
@@ -283,7 +279,7 @@ public class LoginActivity extends XPageActivity {
             public void onClick(View v) {
                 user = binding.loginEtxtUser.getText().toString();
                 password = binding.loginEtxtPassword.getText().toString();
-                if (user.equals("") || password.equals("")) {
+                if (user.isEmpty() || password.isEmpty()) {
                     Toast.makeText(context, "请输入正确的登录账号或密码", Toast.LENGTH_LONG).show();
                     // XToastUtils.warning("请输入正确的登录账号或密码");
                     binding.loginEtxtUser.setText("");
@@ -308,46 +304,38 @@ public class LoginActivity extends XPageActivity {
             }
         });
 
-        binding.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isHideFirst == true) {
-                    binding.imageView.setImageResource(R.drawable.eyeb);
-                    //密文
-                    HideReturnsTransformationMethod method1 = HideReturnsTransformationMethod.getInstance();
-                    binding.loginEtxtPassword.setTransformationMethod(method1);
-                    isHideFirst = false;
-                } else {
-                    binding.imageView.setImageResource(R.drawable.eyeg);
-                    //密文
-                    TransformationMethod method = PasswordTransformationMethod.getInstance();
-                    binding.loginEtxtPassword.setTransformationMethod(method);
-                    isHideFirst = true;
-                }
-                // 光标的位置
-                int index = binding.loginEtxtPassword.getText().toString().length();
-                binding.loginEtxtPassword.setSelection(index);
+        binding.imageView.setOnClickListener(v -> {
+            if (isHideFirst) {
+                binding.imageView.setImageResource(R.drawable.eyeb);
+                //密文
+                HideReturnsTransformationMethod method1 = HideReturnsTransformationMethod.getInstance();
+                binding.loginEtxtPassword.setTransformationMethod(method1);
+                isHideFirst = false;
+            } else {
+                binding.imageView.setImageResource(R.drawable.eyeg);
+                //密文
+                TransformationMethod method = PasswordTransformationMethod.getInstance();
+                binding.loginEtxtPassword.setTransformationMethod(method);
+                isHideFirst = true;
             }
+            // 光标的位置
+            int index = binding.loginEtxtPassword.getText().toString().length();
+            binding.loginEtxtPassword.setSelection(index);
         });
 
-        binding.loginTxtBreak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogLoader.getInstance().showConfirmDialog(
-                        context,
-                        getString(R.string.login_break),
-                        getString(R.string.lab_yes),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            XUtil.exitApp();
-                        },
-                        getString(R.string.lab_no),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                        }
-                );
-            }
-        });
+        binding.loginTxtBreak.setOnClickListener(v -> DialogLoader.getInstance().showConfirmDialog(
+                context,
+                getString(R.string.login_break),
+                getString(R.string.lab_yes),
+                (dialog, which) -> {
+                    dialog.dismiss();
+                    XUtil.exitApp();
+                },
+                getString(R.string.lab_no),
+                (dialog, which) -> {
+                    dialog.dismiss();
+                }
+        ));
 
     }
 
@@ -355,8 +343,8 @@ public class LoginActivity extends XPageActivity {
 
         locationManager = (LocationManager) context
                 .getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager
-                .isProviderEnabled(LocationManager.GPS_PROVIDER) != true) {
+        if (!locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Toast.makeText(context, "GPS未开启,请手动开启", Toast.LENGTH_SHORT).show();
             Intent callGPSSettingIntent = new Intent(
                     Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -405,12 +393,12 @@ public class LoginActivity extends XPageActivity {
                 }
                 List<EcgDataDB> ecgDataDBList;
                 ecgDataDBList = ecgDataDao.loadAll();
-                if (ecgDataDBList.size() > 0) {
+                if (!ecgDataDBList.isEmpty()) {
                     LocalConfig.ecgDataDBList = ecgDataDBList;
                     LoginJudgment();
                 }
             } catch (Exception e) {
-                Log.d("out", e.getMessage());
+                Log.d("out", Objects.requireNonNull(e.getMessage()));
             }
 //            float[] ecgdata = new float[jsonArray.size()];
 //
@@ -455,11 +443,9 @@ public class LoginActivity extends XPageActivity {
             mPermissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-        if (mPermissionList.size() > 0) {
-            //    ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 1001);
-            ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 10000);
+        //    ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 1001);
+        ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 10000);
 
-        }
     }
 
     public void checkPermisson() {
@@ -488,7 +474,7 @@ public class LoginActivity extends XPageActivity {
 //                if (!isGrantExternalRW(this)) {
 //                    return;
 //                }
-            } else if (grantResults[0] != PERMISSION_GRANTED) {
+            } else {
                 LocalConfig.falg = false;
                 Toast.makeText(context, "权限开启失败，无法连接到蓝牙设备！", Toast.LENGTH_SHORT).show();
             }
@@ -555,7 +541,7 @@ public class LoginActivity extends XPageActivity {
         try {
             //先查询数据库是否有Mac地址记录
             List<MacDr> macDrList = macDrDao.loadAll();
-            if (macDrList.size() <= 0) {
+            if (macDrList.isEmpty()) {
 //                String bluethmac = "001B10F1EE68";
 //                String ecgmac = "D208AABB37AE";
 //                String bloodmac = "A4C13844160C";
@@ -574,8 +560,8 @@ public class LoginActivity extends XPageActivity {
 
                 String bluethmac = "001B10F1EE79";
                 String ecgmac = "E76B581B5164";
-                String bloodmac = "A4C138421CF3";
-                String oxygen = "00A0503BD222";
+                String bloodmac = "A4C13844160C";
+                String oxygen = "00A0503BCBAC";
                 MacDr macDr = new MacDr();
                 macDr.setBlueThMac(bluethmac);
                 macDr.setEcgMac(ecgmac);
@@ -590,7 +576,7 @@ public class LoginActivity extends XPageActivity {
 
     public void GetMac() {
         List<MacDr> macDrList = macDrDao.loadAll();
-        if (macDrList.size() > 0) {
+        if (!macDrList.isEmpty()) {
             for (int i = 0; i < macDrList.size(); i++) {
                 LocalConfig.bluemac = macDrList.get(0).getBlueThMac();
                 LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
@@ -658,7 +644,7 @@ public class LoginActivity extends XPageActivity {
             //   toast.setText(e.getMessage());
             //  org.greenrobot.greendao.DaoException: com.rick.recoveryapp.greendao.ActivitRecordDao@513f3c2 (ACTIVIT_RECORD) does not have a single-column primary key
             //   android.database.sqlite.SQLiteException: no such column: T._id (code 1 SQLITE_ERROR): , while compiling: SELECT T."_id",T."USER_NAME",T."USER_NUMBER",T."RECORD_TIME" FROM "ACTIVIT_RECORD" T
-            Log.d("1", e.getMessage());
+            Log.d("1", Objects.requireNonNull(e.getMessage()));
         } finally {
             // dbManager.closeDB();
         }
@@ -748,10 +734,11 @@ public class LoginActivity extends XPageActivity {
     public static boolean isAppRunning(Context context, String packageName) {
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
-        if (list.size() <= 0) {
+        if (list.isEmpty()) {
             return false;
         }
         for (ActivityManager.RunningTaskInfo info : list) {
+            assert info.baseActivity != null;
             if (info.baseActivity.getPackageName().equals(packageName)) {
                 return true;
             }
@@ -770,7 +757,7 @@ public class LoginActivity extends XPageActivity {
     public static boolean isProcessRunning(Context context, int uid) {
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> runningServiceInfos = am.getRunningServices(200);
-        if (runningServiceInfos.size() > 0) {
+        if (!runningServiceInfos.isEmpty()) {
             for (ActivityManager.RunningServiceInfo appProcess : runningServiceInfos) {
                 if (uid == appProcess.uid) {
                     return true;

@@ -63,12 +63,7 @@ public class MacDrDialog extends XPageActivity {
 
     public void initClick() {
 
-        macdialog_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        macdialog_close.setOnClickListener(v -> finish());
 
         macdialog_save.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("MissingPermission")
@@ -99,9 +94,7 @@ public class MacDrDialog extends XPageActivity {
 
                                 },
                                 getString(R.string.lab_null),
-                                (dialog, which) -> {
-                                    dialog.dismiss();
-                                }
+                                (dialog, which) -> dialog.dismiss()
                         );
 
                     }
@@ -113,7 +106,7 @@ public class MacDrDialog extends XPageActivity {
 
     public void GetMac() {
         List<MacDr> macDrList = macDrDao.loadAll();
-        if (macDrList.size() > 0) {
+        if (!macDrList.isEmpty()) {
             for (int i = 0; i < macDrList.size(); i++) {
                 LocalConfig.bluemac = macDrList.get(0).getBlueThMac();
                 LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
@@ -183,9 +176,7 @@ public class MacDrDialog extends XPageActivity {
     }
 
     /**
-     * 获取InputMethodManager，隐藏软键盘
-     *
-     * @param token
+     * @param token 获取InputMethodManager，隐藏软键盘
      */
     private void hideKeyboard(IBinder token) {
         if (token != null) {

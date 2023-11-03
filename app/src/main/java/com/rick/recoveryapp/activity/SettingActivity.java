@@ -16,8 +16,6 @@
  */
 package com.rick.recoveryapp.activity;
 
-import static com.xuexiang.xutil.data.SPUtils.getSharedPreferences;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,11 +30,9 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.rick.recoveryapp.adapter.MyFragmentPagerAdapter;
-import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.databinding.ActivitySettingBinding;
-import com.rick.recoveryapp.fragment.setting.SettingFragment;
+import com.rick.recoveryapp.ui.fragment.setting.SettingFragment;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xui.utils.StatusBarUtils;
@@ -94,29 +90,18 @@ public class SettingActivity extends XPageActivity implements ViewPager.OnPageCh
 
     public void itinClick() {
 
-        binding.settingBtnReturn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(context, AdminMainActivity.class);
-                //  intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            }
+        binding.settingBtnReturn.setOnClickListener(v -> {
+            intent = new Intent(context, AdminMainActivity.class);
+            //  intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         });
 
-        binding.settingTxtSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.settingPagerTest.setCurrentItem(PAGE_ONE);
-            }
-        });
+        binding.settingTxtSetting.setOnClickListener(v ->
+                binding.settingPagerTest.setCurrentItem(PAGE_ONE));
 
-        binding.settingLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.settingPagerTest.setCurrentItem(PAGE_TWO);
-            }
-        });
+        binding.settingLogin.setOnClickListener(v ->
+                binding.settingPagerTest.setCurrentItem(PAGE_TWO));
 
 
     }
@@ -133,9 +118,7 @@ public class SettingActivity extends XPageActivity implements ViewPager.OnPageCh
     }
 
     /**
-     * 获取InputMethodManager，隐藏软键盘
-     *
-     * @param token
+     * @param token 获取InputMethodManager，隐藏软键盘
      */
     private void hideKeyboard(IBinder token) {
         if (token != null) {

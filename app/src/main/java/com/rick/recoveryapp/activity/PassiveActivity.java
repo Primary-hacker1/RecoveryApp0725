@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 
+import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
@@ -54,6 +55,8 @@ import java.util.TimerTask;
  * */
 @Deprecated()
 public class PassiveActivity extends XPageActivity {
+
+    private String tag = PassiveActivity.class.getName();
     private boolean isCloseDialog = false;//如果是运动后停止
     int modleType = 0;
     ArrayList<Float> EcgListData;
@@ -739,10 +742,19 @@ public class PassiveActivity extends XPageActivity {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 
+                Observer<String> observerHigh = s -> {//运动完需要重新测量血压，血压那边一直传值，不同的话再跳转到结束页面
+                    BloodEndState = 2;
+                    LogUtils.e(tag + "结束测量血压值成功！");
+                };
+
                 if (UriConfig.test) {
                     uploadData.setBlood("已连接");
                     uploadData.setHigh("120");
                     uploadData.setLow("60");
+                    if(isCloseDialog){
+                        uploadData.setHigh("150");
+                        uploadData.setLow("80");
+                    }
                 }
 
                 if (isBegin) {
@@ -795,7 +807,7 @@ public class PassiveActivity extends XPageActivity {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
                             if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
-                                BloodEndState = 2;
+                                observerHigh.onChanged(uploadData.getHigh());
                             }
                         }
                         binding.passiveTxtBloodstate1.setCenterString("");
