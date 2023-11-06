@@ -339,261 +339,264 @@ public class IntelligenceActivity extends XPageActivity {
     }
 
     public void itinClick() {
-        binding.btnTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  btDataPro.sendBTMessage(btDataPro.MAC_CODE);
-                btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
-            }
+        binding.btnTest.setOnClickListener(v -> {
+            //  btDataPro.sendBTMessage(btDataPro.MAC_CODE);
+            btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
         });
 
-        binding.trainBtnReturn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    //取消测量运动后血压
-                    BloodEndState = 2;
-                } else if (BloodEndState == 0) {
-                    dialogs(true);
-                }
-
+        binding.trainBtnReturn.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                //取消测量运动后血压
+                BloodEndState = 2;
+            } else if (BloodEndState == 0) {
+                dialogs(true);
             }
+
         });
 
-        binding.intelligenceTitleActive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                modletype = 1;
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ChangeDialog();
+        binding.intelligenceTitleActive.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
             }
+            modletype = 1;
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            ChangeDialog();
         });
 
-        binding.intelligenceTitlePassive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                modletype = 2;
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ChangeDialog();
+        binding.intelligenceTitlePassive.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
             }
+            modletype = 2;
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            ChangeDialog();
         });
 
-        binding.intelligenceImgBegin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                HandlerMessage();
+        binding.intelligenceImgBegin.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
             }
+            if (BloodEndState == 1) {
+                Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            HandlerMessage();
         });
 
-        binding.inteImgBlood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                        if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                            btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
-                            btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
-                        } else if (ContorlState.equals("51")) {
-                            btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
-                            ContorlState = "52";
-                            binding.inteTxtBlood.setCenterString("点击开始测量血压");
-                        }
-                    } else {
-                        Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+        binding.inteImgBlood.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                    if (ContorlState.equals("00") || ContorlState.equals("52")) {
+                        btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
+                        btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                    } else if (ContorlState.equals("51")) {
+                        btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
+                        ContorlState = "52";
+                        binding.inteTxtBlood.setCenterString("点击开始测量血压");
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
-        binding.inteJiaZhuansu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (zhuansuData + 1 <= 60) {
-                    if (zhuansuData + 1 >= 30) {
-                        if (isOk) {
-                            zhuansuData = zhuansuData + 1;
-                            binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
-//                            binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
-//                            binding.progressViewZhuansuIntelligence.startProgressAnimation();
-                            binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
-
-                        } else {
-                            DialogLoader.getInstance().showConfirmDialog(
-                                    context,
-                                    getString(R.string.tip_permission),
-                                    getString(R.string.lab_ok),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = true;
-                                        zhuansuData = zhuansuData + 1;
-                                        binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
-//                                        binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
-//                                        binding.progressViewZhuansuIntelligence.startProgressAnimation();
-                                        binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
-                                        //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                                    },
-                                    getString(R.string.lab_cancel),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = false;
-                                    }
-                            );
-                        }
-
-                    } else {
+        binding.inteJiaZhuansu.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (zhuansuData + 1 <= 60) {
+                if (zhuansuData + 1 >= 30) {
+                    if (isOk) {
                         zhuansuData = zhuansuData + 1;
                         binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
+//                            binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
+//                            binding.progressViewZhuansuIntelligence.startProgressAnimation();
+                        binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
+
+                    } else {
+                        DialogLoader.getInstance().showConfirmDialog(
+                                context,
+                                getString(R.string.tip_permission),
+                                getString(R.string.lab_ok),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = true;
+                                    zhuansuData = zhuansuData + 1;
+                                    binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
+//                                        binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
+//                                        binding.progressViewZhuansuIntelligence.startProgressAnimation();
+                                    binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
+                                    //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                                },
+                                getString(R.string.lab_cancel),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = false;
+                                }
+                        );
+                    }
+
+                } else {
+                    zhuansuData = zhuansuData + 1;
+                    binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
 //                        binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
 //                        binding.progressViewZhuansuIntelligence.startProgressAnimation();
-                        binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
-                        //  btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    }
+                    binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
+                    //  btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                }
 //                    binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
 //                    binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
 //                    binding.progressViewZhuansuIntelligence.startProgressAnimation();
 //                    binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
-                    //  btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                } else {
-                    zhuansuData = 60;
-                    //  btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    return;
-                }
+                //  btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+            } else {
+                zhuansuData = 60;
+                //  btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                return;
             }
         });
 
-        binding.inteJianZhuansu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                zhuansuData = zhuansuData - 1;
-                if (zhuansuData < 0) {
-                    zhuansuData = 0;
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    return;
-                } else {
-                    binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
-                    // binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
-                    //   binding.progressViewZhuansuIntelligence.startProgressAnimation();
-                    binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                }
+        binding.inteJianZhuansu.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            zhuansuData = zhuansuData - 1;
+            if (zhuansuData < 0) {
+                zhuansuData = 0;
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                return;
+            } else {
+                binding.progressViewZhuansuIntelligence.setGraduatedEnabled(true);
+                // binding.progressViewZhuansuIntelligence.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansuData, (float) 60)));
+                //   binding.progressViewZhuansuIntelligence.startProgressAnimation();
+                binding.intelligenceTxtZhuansu.setCenterString(zhuansuData + "");
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
             }
         });
 
-        binding.inteJiaResistance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                resistance = resistance + 1;
-                if (resistance <= 12) {
-                    binding.progressViewResistance.setGraduatedEnabled(true);
-                    //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resistance, (float) 12)));
-                    //   binding.progressViewResistance.startProgressAnimation();
-                    binding.intelligenceTxtResistance.setCenterString(resistance + "");
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                } else {
-                    resistance = 12;
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    return;
-                }
+        binding.inteJiaResistance.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resistance = resistance + 1;
+            if (resistance <= 12) {
+                binding.progressViewResistance.setGraduatedEnabled(true);
+                //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resistance, (float) 12)));
+                //   binding.progressViewResistance.startProgressAnimation();
+                binding.intelligenceTxtResistance.setCenterString(resistance + "");
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+            } else {
+                resistance = 12;
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                return;
             }
         });
 
-        binding.inteJianResistance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                resistance = resistance - 1;
-                if (resistance < 1) {
-                    resistance = 1;
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    return;
-                } else {
-                    binding.progressViewResistance.setGraduatedEnabled(true);
-                    //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resistance, (float) 12)));
-                    //    binding.progressViewResistance.startProgressAnimation();
-                    binding.intelligenceTxtResistance.setCenterString(resistance + "");
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                }
+        binding.inteJianResistance.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resistance = resistance - 1;
+            if (resistance < 1) {
+                resistance = 1;
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                return;
+            } else {
+                binding.progressViewResistance.setGraduatedEnabled(true);
+                //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resistance, (float) 12)));
+                //    binding.progressViewResistance.startProgressAnimation();
+                binding.intelligenceTxtResistance.setCenterString(resistance + "");
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
             }
         });
 
-        binding.inteJiaSpasm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spasm = spasm + 1;
-                if (spasm <= 12) {
-                    binding.progressViewSpasm.setGraduatedEnabled(true);
-                    //  binding.progressViewSpasm.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) spasm, (float) 12)));
-                    //   binding.progressViewSpasm.startProgressAnimation();
-                    binding.intelligenceTxtSpasm.setCenterString(spasm + "");
-                    //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                } else {
-                    spasm = 12;
-                    //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    return;
-                }
+        binding.inteJiaSpasm.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            spasm = spasm + 1;
+            if (spasm <= 12) {
+                binding.progressViewSpasm.setGraduatedEnabled(true);
+                //  binding.progressViewSpasm.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) spasm, (float) 12)));
+                //   binding.progressViewSpasm.startProgressAnimation();
+                binding.intelligenceTxtSpasm.setCenterString(spasm + "");
+                //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+            } else {
+                spasm = 12;
+                //   btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                return;
             }
         });
 
-        binding.inteJianSpasm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                spasm = spasm - 1;
-                if (spasm < 1) {
-                    spasm = 1;
-                    //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                    return;
-                } else {
-                    binding.progressViewSpasm.setGraduatedEnabled(true);
-                    // binding.progressViewSpasm.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) spasm, (float) 12)));
-                    //  binding.progressViewSpasm.startProgressAnimation();
-                    binding.intelligenceTxtSpasm.setCenterString(spasm + "");
-                    //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                }
+        binding.inteJianSpasm.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            spasm = spasm - 1;
+            if (spasm < 1) {
+                spasm = 1;
+                //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                return;
+            } else {
+                binding.progressViewSpasm.setGraduatedEnabled(true);
+                // binding.progressViewSpasm.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) spasm, (float) 12)));
+                //  binding.progressViewSpasm.startProgressAnimation();
+                binding.intelligenceTxtSpasm.setCenterString(spasm + "");
+                //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
             }
         });
     }
 
     public void ChangeDialog() {
-
 
         if (isBegin) {
             Toast.makeText(context, "运动中，请勿切换模式！", Toast.LENGTH_SHORT).show();

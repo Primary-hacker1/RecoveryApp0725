@@ -646,9 +646,9 @@
 
                     <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
                         android:id="@+id/inte_jian_spasm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_marginStart="10dp"
                         android:background="@drawable/baseline_do_not"
                         app:sb_radius="100dp" />
 

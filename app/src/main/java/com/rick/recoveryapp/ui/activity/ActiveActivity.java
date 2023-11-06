@@ -325,7 +325,6 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.trainBtnReturn.setOnClickListener(v -> {
-
             if (BloodEndState == 1) {
                 //取消测量运动后血压
                 BloodEndState = 2;
@@ -335,16 +334,28 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.activeTitlePress.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
             modletype = 1;
             ChangeDialog();
         });
 
         binding.activeTitleIntelligence.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
             modletype = 2;
             ChangeDialog();
         });
 
         binding.activeImgBegin.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (BloodEndState == 1) {
                 Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
                 return;
@@ -353,6 +364,10 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.activeImbtnJia.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (isBegin) {
                 Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
                 return;
@@ -371,6 +386,10 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.activeImbtnMove.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (BloodEndState == 1) {
                 Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
                 return;
@@ -389,6 +408,10 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.activeImgBlood.setOnClickListener(v -> {
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (isBegin) {
                 Toast.makeText(context, "运动中，不能测量血压！", Toast.LENGTH_SHORT).show();
                 return;
