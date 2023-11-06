@@ -73,12 +73,12 @@ public class BtReceiver extends BroadcastReceiver {
 
                 if (state == 12) {
 //                    LocalConfig.isControl = true;
-                    rdMessage = new RDMessage();
-                    rdMessage.setIsConnt(false);
-                    rdMessage.setState("蓝牙设备已重联");
-                    LiveEventBus.get("BT_RECONNECTED")
-                            .post(rdMessage);
-                    mListener.foundBT();
+//                    mListener.foundBT();
+//                    rdMessage = new RDMessage();
+//                    rdMessage.setIsConnt(false);
+//                    rdMessage.setState("蓝牙设备已重联");
+//                    LiveEventBus.get("BT_RECONNECTED")
+//                            .post(rdMessage);
                 }
 
 
@@ -115,6 +115,13 @@ public class BtReceiver extends BroadcastReceiver {
             case BluetoothDevice.ACTION_ACL_CONNECTED:
                 LogUtils.e(TAG + "已连接到 " + BluetoothDevice.ACTION_ACL_CONNECTED);
                 LocalConfig.isControl = true;
+
+                rdMessage = new RDMessage();
+                rdMessage.setIsConnt(false);
+                rdMessage.setState("蓝牙设备已重联");
+                LiveEventBus.get("BT_RECONNECTED")
+                        .post(rdMessage);
+
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                 liveMessage = new LiveMessage();

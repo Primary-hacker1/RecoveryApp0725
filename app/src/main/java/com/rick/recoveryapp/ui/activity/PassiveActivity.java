@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.lifecycle.Observer;
 
 import com.common.network.LogUtils;
+import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
@@ -117,12 +118,10 @@ public class PassiveActivity extends XPageActivity {
         OftenListData = new ArrayList<>();
         countList = new ArrayList<>();
         binding.passiveWaveviewOne.resetCanavas();
-
         ecgDataDBDao = LocalConfig.daoSession.getEcgDataDBDao();
 
         try {
             initLiveData();
-
             binding.passiveWaveviewOne.resetCanavas();
             btDataPro.sendBTMessage(GetCmdCode("53", false, 5, 5, activeTime));
             binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
@@ -217,7 +216,7 @@ public class PassiveActivity extends XPageActivity {
                 .observe(this, msg -> {
                     assert msg != null;
                     if (msg.getState().equals("蓝牙设备未连接")) {
-                        isNotBt = false;//恢复不然退出不了界面
+                        isNotBt = true;//恢复不然退出不了界面
                     }
 
                     if (!msg.getIsConnt()) {
@@ -268,12 +267,55 @@ public class PassiveActivity extends XPageActivity {
         LiveEventBus
                 .get("BT_RECONNECTED", RDMessage.class)
                 .observe(this, msg -> {
+//                    isNotBt = true;
+//                    if (LocalConfig.isControl) {
+//                        LocalConfig.ModType = 1;
+//                        Intent intent = new Intent(context, DialogActivity.class);
+//                        startActivity(intent);
+//                    }
 
-//                    btDataPro.sendBTMessage(GetCmdCode("53", false, 5, 5, activeTime));
+                    binding = ActivityPassiveBinding.inflate(getLayoutInflater());
+                    setContentView(binding.getRoot());
+                    StatusBarUtils.translucent(this);
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    context = this;
 
-//                    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                    isNotBt = LocalConfig.isControl;
 
-//                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                    btDataPro = new BtDataPro();
+
+                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                    itinClick();
+                    binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
+                    binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber + "");
+                    BaseApplication myApp = (BaseApplication) getApplication();
+                    LocalConfig.daoSession = myApp.getDaoSession();
+                    activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
+                    recordDetailedDao = LocalConfig.daoSession.getRecordDetailedDao();
+                    nowTime = 300000;
+                    activeTime = MyTimeUtils.Getminute(nowTime);
+                    String text1 = MyTimeUtils.formatTime(nowTime);
+                    binding.passiveTxtDowntimer.setCenterString(text1);
+                    EcgListData = new ArrayList<>();
+                    OftenListData = new ArrayList<>();
+                    countList = new ArrayList<>();
+                    binding.passiveWaveviewOne.resetCanavas();
+
+                    ecgDataDBDao = LocalConfig.daoSession.getEcgDataDBDao();
+
+                    try {
+                        initLiveData();
+
+                        binding.passiveWaveviewOne.resetCanavas();
+                        btDataPro.sendBTMessage(GetCmdCode("53", false, 5, 5, activeTime));
+                        binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
+                        binding.passiveTxtSpasm.setCenterString(spasmData + "");
+                        PassEcg();
+                    } catch (Exception ex) {
+                        ex.getMessage();
+                    }
+
+
                 });
     }
 
@@ -359,22 +401,22 @@ public class PassiveActivity extends XPageActivity {
     public void itinClick() {
 
         binding.btnTest.setOnClickListener(v -> {
-                    if (!LocalConfig.isControl) {
-                        Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    btDataPro.sendBTMessage(btDataPro.
-                            GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
-                });
+            if (!LocalConfig.isControl) {
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            btDataPro.sendBTMessage(btDataPro.
+                    GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+        });
 
-                binding.trainBtnReturn.setOnClickListener(v -> {
-                    if (BloodEndState == 1) {
-                        //取消测量运动后血压
-                        BloodEndState = 2;
-                    } else if (BloodEndState == 0) {
-                        dialogs(true);
-                    }
-                });
+        binding.trainBtnReturn.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                //取消测量运动后血压
+                BloodEndState = 2;
+            } else if (BloodEndState == 0) {
+                dialogs(true);
+            }
+        });
 
         binding.passiveTitleActive.setOnClickListener(v -> {
             modleType = 1;
@@ -387,7 +429,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveTitleIntelligence.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             modleType = 2;
@@ -400,7 +442,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveImgBegin.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (BloodEndState == 1) {
@@ -412,7 +454,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveZhuansuJia.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (isBegin) {
@@ -466,7 +508,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveZhuansuJian.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (isBegin) {
@@ -489,7 +531,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveSpasmJia.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (isBegin) {
@@ -512,7 +554,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveSpasmJian.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (isBegin) {
@@ -535,7 +577,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveTimeJia.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             nowTime = nowTime + 300000;
@@ -558,7 +600,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveTimeJian.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,
+                Toast.makeText(this, R.string.bluetoothIsNotConnected,
                         Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -582,7 +624,7 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveImgBlood.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (isBegin) {

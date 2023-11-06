@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -39,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -182,11 +184,7 @@ public class U3DActivity extends UnityPlayerActivity {
         UnityPlayer.UnitySendMessage("GameMenue", "OnAndStart", "");
         UnityPlayer.UnitySendMessage("GameMenue", "onDuorenStart", "");
         U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", true, zhuansu, jingluan));
-        U3DActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                u3d_linear_data.setVisibility(View.GONE);
-            }
-        });
+        U3DActivity.this.runOnUiThread(() -> u3d_linear_data.setVisibility(View.GONE));
         u3d_img_begin.setBackground(getResources().getDrawable(R.drawable.stop));
         u3d_txt_begin.setCenterString("停  止");
         timeCountTool.startCount();
@@ -194,266 +192,239 @@ public class U3DActivity extends UnityPlayerActivity {
 
     public void initClick() {
 
-        u3d_btn_return.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BloodEndState == 1) {
-                    //取消测量运动后血压
-                    BloodEndState = 2;
-                } else if (BloodEndState == 0) {
-                    DialogLoader.getInstance().showConfirmDialog(
-                            context,
-                            getString(R.string.active_return),
-                            getString(R.string.lab_yes),
-                            (dialog, which) -> {
-                                dialog.dismiss();
-                                if (isBegin) {
-                                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, 5, 1));
-                                } else {
-                                    U3DActivity.this.runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            u3d_linear_data.setVisibility(View.GONE);
-                                        }
-                                    });
-                                    UnityPlayer.UnitySendMessage("GameMenue", "OnAndStop", "");
-                                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(1, "53", false, 5, 1));
-                                }
-                                initView();
-                            },
-                            getString(R.string.lab_no),
-                            (dialog, which) -> {
-                                dialog.dismiss();
+        u3d_btn_return.setOnClickListener(v -> {
+            if (BloodEndState == 1) {
+                //取消测量运动后血压
+                BloodEndState = 2;
+            } else if (BloodEndState == 0) {
+                DialogLoader.getInstance().showConfirmDialog(
+                        context,
+                        getString(R.string.active_return),
+                        getString(R.string.lab_yes),
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            if (isBegin) {
+                                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, 5, 1));
+                            } else {
+                                U3DActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        u3d_linear_data.setVisibility(View.GONE);
+                                    }
+                                });
+                                UnityPlayer.UnitySendMessage("GameMenue", "OnAndStop", "");
+                                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(1, "53", false, 5, 1));
                             }
-                    );
-                }
+                            initView();
+                        },
+                        getString(R.string.lab_no),
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                        }
+                );
             }
         });
 
         //开始按钮点击事件
-        u3d_img_begin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (BloodEndState == 1) {
-                        Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    String txts = u3d_txt_begin.getCenterString();
-                    if (txts.equals("开  始")) {
-                        String highblood = u3d_txt_high.getCenterString();
-                        String lowblood = u3d_txt_low.getCenterString();
-                        if (highblood.equals("0") && lowblood.equals("0")) {
-                            DialogLoader.getInstance().showConfirmDialog(
-                                    context,
-                                    getString(R.string.active_blood),
-                                    getString(R.string.lab_ok),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        BeginAnima();
-                                    },
-                                    getString(R.string.lab_cancel),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        // timeTask.start();
-                                    }
-                            );
-                        } else {
-                            BeginAnima();
-                        }
-                    } else {
-                        // UnityPlayer.UnitySendMessage("GameMenue", "OnAndPause", "");
-                        u3d_img_begin.setBackground(getResources().getDrawable(R.drawable.begin));
-                        u3d_txt_begin.setCenterString("开  始");
-                        U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                    }
-                } catch (Exception e) {
-                    e.getMessage();
+        u3d_img_begin.setOnClickListener(v -> {
+            try {
+                if (BloodEndState == 1) {
+                    Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                String txts = u3d_txt_begin.getCenterString();
+                if (txts.equals("开  始")) {
+                    String highblood = u3d_txt_high.getCenterString();
+                    String lowblood = u3d_txt_low.getCenterString();
+                    if (highblood.equals("0") && lowblood.equals("0")) {
+                        DialogLoader.getInstance().showConfirmDialog(
+                                context,
+                                getString(R.string.active_blood),
+                                getString(R.string.lab_ok),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    BeginAnima();
+                                },
+                                getString(R.string.lab_cancel),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    // timeTask.start();
+                                }
+                        );
+                    } else {
+                        BeginAnima();
+                    }
+                } else {
+                    // UnityPlayer.UnitySendMessage("GameMenue", "OnAndPause", "");
+                    u3d_img_begin.setBackground(getResources().getDrawable(R.drawable.begin));
+                    u3d_txt_begin.setCenterString("开  始");
+                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+                }
+            } catch (Exception e) {
+                e.getMessage();
             }
         });
 
         //血压测量按钮
-        u3d_img_blood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (isBegin) {
-                        Toast.makeText(context, "运动中，请勿测量血压！", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                        if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                            U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "51", false, zhuansu, jingluan));
-                        } else if (ContorlState.equals("51")) {
-                            //    sendBTMessage(btDataPro.CONTORL_CODE_END);
-                            //btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
-                            U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "52", false, zhuansu, jingluan));
-                            ContorlState = "52";
-                        }
-                    } else {
-                        Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
-                    }
-                    isBlood = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
+        u3d_img_blood.setOnClickListener(v -> {
+            try {
+                if (isBegin) {
+                    Toast.makeText(context, "运动中，请勿测量血压！", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                    if (ContorlState.equals("00") || ContorlState.equals("52")) {
+                        U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "51", false, zhuansu, jingluan));
+                    } else if (ContorlState.equals("51")) {
+                        //    sendBTMessage(btDataPro.CONTORL_CODE_END);
+                        //btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
+                        U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "52", false, zhuansu, jingluan));
+                        ContorlState = "52";
+                    }
+                } else {
+                    Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+                }
+                isBlood = true;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
-        u3d_jia_zhuansu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (zhuansu + 1 <= 60) {
-                    if (zhuansu + 1 >= 30) {
-                        if (isOk) {
-                            zhuansu = zhuansu + 1;
-                            u3d_progress_zhuansu.setGraduatedEnabled(true);
-                            u3d_txt_zhuansu.setCenterString(zhuansu + "");
-                        } else {
-                            DialogLoader.getInstance().showConfirmDialog(
-                                    context,
-                                    getString(R.string.tip_permission),
-                                    getString(R.string.lab_ok),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = true;
-                                        zhuansu = zhuansu + 1;
-                                        u3d_progress_zhuansu.setGraduatedEnabled(true);
-                                        u3d_txt_zhuansu.setCenterString(zhuansu + "");
-                                        //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-                                    },
-                                    getString(R.string.lab_cancel),
-                                    (dialog, which) -> {
-                                        dialog.dismiss();
-                                        isOk = false;
-                                    }
-                            );
-                        }
-                    } else {
+        u3d_jia_zhuansu.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (zhuansu + 1 <= 60) {
+                if (zhuansu + 1 >= 30) {
+                    if (isOk) {
                         zhuansu = zhuansu + 1;
                         u3d_progress_zhuansu.setGraduatedEnabled(true);
                         u3d_txt_zhuansu.setCenterString(zhuansu + "");
+                    } else {
+                        DialogLoader.getInstance().showConfirmDialog(
+                                context,
+                                getString(R.string.tip_permission),
+                                getString(R.string.lab_ok),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = true;
+                                    zhuansu = zhuansu + 1;
+                                    u3d_progress_zhuansu.setGraduatedEnabled(true);
+                                    u3d_txt_zhuansu.setCenterString(zhuansu + "");
+                                    //    btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
+                                },
+                                getString(R.string.lab_cancel),
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    isOk = false;
+                                }
+                        );
                     }
+                } else {
+                    zhuansu = zhuansu + 1;
                     u3d_progress_zhuansu.setGraduatedEnabled(true);
                     u3d_txt_zhuansu.setCenterString(zhuansu + "");
-                } else {
-                    zhuansu = 60;
-                    return;
                 }
+                u3d_progress_zhuansu.setGraduatedEnabled(true);
+                u3d_txt_zhuansu.setCenterString(zhuansu + "");
+            } else {
+                zhuansu = 60;
+                return;
             }
         });
 
-        u3d_jian_zhuansu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                zhuansu = zhuansu - 1;
-                if (zhuansu < 0) {
-                    zhuansu = 0;
-                    // U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                    return;
-                } else {
-                    u3d_progress_zhuansu.setGraduatedEnabled(true);
-                    // u3d_progress_zhuansu.setEndProgress(Float.parseFloat(GetProgress((float) zhuansu, (float) 60)));
-                    //   u3d_progress_zhuansu.startProgressAnimation();
-                    u3d_txt_zhuansu.setCenterString(zhuansu + "");
-                    //   U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingl uan));
-                }
+        u3d_jian_zhuansu.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            zhuansu = zhuansu - 1;
+            if (zhuansu < 0) {
+                zhuansu = 0;
+                // U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+                return;
+            } else {
+                u3d_progress_zhuansu.setGraduatedEnabled(true);
+                // u3d_progress_zhuansu.setEndProgress(Float.parseFloat(GetProgress((float) zhuansu, (float) 60)));
+                //   u3d_progress_zhuansu.startProgressAnimation();
+                u3d_txt_zhuansu.setCenterString(zhuansu + "");
+                //   U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingl uan));
             }
         });
 
-        u3d_jia_resistance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                resistance = resistance + 1;
-                if (resistance <= 12) {
-                    u3d_progress_zhuli.setGraduatedEnabled(true);
-                    //  u3d_progress_zhuli.setEndProgress(Float.parseFloat(GetProgress((float) resistance, (float) 12)));
-                    //  u3d_progress_zhuli.startProgressAnimation();
-                    u3d_txt_resistance.setCenterString(resistance + "");
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                } else {
-                    resistance = 12;
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                    return;
-                }
+        u3d_jia_resistance.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resistance = resistance + 1;
+            if (resistance <= 12) {
+                u3d_progress_zhuli.setGraduatedEnabled(true);
+                //  u3d_progress_zhuli.setEndProgress(Float.parseFloat(GetProgress((float) resistance, (float) 12)));
+                //  u3d_progress_zhuli.startProgressAnimation();
+                u3d_txt_resistance.setCenterString(resistance + "");
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+            } else {
+                resistance = 12;
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+                return;
             }
         });
 
-        u3d_jian_resistance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                resistance = resistance - 1;
-                if (resistance < 1) {
-                    resistance = 1;
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                    return;
-                } else {
-                    u3d_progress_zhuli.setGraduatedEnabled(true);
-                    // u3d_progress_zhuli.setEndProgress(Float.parseFloat(GetProgress((float) resistance, (float) 12)));
-                    //  u3d_progress_zhuli.startProgressAnimation();
-                    u3d_txt_resistance.setCenterString(resistance + "");
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                }
+        u3d_jian_resistance.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resistance = resistance - 1;
+            if (resistance < 1) {
+                resistance = 1;
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+                return;
+            } else {
+                u3d_progress_zhuli.setGraduatedEnabled(true);
+                // u3d_progress_zhuli.setEndProgress(Float.parseFloat(GetProgress((float) resistance, (float) 12)));
+                //  u3d_progress_zhuli.startProgressAnimation();
+                u3d_txt_resistance.setCenterString(resistance + "");
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
             }
         });
 
-        u3d_jia_spasm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                jingluan = jingluan + 1;
-                if (jingluan <= 12) {
-                    u3d_progress_spasm.setGraduatedEnabled(true);
-                    // u3d_progress_spasm.setEndProgress(Float.parseFloat(GetProgress((float) jingluan, (float) 12)));
-                    // u3d_progress_spasm.startProgressAnimation();
-                    u3d_txt_spasm.setCenterString(jingluan + "");
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                } else {
-                    jingluan = 12;
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                    return;
-                }
+        u3d_jia_spasm.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            jingluan = jingluan + 1;
+            if (jingluan <= 12) {
+                u3d_progress_spasm.setGraduatedEnabled(true);
+                // u3d_progress_spasm.setEndProgress(Float.parseFloat(GetProgress((float) jingluan, (float) 12)));
+                // u3d_progress_spasm.startProgressAnimation();
+                u3d_txt_spasm.setCenterString(jingluan + "");
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+            } else {
+                jingluan = 12;
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+                return;
             }
         });
 
-        u3d_jian_spasm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isBegin) {
-                    Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                jingluan = jingluan - 1;
-                if (jingluan < 1) {
-                    jingluan = 1;
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                    return;
-                } else {
-                    u3d_progress_spasm.setGraduatedEnabled(true);
-                    // u3d_progress_spasm.setEndProgress(Float.parseFloat(GetProgress((float) jingluan, (float) 12)));
-                    //   u3d_progress_spasm.startProgressAnimation();
-                    u3d_txt_spasm.setCenterString(jingluan + "");
-                    U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-                }
+        u3d_jian_spasm.setOnClickListener(v -> {
+            if (isBegin) {
+                Toast.makeText(context, "运动中，请勿调节参数！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            jingluan = jingluan - 1;
+            if (jingluan < 1) {
+                jingluan = 1;
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
+                return;
+            } else {
+                u3d_progress_spasm.setGraduatedEnabled(true);
+                // u3d_progress_spasm.setEndProgress(Float.parseFloat(GetProgress((float) jingluan, (float) 12)));
+                //   u3d_progress_spasm.startProgressAnimation();
+                u3d_txt_spasm.setCenterString(jingluan + "");
+                U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
             }
         });
     }
@@ -474,7 +445,7 @@ public class U3DActivity extends UnityPlayerActivity {
         }
     }
 
-    Handler mHandler = new Handler() {
+    Handler mHandler = new Handler(Objects.requireNonNull(Looper.myLooper())) {
 
         //handleMessage为处理消息的方法
         public void handleMessage(Message msg) {
@@ -497,7 +468,7 @@ public class U3DActivity extends UnityPlayerActivity {
             public void run() {
                 try {
                     if (OftenListData != null) {
-                        if (OftenListData.size() > 0) {
+                        if (!OftenListData.isEmpty()) {
                             Float cooY = OftenListData.get(0);
                             u3d_waveview_one.showLine(cooY);
                             OftenListData.remove(0);
