@@ -17,6 +17,7 @@ import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.entity.LiveMessage;
+import com.rick.recoveryapp.entity.RDMessage;
 import com.rick.recoveryapp.utils.LocalConfig;
 
 /**
@@ -26,6 +27,7 @@ public class BtReceiver extends BroadcastReceiver {
     private static final String TAG = BtReceiver.class.getSimpleName();
     private final Listener mListener;
     public static LiveMessage liveMessage = null;
+    public static RDMessage rdMessage = null;
 
     public BtReceiver(Context cxt, Listener listener) {
         mListener = listener;
@@ -70,17 +72,18 @@ public class BtReceiver extends BroadcastReceiver {
                 }
 
                 if (state == 12) {
-                    LocalConfig.isControl = true;
-                    liveMessage = new LiveMessage();
-                    liveMessage.setIsConnt(false);
-                    liveMessage.setState("已连接");
+//                    LocalConfig.isControl = true;
+                    rdMessage = new RDMessage();
+                    rdMessage.setIsConnt(false);
+                    rdMessage.setState("蓝牙设备已重联");
                     LiveEventBus.get("BT_RECONNECTED")
-                            .post(liveMessage);
+                            .post(rdMessage);
+                    mListener.foundBT();
                 }
 
 
-                LogUtils.e(TAG + "STATE:  " + state + "---BluetoothAdapter.ACTION_STATE_CHANGED");
-                LogUtils.e(TAG + "LocalConfig.isControl= " + LocalConfig.isControl);
+                LogUtils.e(TAG + "STATE:  " + state + "---"+ "LocalConfig.isControl= "
+                        + LocalConfig.isControl);
                 break;
             case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                 LogUtils.e(TAG + "BluetoothAdapter.ACTION_DISCOVERY_STARTED");

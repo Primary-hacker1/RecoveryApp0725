@@ -9,6 +9,7 @@ import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,8 +41,6 @@ import com.umeng.commonsdk.UMConfigure;
 import com.xuexiang.xhttp2.XHttpSDK;
 import com.xuexiang.xui.XUI;
 import com.xuexiang.xupdate.XUpdate;
-import com.xuexiang.xupdate.entity.UpdateError;
-import com.xuexiang.xupdate.listener.OnUpdateFailureListener;
 import com.xuexiang.xupdate.proxy.IFileEncryptor;
 import com.xuexiang.xupdate.utils.UpdateUtils;
 import com.xuexiang.xutil.tip.ToastUtils;
@@ -57,7 +56,7 @@ import java.util.Objects;
 
 public class BaseApplication extends Application implements BtReceiver.Listener {
 
-    private static String tag = BaseApplication.class.getName();
+    private static final String tag = BaseApplication.class.getName();
     private static DaoSession daoSession;
     private static Context context;
     // 来自BluetoothChatService Handler的消息类型
@@ -74,6 +73,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     public static final String TOAST = "toast";
     // Intent请求代码
     public static LiveMessage liveMessage = null;
+
     public static BluetoothChatService mConnectService = null;
     // 已连接设备的名字
     public static String mConnectedDeviceName = null;
@@ -230,7 +230,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             //  LocalConfig.bluetoothstate=true;
                             LiveEventBus.get("BT_CONNECTED")
                                     .post(liveMessage);
-                            LogUtils.e(tag+"已连接到 " + mConnectedDeviceName);
+                            LogUtils.e(tag + "已连接到 " + mConnectedDeviceName);
 //                            liveMessage = new LiveMessage();
 //                            liveMessage.setIsConnt(true);
 //                            liveMessage.setMessage("已连接到 " + mConnectedDeviceName);
@@ -247,7 +247,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             liveMessage.setState("");
                             LiveEventBus.get("BT_CONNECTED")
                                     .post(liveMessage);
-                            LogUtils.e(tag+"正在连接。。。 ");
+                            LogUtils.e(tag + "正在连接。。。 ");
                             break;
 
                         case BluetoothChatService.STATE_LISTEN:
@@ -457,7 +457,28 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
     @Override
     public void foundBT() {
-        LogUtils.e(tag + "重新连接mac");
-        AutoConnect();
+        LogUtils.e(tag + "重联蓝牙设备");
+        mConnectService = new BluetoothChatService(mHandler);
+        try {
+            GetMac();
+            String address = LocalConfig.bluemac;
+            // ZXJ_BL_006  00:1B:10:F1:EE:7E
+            if (!address.isEmpty()) {
+                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                String target_device_name = device.getName();
+                if (target_device_name.equals(mConnectedDeviceName)) {
+                    return;
+                }
+
+                mConnectService.connect(device);
+            }
+            LogUtils.e(tag + address + "--" + "地址获取失败！");
+
+        } catch (Exception e) {
+            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
+        }
     }
 }

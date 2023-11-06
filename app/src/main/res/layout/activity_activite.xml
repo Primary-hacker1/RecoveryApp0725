@@ -208,27 +208,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center"
                 app:sb_radius="20dp"
-                android:background="@mipmap/bg_type"
                 android:layout_margin="5dp"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                    android:id="@+id/main_img_link"
+                    android:layout_marginStart="10dp"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_margin="8dp"
-                    android:src="@drawable/click_qj_type" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="情景模式"
-                    android:textColor="@color/white"
-                    android:layout_marginEnd="@dimen/config_margin_10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_gravity="center"
+                    android:background="@drawable/img_bt_close"
                     app:sb_radius="20dp"
-                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck,TouchTargetSizeCheck" />
+                    />
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

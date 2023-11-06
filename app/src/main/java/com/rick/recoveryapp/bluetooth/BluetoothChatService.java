@@ -52,9 +52,6 @@ public class BluetoothChatService {
     // 来自BluetoothChatService Handler的关键名
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
-    // Intent请求代码
-    private static final int REQUEST_CONNECT_DEVICE = 1;
-    private static final int REQUEST_ENABLE_BT = 2;
 
     //蓝牙接收延迟时间
     private int delay_time;
@@ -481,16 +478,16 @@ public class BluetoothChatService {
 
         // 将字节数组转化为16进制字符串，确定长度
         public String bytesToHexString(byte[] bytes, int a) {
-            String result = "";
+            StringBuilder result = new StringBuilder();
             for (int i = 0; i < a; i++) {
                 String hexString = Integer.toHexString(bytes[i] & 0xFF);// 将高24位置0
                 if (hexString.length() == 1) {
                     hexString = '0' + hexString;
                 }
-                result += hexString.toUpperCase() + " ";
+                result.append(hexString.toUpperCase()).append(" ");
 
             }
-            return result;
+            return result.toString();
         }
 
         /**
@@ -501,7 +498,6 @@ public class BluetoothChatService {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-
                 //将发送的消息共享回UI活动
                 mHandler.obtainMessage(MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();

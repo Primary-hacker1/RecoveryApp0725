@@ -18,6 +18,7 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
+import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityIntelligenceBinding;
@@ -234,6 +235,29 @@ public class IntelligenceActivity extends XPageActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+
+        if (BaseApplication.mConnectService != null) {
+            //蓝牙闲置状态
+            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+                if (BaseApplication.liveMessage != null) {
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
+                    binding.mainImgLink.setEnabled(true);
+                    //监听其他蓝牙主设备
+                    BaseApplication.mConnectService.start();
+                }
+                //蓝牙已连接
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+                if (BaseApplication.liveMessage != null) {
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
+                    binding.mainImgLink.setEnabled(false);
+                }
+            }
+        }
     }
 
     public void SaveRecord() {

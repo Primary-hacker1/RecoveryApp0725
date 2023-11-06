@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.bluetooth.BluetoothChatService;
+import com.rick.recoveryapp.entity.RDMessage;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
@@ -131,6 +133,29 @@ public class PassiveActivity extends XPageActivity {
         }
     }
 
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+
+        if (BaseApplication.mConnectService != null) {
+            //蓝牙闲置状态
+            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+                if (BaseApplication.liveMessage != null) {
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
+                    binding.mainImgLink.setEnabled(true);
+                    //监听其他蓝牙主设备
+                    BaseApplication.mConnectService.start();
+                }
+                //蓝牙已连接
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+                if (BaseApplication.liveMessage != null) {
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
+                    binding.mainImgLink.setEnabled(false);
+                }
+            }
+        }
+    }
+
     public void PassEcg() {
         timer1 = new Timer();
         timerTask1 = new TimerTask() {
@@ -241,9 +266,14 @@ public class PassiveActivity extends XPageActivity {
                 });
 
         LiveEventBus
-                .get("BT_RECONNECTED", PoolMessage.class)
+                .get("BT_RECONNECTED", RDMessage.class)
                 .observe(this, msg -> {
 
+//                    btDataPro.sendBTMessage(GetCmdCode("53", false, 5, 5, activeTime));
+
+//                    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+
+//                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
                 });
     }
 
@@ -513,20 +543,23 @@ public class PassiveActivity extends XPageActivity {
             if (nowTime <= 3600000) {
                 binding.passiveTxtDowntimer.setCenterString(text);
                 activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                btDataPro.sendBTMessage(GetCmdCode("50", false,
+                        spasmData, zhuansu, activeTime));
             } else {
                 nowTime = 3600000;
                 text = MyTimeUtils.formatTime(nowTime);
                 binding.passiveTxtDowntimer.setCenterString(text);
                 activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                btDataPro.sendBTMessage(GetCmdCode("50", false,
+                        spasmData, zhuansu, activeTime));
                 return;
             }
         });
 
         binding.passiveTimeJian.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this,R.string.bluetoothIsNotConnected,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,R.string.bluetoothIsNotConnected,
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
             nowTime = nowTime - 300000;
@@ -534,13 +567,15 @@ public class PassiveActivity extends XPageActivity {
             if (nowTime >= 300000) {
                 binding.passiveTxtDowntimer.setCenterString(text1);
                 activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                btDataPro.sendBTMessage(GetCmdCode("50", false,
+                        spasmData, zhuansu, activeTime));
             } else {
                 nowTime = 300000;
                 text1 = MyTimeUtils.formatTime(nowTime);
                 binding.passiveTxtDowntimer.setCenterString(text1);
                 activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
+                btDataPro.sendBTMessage(GetCmdCode("50", false,
+                        spasmData, zhuansu, activeTime));
                 return;
             }
         });
@@ -652,41 +687,37 @@ public class PassiveActivity extends XPageActivity {
                 initCountDownTimer(nowTime);
                 timeCountTool.startCount();
                 activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", true, spasmData, zhuansu, activeTime));
+                btDataPro.sendBTMessage(GetCmdCode("50", true,
+                        spasmData, zhuansu, activeTime));
             }
 
 
         } else {
             //    stop();
-            btDataPro.sendBTMessage(GetCmdCode("50", false, 5, 1, 0L));
+            btDataPro.sendBTMessage(GetCmdCode("50", false,
+                    5, 1, 0L));
         }
     }
 
     public void initCountDownTimer(long millisInFuture) {
         downTimer = new PeterTimeCountRefresh(millisInFuture, 1000);
-        downTimer.setOnTimerProgressListener(new PeterTimeCountRefresh.OnTimerProgressListener() {
-            @Override
-            public void onTimerProgress(long timeLong) {
-                nowTime = timeLong;
-                String text = MyTimeUtils.formatTime(timeLong);
-                binding.passiveTxtDowntimer.setCenterString(text);
-            }
+        downTimer.setOnTimerProgressListener(timeLong -> {
+            nowTime = timeLong;
+            String text = MyTimeUtils.formatTime(timeLong);
+            binding.passiveTxtDowntimer.setCenterString(text);
         });
 
         //时间结束回调
-        downTimer.setOnTimerFinishListener(new PeterTimeCountRefresh.OnTimerFinishListener() {
-            @Override
-            public void onTimerFinish() {
-                //    ActiveActivity.timeCountTool.stopCount();
-                binding.passiveTxtDowntimer.setCenterString("00:00:00");
-                nowTime = 300000;
-                stop();
-                binding.passiveTxtBegin.setCenterString("开  始");
-                binding.passiveTimeJia.setEnabled(true);
-                binding.passiveTimeJian.setEnabled(true);
-                binding.passiveTimeJia.setVisibility(View.VISIBLE);
-                binding.passiveTimeJian.setVisibility(View.VISIBLE);
-            }
+        downTimer.setOnTimerFinishListener(() -> {
+            //    ActiveActivity.timeCountTool.stopCount();
+            binding.passiveTxtDowntimer.setCenterString("00:00:00");
+            nowTime = 300000;
+            stop();
+            binding.passiveTxtBegin.setCenterString("开  始");
+            binding.passiveTimeJia.setEnabled(true);
+            binding.passiveTimeJian.setEnabled(true);
+            binding.passiveTimeJia.setVisibility(View.VISIBLE);
+            binding.passiveTimeJian.setVisibility(View.VISIBLE);
         });
         downTimer.start();
     }
@@ -780,15 +811,15 @@ public class PassiveActivity extends XPageActivity {
                     LogUtils.e(tag + "结束测量血压值成功！");
                 };
 
-                if (UriConfig.test) {
-                    uploadData.setBlood("已连接");
-                    uploadData.setHigh("120");
-                    uploadData.setLow("60");
-                    if (isCloseDialog) {
-                        uploadData.setHigh("150");
-                        uploadData.setLow("80");
-                    }
-                }
+//                if (UriConfig.test) {
+//                    uploadData.setBlood("已连接");
+//                    uploadData.setHigh("120");
+//                    uploadData.setLow("60");
+//                    if (isCloseDialog) {
+//                        uploadData.setHigh("150");
+//                        uploadData.setLow("80");
+//                    }
+//                }
 
                 if (isBegin) {
                     spasmData = Integer.parseInt(uploadData.getSTspasm());

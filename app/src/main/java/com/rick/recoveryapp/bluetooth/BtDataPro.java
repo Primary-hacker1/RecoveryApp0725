@@ -83,7 +83,7 @@ public class BtDataPro {
             // 清空输出缓冲区
             //     mOutStringBuffer.setLength(0);
         }   //            Toast.makeText(this,"发送内容不能为空",
-            //                    Toast.LENGTH_SHORT).show();
+        //                    Toast.LENGTH_SHORT).show();
 
     }
 
