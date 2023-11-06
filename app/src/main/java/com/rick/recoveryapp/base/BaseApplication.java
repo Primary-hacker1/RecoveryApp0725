@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
@@ -36,6 +37,7 @@ import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.umeng.commonsdk.UMConfigure;
 import com.xuexiang.xhttp2.XHttpSDK;
@@ -103,7 +105,6 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         XUI.init(this); //初始化UI框架
         XUI.debug(true);  //开启UI框架调试日志
 
-        Log.d("LiveEventBus", "DemoApplication.this: " + BaseApplication.this);
         LiveEventBus
                 .config()
                 .lifecycleObserverAlwaysActive(true);
@@ -227,17 +228,8 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             liveMessage.setIsConnt(true);
                             liveMessage.setMessage("已连接到 " + mConnectedDeviceName);
                             liveMessage.setState(mConnectedDeviceName);
-                            //  LocalConfig.bluetoothstate=true;
-                            LiveEventBus.get("BT_CONNECTED")
-                                    .post(liveMessage);
+                            LiveDataBus.get().with(Constants.BT_CONNECTED).postValue(liveMessage);
                             LogUtils.e(tag + "已连接到 " + mConnectedDeviceName);
-//                            liveMessage = new LiveMessage();
-//                            liveMessage.setIsConnt(true);
-//                            liveMessage.setMessage("已连接到 " + mConnectedDeviceName);
-//                            liveMessage.setState(mConnectedDeviceName);
-//                            LocalConfig.bluetoothstate=true;
-//                            LiveEventBus.get("BT_CONNECTED")
-//                                    .post(liveMessage);
                             break;
 
                         case BluetoothChatService.STATE_CONNECTING:
@@ -245,8 +237,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             liveMessage.setIsConnt(false);
                             liveMessage.setMessage("");//正在连接。。。
                             liveMessage.setState("");
-                            LiveEventBus.get("BT_CONNECTED")
-                                    .post(liveMessage);
+                            LiveDataBus.get().with(Constants.BT_CONNECTED).postValue(liveMessage);
                             LogUtils.e(tag + "正在连接。。。 ");
                             break;
 
@@ -283,8 +274,6 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
                 case MESSAGE_READ:
                     dataStr.setLength(0);
-//                    byte[] readBuf = (byte[]) msg.obj;
-                    //    SecondList = LocalConfig.Datalist;
                     Bundle data = msg.getData();
                     dataStr.append(data.getString("BTdata"));
                     String endStr = "";
@@ -321,13 +310,9 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                                     return;
                                 }
                             }
-                            //  Log.d("FirstList", FirstList.get(2));
                             btDataPro.Processing(SecondList, "82");//其他一般数据
                             btDataPro.Processing(FirstList, "83");//心电数据
-                            //  Log.d("FirstList", SecondList.get(2) + " " + FirstList.size() + " " + SecondList.size());
                         }
-                    } else {
-                        //   Log.d("Erroy", split.length + " " + FirstList.get(0) + " " + FirstList.get(1) + "  " + FirstList.get(2));
                     }
                     break;
 
@@ -340,22 +325,15 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                     liveMessage = new LiveMessage();
                     liveMessage.setIsConnt(false);
                     liveMessage.setState("蓝牙设备未连接");
-//                    LiveEventBus.get("BT_CONNECTED")
-//                            .post(liveMessage); liveMessage.setMessage("与" + mConnectedDeviceName +
-//                                msg.getData().getString(TOAST));
                     if (mConnectedDeviceName == null) {
-                        //     liveMessage.setMessage("蓝牙连接失败！");
                         liveMessage.setMessage(msg.getData().getString(TOAST));
-                        //     liveMessage.setMessage("无法连接到设备");
                     }
                     if (mConnectService != null) {
                         mConnectService.stop();
                     }
                     LocalConfig.isControl = false;
                     mConnectedDeviceName = null;
-                    LiveEventBus.get("BT_CONNECTED")
-                            .post(liveMessage);
-                    //  AutoConnect();
+                    LiveDataBus.get().with(Constants.BT_CONNECTED).postValue(liveMessage);
                     break;
             }
         }

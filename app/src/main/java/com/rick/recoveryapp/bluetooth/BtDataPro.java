@@ -5,13 +5,14 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
 import com.rick.recoveryapp.entity.protocol.UploadData;
 import com.rick.recoveryapp.utils.CRC16Util;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 
 import java.text.SimpleDateFormat;
@@ -130,8 +131,7 @@ public class BtDataPro {
                     poolMessage.setState(false);
                 }
                 LocalConfig.poolMessage = poolMessage;
-                LiveEventBus.get("BT_PROTOCOL")
-                        .post(poolMessage);
+                LiveDataBus.get().with(Constants.BT_PROTOCOL).postValue(poolMessage);
                 break;
 
             //处理心电数据
@@ -143,8 +143,7 @@ public class BtDataPro {
                     poolMessage.setObjectJson(gson.toJson(ecgData));
                     poolMessage.setObjectName(ECGDATA_ANSWER);
                     poolMessage.setState(true);
-                    LiveEventBus.get("BT_PROTOCOL")
-                            .post(poolMessage);
+                    LiveDataBus.get().with(Constants.BT_ECG).postValue(poolMessage);
                 } else {
                     poolMessage.setObjectJson(null);
                     poolMessage.setObjectName("");
@@ -163,9 +162,7 @@ public class BtDataPro {
                 poolMessage.setObjectJson(eqmentControl(RXlist));
                 poolMessage.setObjectName(CONTORL_ANSWER);
                 poolMessage.setState(true);
-                //  LocalConfig.poolMessage = poolMessage;
-                LiveEventBus.get("BT_PROTOCOL")
-                        .post(poolMessage);
+                LiveDataBus.get().with(Constants.BT_ECG).postValue(poolMessage);
                 break;
 
             default:

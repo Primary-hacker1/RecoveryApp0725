@@ -12,12 +12,11 @@ import android.widget.Toast;
 import androidx.lifecycle.Observer;
 
 import com.common.network.LogUtils;
-import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.entity.RDMessage;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.base.BaseApplication;
@@ -34,7 +33,9 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.utils.CRC16Util;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.MyTimeUtils;
 import com.rick.recoveryapp.utils.PeterTimeCountRefresh;
@@ -181,142 +182,76 @@ public class PassiveActivity extends XPageActivity {
     }
 
     public void initLiveData() {
-        LiveEventBus
-                .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, msg -> {
-                    if (msg.isState()) {
-                        Log.d("BT", msg.getObjectName());
-                        if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                            UploadData uploadData = new UploadData();
-                            uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
-                            //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
-                            if (uploadData.getECG().equals("已连接")) {
-                                binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
-                            } else {
-                                binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                            }
-                            if (uploadData.getBlood().equals("已连接")) {
-                                binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
-                            } else {
-                                binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                            }
-                            if (uploadData.getBlood_oxy().equals("已连接")) {
-                                binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
-                            } else {
-                                binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
-                            }
+        LiveDataBus.get().with(Constants.BT_PROTOCOL).observe(this, v -> {
+            if (v instanceof PoolMessage) {
+                PoolMessage msg = (PoolMessage) v;
+                if (msg.isState()) {
+//                    LogUtils.d("BT" + msg.getObjectName());
+                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                        UploadData uploadData;
+                        uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
+                        //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
+                        if (uploadData.getECG().equals("已连接")) {
+                            binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
+                        } else {
+                            binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
                         }
-                    } else {
-                        Log.d("BT", "没有任何数据");
-                    }
-                });
-
-        LiveEventBus
-                .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, msg -> {
-                    assert msg != null;
-                    if (msg.getState().equals("蓝牙设备未连接")) {
-                        isNotBt = true;//恢复不然退出不了界面
-                    }
-
-                    if (!msg.getIsConnt()) {
-                        //未连接
-                        binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                        binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                        binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
-
-                        //未连接
-                        binding.passiveTxtO2State.setCenterString("血氧仪未连接");
-                        binding.passiveTxtBoxygen.setCenterString("0");
-
-                        binding.passiveTxtBloodstate1.setCenterString("血压仪未连接");
-                        binding.passiveTxtBloodstate2.setCenterString("血压仪未连接");
-
-//                            LocalConfig.B_Diastole_Shrink = "0/0";
-//                            LocalConfig.L_Diastole_Shrink = "0/0";
-
-                        binding.passiveTxtCoory.setCenterString("0");
-                        binding.passiveTxtEcgstate.setCenterString("心电仪未连接");
-                        OftenListData.clear();
-                    }
-                });
-
-        LiveEventBus
-                .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, msg -> {
-                    com.efs.sdk.base.core.util.Log.d("test_BT_PROTOCOL", "ActiveFragemt");
-                    if (msg.isState()) {
-                        int mark = 0;
-                        if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                            mark = 1;
-                        } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
-                            mark = 2;
-                        } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
-                            mark = 3;
+                        if (uploadData.getBlood().equals("已连接")) {
+                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
+                        } else {
+                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
                         }
-                        DataDisplay(mark, msg.getObjectJson());
-                        if (isBegin) {
-                            UpdatProgress();
+                        if (uploadData.getBlood_oxy().equals("已连接")) {
+                            binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
+                        } else {
+                            binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
                         }
-
-                    } else {
-                        Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        LiveEventBus
-                .get("BT_RECONNECTED", RDMessage.class)
-                .observe(this, msg -> {
-//                    isNotBt = true;
-//                    if (LocalConfig.isControl) {
-//                        LocalConfig.ModType = 1;
-//                        Intent intent = new Intent(context, DialogActivity.class);
-//                        startActivity(intent);
-//                    }
-
-                    binding = ActivityPassiveBinding.inflate(getLayoutInflater());
-                    setContentView(binding.getRoot());
-                    StatusBarUtils.translucent(this);
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    context = this;
-
-                    isNotBt = LocalConfig.isControl;
-
-                    btDataPro = new BtDataPro();
-
-                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
-                    itinClick();
-                    binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
-                    binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber + "");
-                    BaseApplication myApp = (BaseApplication) getApplication();
-                    LocalConfig.daoSession = myApp.getDaoSession();
-                    activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
-                    recordDetailedDao = LocalConfig.daoSession.getRecordDetailedDao();
-                    nowTime = 300000;
-                    activeTime = MyTimeUtils.Getminute(nowTime);
-                    String text1 = MyTimeUtils.formatTime(nowTime);
-                    binding.passiveTxtDowntimer.setCenterString(text1);
-                    EcgListData = new ArrayList<>();
-                    OftenListData = new ArrayList<>();
-                    countList = new ArrayList<>();
-                    binding.passiveWaveviewOne.resetCanavas();
-
-                    ecgDataDBDao = LocalConfig.daoSession.getEcgDataDBDao();
-
-                    try {
-                        initLiveData();
-
-                        binding.passiveWaveviewOne.resetCanavas();
-                        btDataPro.sendBTMessage(GetCmdCode("53", false, 5, 5, activeTime));
-                        binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                        binding.passiveTxtSpasm.setCenterString(spasmData + "");
-                        PassEcg();
-                    } catch (Exception ex) {
-                        ex.getMessage();
                     }
 
+                    DataDisplay(msg.getObjectName(), msg.getObjectJson());
 
-                });
+                } else {
+                    Log.d("BT", "没有任何数据");
+                }
+            } else {
+                LogUtils.d("BT" + "没有任何数据");
+            }
+
+        });
+
+        LiveDataBus.get().with(Constants.BT_ECG).observe(this, v -> {
+            if (v instanceof PoolMessage) {
+                PoolMessage msg = (PoolMessage) v;
+                DataDisplay(msg.getObjectName(), msg.getObjectJson());
+            }
+        });
+
+        LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
+            if (v instanceof LiveMessage) {
+                LiveMessage msg = (LiveMessage) v;
+                if (msg.getState().equals("蓝牙设备未连接")) {
+                    isNotBt = true;//恢复不然退出不了界面
+                }
+
+                if (!msg.getIsConnt()) {
+                    //未连接
+                    binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                    binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                    binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+
+                    //未连接
+                    binding.passiveTxtO2State.setCenterString("血氧仪未连接");
+                    binding.passiveTxtBoxygen.setCenterString("0");
+
+                    binding.passiveTxtBloodstate1.setCenterString("血压仪未连接");
+                    binding.passiveTxtBloodstate2.setCenterString("血压仪未连接");
+
+                    binding.passiveTxtCoory.setCenterString("0");
+                    binding.passiveTxtEcgstate.setCenterString("心电仪未连接");
+                    OftenListData.clear();
+                }
+            }
+        });
     }
 
     public void SaveRecord() {
@@ -842,7 +777,22 @@ public class PassiveActivity extends XPageActivity {
         return CMD_CODE;
     }
 
-    public void DataDisplay(int mark, String ObjectJson) {
+    public void DataDisplay(String msg,String ObjectJson) {
+
+        if(msg.isEmpty()){
+            return;
+        }
+
+        int mark = 0;
+        if (msg.equals(btDataPro.UPLODE_ANSWER)) {
+            mark = 1;
+        } else if (msg.equals(btDataPro.ECGDATA_ANSWER)) {
+            mark = 2;
+        } else if (msg.equals(btDataPro.CONTORL_ANSWER)) {
+            mark = 3;
+        }
+
+        LogUtils.e(tag + "mark" + mark + ObjectJson);
 
         switch (mark) {
             case 1:
@@ -853,15 +803,15 @@ public class PassiveActivity extends XPageActivity {
                     LogUtils.e(tag + "结束测量血压值成功！");
                 };
 
-//                if (UriConfig.test) {
-//                    uploadData.setBlood("已连接");
-//                    uploadData.setHigh("120");
-//                    uploadData.setLow("60");
-//                    if (isCloseDialog) {
-//                        uploadData.setHigh("150");
-//                        uploadData.setLow("80");
-//                    }
-//                }
+                if (UriConfig.test) {
+                    uploadData.setBlood("已连接");
+                    uploadData.setHigh("120");
+                    uploadData.setLow("60");
+                    if (isCloseDialog) {
+                        uploadData.setHigh("150");
+                        uploadData.setLow("80");
+                    }
+                }
 
                 if (isBegin) {
                     spasmData = Integer.parseInt(uploadData.getSTspasm());

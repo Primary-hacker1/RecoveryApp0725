@@ -37,7 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 
-import com.jeremyliao.liveeventbus.LiveEventBus;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
@@ -48,6 +48,7 @@ import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.databinding.ActivityMainBinding;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.utils.DateUtil;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xutil.XUtil;
@@ -158,28 +159,29 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 //    }
 
     public void controlBT() {
-        LiveEventBus
-                .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, msg -> {
-                    try {
-                        if (msg.getIsConnt()) {
-                            Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
-                            binding.mainImgLink.setBackgroundResource(drawable.img_bt_open);
-                            binding.mainImgLink.setEnabled(false);
+        LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
+            if (v instanceof LiveMessage) {
+                LiveMessage msg = (LiveMessage) v;
+                try {
+                    if (msg.getIsConnt()) {
+                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
+                        binding.mainImgLink.setBackgroundResource(drawable.img_bt_open);
+                        binding.mainImgLink.setEnabled(false);
+                        Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
+                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                        btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                    } else {
+                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
+                        binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);
+                        binding.mainImgLink.setEnabled(true);
+                        if (!msg.getMessage().equals("")) {
                             Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                            btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-                            btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
-                        } else {
-                            Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
-                            binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);
-                            binding.mainImgLink.setEnabled(true);
-                            if (!msg.getMessage().equals("")) {
-                                Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
                         }
-                    } catch (Exception e) {
-                        Log.d("AdminMainActivity", e.getMessage());
                     }
+                } catch (Exception e) {
+                    Log.d("AdminMainActivity", e.getMessage());
+                }
+            }
                 });
     }
 

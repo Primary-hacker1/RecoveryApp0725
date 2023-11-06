@@ -16,8 +16,8 @@ import com.common.base.CommonBaseActivity;
 import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.ui.activity.serial.SerialBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort.Type;
@@ -36,6 +36,7 @@ import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.ActiveTimeTool;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.MyTimeUtils;
 import com.rick.recoveryapp.utils.PeterTimeCountRefresh;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /*
  * "主动模式需要重构界面冗余"
@@ -241,94 +243,98 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     }
 
     public void initLiveData() {
-        LiveEventBus
-                .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, msg -> {
-                    if (msg.isState()) {
+        LiveDataBus.get().with(Constants.BT_PROTOCOL).observe(this, v -> {
+            if (v instanceof PoolMessage) {
+                PoolMessage msg = (PoolMessage) v;
+                if (msg.isState()) {
 //                        Log.d("BT", msg.getObjectName());
-                        if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                            UploadData uploadData;
-                            uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
+                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                        UploadData uploadData;
+                        uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
 //                            LogUtils.d("BTBlood"+ uploadData.getBlood_oxy());
-                            if (uploadData.getECG().equals("已连接")) {
-                                managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
-                            } else {
-                                managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                            }
-                            if (uploadData.getBlood().equals("已连接")) {
-                                managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
-                            } else {
-                                managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                            }
-                            if (uploadData.getBlood_oxy().equals("已连接")) {
-                                managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
-                            } else {
-                                managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_no);
-                            }
+                        if (uploadData.getECG().equals("已连接")) {
+                            managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
+                        } else {
+                            managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
                         }
-                    } else {
-                        Log.d("BT", "没有任何数据");
+                        if (uploadData.getBlood().equals("已连接")) {
+                            managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
+                        } else {
+                            managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                        }
+                        if (uploadData.getBlood_oxy().equals("已连接")) {
+                            managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
+                        } else {
+                            managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                        }
                     }
-                });
+                }
+            } else {
+                LogUtils.d("BT" + "没有任何数据");
+            }
 
-        LiveEventBus
-                .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, msg -> {
-                    if (!msg.getIsConnt()) {//未连接
+        });
 
-                        managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                        managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                        managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+        LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
+            if (v instanceof LiveMessage) {
+                LiveMessage msg = (LiveMessage) v;
+                if (!msg.getIsConnt()) {//未连接
 
-                        managerBinding.activeTxtBoxygen.setCenterString("0");
-                        managerBinding.activeTxtO2State.setCenterString("血氧仪未连接");
-                        managerBinding.activeTxtBloodstate1.setCenterString("血压仪未连接");
-                        managerBinding.activeTxtBloodstate2.setCenterString("血压仪未连接");
+                    managerBinding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                    managerBinding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                    managerBinding.trainButO2.setBackgroundResource(R.drawable.o2_no);
 
-                        if (type == Type.INTELLIGENT) {
-                            managerBinding.progressViewLeft.setGraduatedEnabled(true);
-                            managerBinding.progressViewRight.setGraduatedEnabled(true);
-                            managerBinding.activeTxtLeft.setCenterString("0");
-                        }
+                    managerBinding.activeTxtBoxygen.setCenterString("0");
+                    managerBinding.activeTxtO2State.setCenterString("血氧仪未连接");
+                    managerBinding.activeTxtBloodstate1.setCenterString("血压仪未连接");
+                    managerBinding.activeTxtBloodstate2.setCenterString("血压仪未连接");
 
-                        if (type == Type.ACTIVE) {
-                            int left = 0;
-                            managerBinding.progressViewLeft.setGraduatedEnabled(true);
-                            managerBinding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
-                            managerBinding.activeTxtLeft.setCenterString("0");
-
-                            int right = 0;
-                            managerBinding.progressViewRight.setGraduatedEnabled(true);
-                            managerBinding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
-                            managerBinding.activeTxtRight.setCenterString("0");
-                        }
-
-                        managerBinding.activeTxtCoory.setCenterString("--");
-                        managerBinding.activeTxtEcgstate.setCenterString("心电仪未连接");
-                        OftenListData.clear();
+                    if (type == Type.INTELLIGENT) {
+                        managerBinding.progressViewLeft.setGraduatedEnabled(true);
+                        managerBinding.progressViewRight.setGraduatedEnabled(true);
+                        managerBinding.activeTxtLeft.setCenterString("0");
                     }
-                });
-        LiveEventBus
-                .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this,
-                        msg -> {
-                            if (msg.isState()) {
-                                int mark = 0;
-                                if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                                    mark = 1;
-                                } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
-                                    mark = 2;
-                                } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
-                                    mark = 3;
-                                }
-                                DataDisplay(mark, msg.getObjectJson());
-                                if (isBegin) {
-                                    updatePerogress();
-                                }
-                            } else {
-                                Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+
+                    if (type == Type.ACTIVE) {
+                        int left = 0;
+                        managerBinding.progressViewLeft.setGraduatedEnabled(true);
+                        managerBinding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
+                        managerBinding.activeTxtLeft.setCenterString("0");
+
+                        int right = 0;
+                        managerBinding.progressViewRight.setGraduatedEnabled(true);
+                        managerBinding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
+                        managerBinding.activeTxtRight.setCenterString("0");
+                    }
+
+                    managerBinding.activeTxtCoory.setCenterString("--");
+                    managerBinding.activeTxtEcgstate.setCenterString("心电仪未连接");
+                    OftenListData.clear();
+                }
+            }
+        });
+
+        LiveDataBus.get().with(Constants.BT_PROTOCOL).observe(this, v -> {
+            if (v instanceof PoolMessage) {
+                PoolMessage msg = (PoolMessage) v;
+                if (msg.isState()) {
+                    int mark = 0;
+                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                        mark = 1;
+                    } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
+                        mark = 2;
+                    } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
+                        mark = 3;
+                    }
+                    DataDisplay(mark, msg.getObjectJson());
+                    if (isBegin) {
+                        updatePerogress();
+                    }
+                } else {
+                    Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @SuppressLint("DefaultLocale")
@@ -524,7 +530,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             activeTime = MyTimeUtils.Getminute(nowTime);
 
             btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(
-                    new SerialBean(type,resistance,"50",false,rotateSpeed,spasmData,activeTime)));
+                    new SerialBean(type, resistance, "50", false, rotateSpeed, spasmData, activeTime)));
         });
 
         managerBinding.passiveTimeJian.setOnClickListener(v -> {
@@ -539,7 +545,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
             }
             activeTime = MyTimeUtils.Getminute(nowTime);
             btDataPro.sendBTMessage(SerialPort.Companion.getCmdCode(
-                    new SerialBean(type,resistance,"50",false,rotateSpeed,spasmData,activeTime)));
+                    new SerialBean(type, resistance, "50", false, rotateSpeed, spasmData, activeTime)));
         });
 
 

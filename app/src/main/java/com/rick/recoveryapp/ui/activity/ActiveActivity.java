@@ -8,12 +8,10 @@ import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 
+import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
@@ -21,6 +19,7 @@ import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteBinding;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
@@ -31,6 +30,7 @@ import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.CRC16Util;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.xuexiang.xui.utils.CountDownButtonHelper;
@@ -41,12 +41,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 @Deprecated
 public class ActiveActivity extends XPageActivity {
 
+    private String tag = ActiveActivity.class.getName();
     int resiDta = 1, modletype = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -134,113 +136,85 @@ public class ActiveActivity extends XPageActivity {
     }
 
     public void initLiveData() {
-        LiveEventBus
-                .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, new Observer<PoolMessage>() {
-                    @Override
-                    public void onChanged(@Nullable PoolMessage msg) {
-                        if (msg.isState()) {
-                            Log.d("BT", msg.getObjectName());
-                            if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                                UploadData uploadData = new UploadData();
-                                uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
-                                //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
-                                if (uploadData.getECG().equals("已连接")) {
-                                    binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
-                                } else {
-                                    binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                                }
-                                if (uploadData.getBlood().equals("已连接")) {
-                                    binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
-                                } else {
-                                    binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                                }
-                                if (uploadData.getBlood_oxy().equals("已连接")) {
-                                    binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
-                                } else {
-                                    binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
-                                }
-                            }
+        LiveDataBus.get().with(Constants.BT_PROTOCOL).observe(this, v -> {
+            if (v instanceof PoolMessage) {
+                PoolMessage msg = (PoolMessage) v;
+                if (msg.isState()) {
+                    Log.d("BT", msg.getObjectName());
+                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                        UploadData uploadData;
+                        uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
+                        //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
+                        if (uploadData.getECG().equals("已连接")) {
+                            binding.trainButEcg.setBackgroundResource(R.drawable.xindian_ok);
                         } else {
-                            Log.d("BT", "没有任何数据");
-                        }
-                    }
-                });
-
-        LiveEventBus
-                .get("BT_CONNECTED", LiveMessage.class)
-                .observe(this, new Observer<LiveMessage>() {
-                    @Override
-                    public void onChanged(@Nullable LiveMessage msg) {
-                        assert msg != null;
-                        if (msg.getState().equals("蓝牙设备未连接")) {
-                            isBegin = false;//恢复不然退出不了界面
-                        }
-
-                        if (!msg.getIsConnt()) {
-                            //未连接
                             binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
-                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
-                            binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
-
-                            binding.activeTxtBoxygen.setCenterString("0");
-                            binding.activeTxtO2State.setCenterString("血氧仪未连接");
-//                            binding.activeTxtHigh.setCenterString(LocalConfig.B_Diastole_Shrink);
-//                            binding.activeTxtLow.setCenterString(LocalConfig.L_Diastole_Shrink);
-                            binding.activeTxtBloodstate1.setCenterString("血压仪未连接");
-                            binding.activeTxtBloodstate2.setCenterString("血压仪未连接");
-//                            LocalConfig.B_Diastole_Shrink = "0/0";
-//                            LocalConfig.L_Diastole_Shrink = "0/0";
-
-                            binding.activeTxtCoory.setCenterString("--");
-                            binding.activeTxtEcgstate.setCenterString("心电仪未连接");
-                            OftenListData.clear();
-
-                            int left = 0;
-                            binding.progressViewLeft.setGraduatedEnabled(true);
-                            binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
-                            //  binding.progressViewLeft.startProgressAnimation();
-                            binding.activeTxtLeft.setCenterString("0");
-
-                            int right = 0;
-                            binding.progressViewRight.setGraduatedEnabled(true);
-                            binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
-                            //    binding.progressViewRight.startProgressAnimation();
-                            binding.activeTxtRight.setCenterString("0");
                         }
-                    }
-                });
-
-        LiveEventBus
-                .get("BT_PROTOCOL", PoolMessage.class)
-                .observe(this, new Observer<PoolMessage>() {
-                    @Override
-                    public void onChanged(@Nullable PoolMessage msg) {
-                        com.efs.sdk.base.core.util.Log.d("test_BT_PROTOCOL", "ActiveFragemt");
-                        if (msg.isState()) {
-                            int mark = 0;
-                            if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                                mark = 1;
-                            } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
-                                mark = 2;
-                            } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
-                                mark = 3;
-                            }
-                            DataDisplay(mark, msg.getObjectJson());
-                            if (isBegin) {
-                                UpdatProgress();
-                            }
+                        if (uploadData.getBlood().equals("已连接")) {
+                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_ok);
                         } else {
-                            Toast.makeText(context, "数据异常", Toast.LENGTH_SHORT).show();
+                            binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
                         }
+                        if (uploadData.getBlood_oxy().equals("已连接")) {
+                            binding.trainButO2.setBackgroundResource(R.drawable.o2_ok);
+                        } else {
+                            binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+                        }
+                        DataDisplay(msg.getObjectName(), msg.getObjectJson());
                     }
-                });
+                } else {
+                    Log.d("BT", "没有任何数据");
+                }
+            }
+        });
+
+        LiveDataBus.get().with(Constants.BT_ECG).observe(this, v -> {
+            if (v instanceof PoolMessage) {
+                PoolMessage msg = (PoolMessage) v;
+                DataDisplay(msg.getObjectName(), msg.getObjectJson());
+            }
+        });
+
+        LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
+            if (v instanceof LiveMessage) {
+                LiveMessage msg = (LiveMessage) v;
+                if (msg.getState().equals("蓝牙设备未连接")) {
+                    isBegin = false;//恢复不然退出不了界面
+                }
+
+                if (!msg.getIsConnt()) {
+                    //未连接
+                    binding.trainButEcg.setBackgroundResource(R.drawable.xindian_no);
+                    binding.trainButBp.setBackgroundResource(R.drawable.xueya_no);
+                    binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
+
+                    binding.activeTxtBoxygen.setCenterString("0");
+                    binding.activeTxtO2State.setCenterString("血氧仪未连接");
+                    binding.activeTxtBloodstate1.setCenterString("血压仪未连接");
+                    binding.activeTxtBloodstate2.setCenterString("血压仪未连接");
+
+                    binding.activeTxtCoory.setCenterString("--");
+                    binding.activeTxtEcgstate.setCenterString("心电仪未连接");
+                    OftenListData.clear();
+
+                    int left = 0;
+                    binding.progressViewLeft.setGraduatedEnabled(true);
+                    binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
+                    binding.activeTxtLeft.setCenterString("0");
+
+                    int right = 0;
+                    binding.progressViewRight.setGraduatedEnabled(true);
+                    binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
+                    binding.activeTxtRight.setCenterString("0");
+                }
+            }
+        });
     }
 
     public void SaveRecord() {
 
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         String sim = dateFormat.format(date);
         ActivitRecord activitRecord = new ActivitRecord();
         activitRecord.setRecordID(LocalConfig.UserID);
@@ -304,7 +278,7 @@ public class ActiveActivity extends XPageActivity {
                         RecordDetailedDao.Properties.Speed.notEq("0"),
                         RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID))
                 .list();
-        if (recordList.size() > 0) {
+        if (!recordList.isEmpty()) {
             for (int i = 0; i < recordList.size(); i++) {
                 speed = recordList.get(i).getSpeed() + speed;
             }
@@ -328,13 +302,10 @@ public class ActiveActivity extends XPageActivity {
             }
             //平均阻力
             int Avg = (int) Math.ceil(resistance / DetailedList.size());
-//            String.format("%.2f", resistance);
             resistanceVal = LocalConfig.Getvalue(Avg);
         }
-//        double perimeter = (float) (3.14 * 0.102 * 2);
 
         if (time > 0) {
-//            double K_index = 30d / (400d / (Math.ceil(Total_mileage) / Math.ceil(time)));//指数K
             Calories = resistanceVal * (time / 60) * average_speed;
         } else {
             Calories = 0;
@@ -393,14 +364,9 @@ public class ActiveActivity extends XPageActivity {
             resiDta = resiDta + 1;
             if (resiDta <= 12) {
                 binding.progressViewResistance.setGraduatedEnabled(true);
-                //  binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
-                //    binding.progressViewResistance.startProgressAnimation();
                 binding.activeTxtResistance.setCenterString(resiDta + "");
-                //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
             } else {
                 resiDta = 12;
-                //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
-                return;
             }
         });
 
@@ -416,14 +382,9 @@ public class ActiveActivity extends XPageActivity {
             resiDta = resiDta - 1;
             if (resiDta < 1) {
                 resiDta = 1;
-                //  btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
-                return;
             } else {
                 binding.progressViewResistance.setGraduatedEnabled(true);
-                // binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
-                //   binding.progressViewResistance.startProgressAnimation();
                 binding.activeTxtResistance.setCenterString(resiDta + "");
-                //   btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", false));
             }
         });
 
@@ -435,12 +396,9 @@ public class ActiveActivity extends XPageActivity {
             try {
                 if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                     if (ContorlState.equals("00") || ContorlState.equals("52")) {
-//                              btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
                         btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
                     } else if (ContorlState.equals("51")) {
-                        // btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_END);
                         btDataPro.sendBTMessage(GetCmdCode(resiDta, "52", false));
-//                            ContorlState = "52";
                         binding.activeTxtBlood.setCenterString("点击开始测量血压");
                     }
                 } else {
@@ -451,38 +409,6 @@ public class ActiveActivity extends XPageActivity {
                 e.printStackTrace();
             }
         });
-//                binding.tabSegment.setOnTabClickListener(new TabSegment.OnTabClickListener() {
-//
-//                    @Override
-//                    public void onTabClick(int index) {
-//
-//                        DialogLoader.getInstance().showConfirmDialog(
-//                                LocalConfig.TrainContext,
-//                                getString(R.string.active_change),
-//                                getString(R.string.lab_yes),
-//                                (dialog, which) -> {
-//                                    dialog.dismiss();
-//                                    timecount = timeCountTool.stopCount();
-//                                    getCalories_mileage();
-//                                    timeCountTool.setTime(0);
-//                                    SaveRecord();
-//                                    LocalConfig.ModType = index;
-//                                    Date date = new Date();
-//                                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//                                    String sim = dateFormat.format(date);
-//                                    LocalConfig.UserID = Long.valueOf(sim).longValue();
-//                                    //  binding.viewPagerTrain.setCurrentItem(LocalConfig.ModType);//设置当前标签页
-//                                    //  Toast.makeText(context,"确认切换",Toast.LENGTH_SHORT).show();
-//                                },
-//                                getString(R.string.lab_no),
-//                                (dialog, which) -> {
-//                                    dialog.dismiss();
-//
-//                                }
-//                        );
-//
-//                    }
-//                });
     }
 
     public void HandlerMessage() {
@@ -622,7 +548,22 @@ public class ActiveActivity extends XPageActivity {
         return CMD_CODE;
     }
 
-    public void DataDisplay(int mark, String ObjectJson) {
+    public void DataDisplay(String msg, String ObjectJson) {
+
+        if(msg.isEmpty()){
+            return;
+        }
+
+        int mark = 0;
+        if (msg.equals(btDataPro.UPLODE_ANSWER)) {
+            mark = 1;
+        } else if (msg.equals(btDataPro.ECGDATA_ANSWER)) {
+            mark = 2;
+        } else if (msg.equals(btDataPro.CONTORL_ANSWER)) {
+            mark = 3;
+        }
+
+        LogUtils.e(tag + "mark" + mark + ObjectJson);
 
         switch (mark) {
             case 1:

@@ -14,10 +14,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.common.network.LogUtils;
-import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.RDMessage;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 
 /**
@@ -67,8 +68,7 @@ public class BtReceiver extends BroadcastReceiver {
                     liveMessage.setIsConnt(false);
                     liveMessage.setState("蓝牙设备未连接");
                     BaseApplication.mConnectedDeviceName = null;
-                    LiveEventBus.get("BT_CONNECTED")
-                            .post(liveMessage);
+                    LiveDataBus.get().with(Constants.BT_CONNECTED).setValue(liveMessage);
                 }
 
                 if (state == 12) {
@@ -119,8 +119,7 @@ public class BtReceiver extends BroadcastReceiver {
                 rdMessage = new RDMessage();
                 rdMessage.setIsConnt(false);
                 rdMessage.setState("蓝牙设备已重联");
-                LiveEventBus.get("BT_RECONNECTED")
-                        .post(rdMessage);
+                LiveDataBus.get().with(Constants.BT_RECONNECTED).setValue(rdMessage);
 
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
@@ -129,8 +128,7 @@ public class BtReceiver extends BroadcastReceiver {
                 liveMessage.setState("蓝牙设备未连接");
                 BaseApplication.mConnectedDeviceName = null;
                 LocalConfig.isControl = false;
-                LiveEventBus.get("BT_CONNECTED")
-                        .post(liveMessage);
+                LiveDataBus.get().with(Constants.BT_CONNECTED).setValue(liveMessage);
 
                 // intent = new Intent();
 //                intent = new Intent(BluetoothDevice.ACTION_ACL_DISCONNECTED);
