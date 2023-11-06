@@ -454,4 +454,10 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     public void foundDev(BluetoothDevice dev) {
 
     }
+
+    @Override
+    public void foundBT() {
+        LogUtils.e(tag + "重新连接mac");
+        AutoConnect();
+    }
 }

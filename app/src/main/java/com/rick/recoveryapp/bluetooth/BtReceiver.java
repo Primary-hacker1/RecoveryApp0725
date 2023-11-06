@@ -59,23 +59,28 @@ public class BtReceiver extends BroadcastReceiver {
         switch (action) {
             case BluetoothAdapter.ACTION_STATE_CHANGED:
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                if(state==10){
+                if (state == 10) {
+                    LocalConfig.isControl = false;
                     liveMessage = new LiveMessage();
                     liveMessage.setIsConnt(false);
                     liveMessage.setState("蓝牙设备未连接");
                     BaseApplication.mConnectedDeviceName = null;
-                    LocalConfig.isControl = false;
                     LiveEventBus.get("BT_CONNECTED")
                             .post(liveMessage);
                 }
 
-                if(state==12){
-                    BaseApplication.AutoConnect();
-                    LogUtils.e(TAG + "重新连接mac");
+                if (state == 12) {
+                    LocalConfig.isControl = true;
+                    liveMessage = new LiveMessage();
+                    liveMessage.setIsConnt(false);
+                    liveMessage.setState("已连接");
+                    LiveEventBus.get("BT_RECONNECTED")
+                            .post(liveMessage);
                 }
 
 
-                LogUtils.e(TAG + "STATE:  " + "BluetoothAdapter.ACTION_STATE_CHANGED");
+                LogUtils.e(TAG + "STATE:  " + state + "---BluetoothAdapter.ACTION_STATE_CHANGED");
+                LogUtils.e(TAG + "LocalConfig.isControl= " + LocalConfig.isControl);
                 break;
             case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                 LogUtils.e(TAG + "BluetoothAdapter.ACTION_DISCOVERY_STARTED");
@@ -107,8 +112,6 @@ public class BtReceiver extends BroadcastReceiver {
             case BluetoothDevice.ACTION_ACL_CONNECTED:
                 LogUtils.e(TAG + "已连接到 " + BluetoothDevice.ACTION_ACL_CONNECTED);
                 LocalConfig.isControl = true;
-
-
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                 liveMessage = new LiveMessage();
@@ -139,5 +142,7 @@ public class BtReceiver extends BroadcastReceiver {
 
     public interface Listener {
         void foundDev(BluetoothDevice dev);
+
+        void foundBT();
     }
 }

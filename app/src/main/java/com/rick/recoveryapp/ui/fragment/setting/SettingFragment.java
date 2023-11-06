@@ -308,6 +308,11 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
         mBtDevAdapter.add(dev);
     }
 
+    @Override
+    public void foundBT() {
+
+    }
+
 
     @Override
     public void onDestroy() {

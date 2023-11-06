@@ -368,12 +368,14 @@ public class BluetoothChatService {
             mAdapter.cancelDiscovery();
             //连接到BluetoothSocket
             try {
-                // 这是一个阻塞调用，只会在成功的连接或异常返回
-                mmSocket.connect();
+                if(mmSocket!=null){// 这是一个阻塞调用，只会在成功的连接或异常返回
+                    mmSocket.connect();
+                }
             } catch (IOException e) {
                 connectionFailed();
                 // Close the socket
                 try {
+                    // 这是一个阻塞调用，只会在成功的连接或异常返回
                     mmSocket.close();
                 } catch (IOException e2) {
                     Log.e(TAG, "unable to close() socket during connection failure", e2);

@@ -388,4 +388,9 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     public void foundDev(BluetoothDevice dev) {
 
     }
+
+    @Override
+    public void foundBT() {
+
+    }
 }
