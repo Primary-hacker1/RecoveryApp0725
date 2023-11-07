@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 
+import com.common.network.LogUtils;
 import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
@@ -110,18 +111,22 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 
             LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this,v->{
                 String bluethmac = "001B10F04B60";
-                String ecgmac = "E3ADBA1DF806";
-                String bloodmac = "A4C138421CF3";
-                String oxygen = "00A0503BD222";
+//                String ecgmac = "E3ADBA1DF806";
+//                String bloodmac = "A4C138421CF3";
+//                String oxygen = "00A0503BD222";
 
+                String ecgmac = "D208AABB37AE";
+                String bloodmac = "A4C13844160C";
+                String oxygen = "00A0503BCBAC";
 
                 AddressBean bean = new AddressBean();
                 bean.setMacAddress(bluethmac);
                 bean.setEcg(ecgmac);
                 bean.setBloodPressure(bloodmac);
-                bean.setMacAddress(oxygen);
+                bean.setBloodOxygen(oxygen);
 
                 btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
+
             });
 
 

@@ -21,6 +21,9 @@ import com.rick.recoveryapp.entity.RDMessage;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * 监听蓝牙广播-各种状态
  */
@@ -119,7 +122,15 @@ public class BtReceiver extends BroadcastReceiver {
                 rdMessage = new RDMessage();
                 rdMessage.setIsConnt(false);
                 rdMessage.setState("蓝牙设备已重联");
-                LiveDataBus.get().with(Constants.BT_RECONNECTED).setValue(rdMessage);
+
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LiveDataBus.get().with(Constants.BT_RECONNECTED).postValue(rdMessage);
+                    }
+                }, 2000);
+
 
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
