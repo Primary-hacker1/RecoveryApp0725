@@ -97,22 +97,16 @@ public class HistoryActivity extends XPageActivity implements AdapterView.OnItem
 
     public void initClick() {
 
-        binding.hisImgSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = binding.hisEtxtUser.getText().toString();
-                Bandin(message);
-            }
+        binding.hisImgSelect.setOnClickListener(v -> {
+            String message = binding.hisEtxtUser.getText().toString();
+            Bandin(message);
         });
 
-        binding.historyBtnReturn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, AdminMainActivity.class);
-             //   intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-            }
+        binding.historyBtnReturn.setOnClickListener(v -> {
+            Intent intent = new Intent(context, AdminMainActivity.class);
+         //   intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         });
     }
 

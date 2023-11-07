@@ -53,6 +53,7 @@ import com.google.gson.JsonParser;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
+import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.databinding.ActivityLoginBinding;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;
@@ -62,6 +63,8 @@ import com.rick.recoveryapp.greendao.entity.EcgDataDB;
 import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.view.WaveUtil;
@@ -96,6 +99,8 @@ public class LoginActivity extends XPageActivity {
     LocationManager locationManager;
     EcgDataDBDao ecgDataDao;
     MacDrDao macDrDao;
+
+    BtDataPro btDataPro;
     ActivitRecordDao activitRecordDao;
     int uid = 0;
     public static LoginActivity loginActivity;
@@ -126,27 +131,13 @@ public class LoginActivity extends XPageActivity {
             activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
             sharedPreferences = getSharedPreferences("Personal", MODE_PRIVATE);
             AgainInto();
+
             SetMac();
+
             initClick();
-//            initPermission();
-//
-//            //  检查蓝牙开关
-//            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-//            if (adapter == null) {
-//                // Toast.makeText(context, "本机没有找到蓝牙硬件或驱动！", Toast.LENGTH_SHORT).show();
-//                finish();
-//                return;
-//            } else {
-//                if (!adapter.isEnabled()) {
-//                    //直接开启蓝牙
-//                    adapter.enable();
-//                    // Toast.makeText(context, "本机没有找到蓝牙硬件或驱动！", Toast.LENGTH_SHORT).show();
-//                }
-//            }
+
             openBlueTooth();
 
-            //     initPermission();
-            // checkPermisson();
         } catch (Exception e) {
             Log.d("1234567890", e.getMessage());
         }
@@ -256,8 +247,8 @@ public class LoginActivity extends XPageActivity {
     public static int getPackageUid(Context context, String packageName) {
         try {
             ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(packageName, 0);
-                //   Logger.d(applicationInfo.uid);
-                return applicationInfo.uid;
+            //   Logger.d(applicationInfo.uid);
+            return applicationInfo.uid;
         } catch (Exception e) {
             return -1;
         }
@@ -529,7 +520,7 @@ public class LoginActivity extends XPageActivity {
     }
 
     public void SetMac() {
-        if(!UriConfig.test){
+        if (!UriConfig.test) {
             return;
         }
         try {
@@ -552,10 +543,13 @@ public class LoginActivity extends XPageActivity {
 //                String bloodmac = "A4C138402A4D";
 //                String oxygen = "00A0503D0264";
 
+
                 String bluethmac = "001B10F04B60";
-                String ecgmac = "E76B581B5164";
-                String bloodmac = "A4C13844160C";
-                String oxygen = "00A0503BCBAC";
+//                String bluethmac = "001B10F04B5E";
+                String ecgmac = "E3ADBA1DF806";
+                String bloodmac = "A4C138421CF3";
+                String oxygen = "00A0503BD222";
+
                 MacDr macDr = new MacDr();
                 macDr.setBlueThMac(bluethmac);
                 macDr.setEcgMac(ecgmac);

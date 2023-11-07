@@ -38,6 +38,8 @@ import androidx.core.content.ContextCompat;
 
 
 import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
@@ -100,18 +102,29 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             binding.mainTxtDate.setCenterBottomString(DateUtil.getNowDate());
 
             if (!LocalConfig.isControl) {
-//                if (!BaseApplication.mBluetoothAdapter.isEnabled()) {
-//                    //直接开启蓝牙
-//                    BaseApplication.mBluetoothAdapter.enable();
-//                } //否则创建蓝牙连接服务对象
-//                else if (BaseApplication.mConnectService == null) {
-//                    //  BaseApplication.mConnectService = new BluetoothService(BaseApplication.mHandler);
-//                    BaseApplication.AutoConnect();
-//                }
                 Intent intent = new Intent(this, BtKeepService.class);
                 startService(intent);
             }
             controlBT();
+
+
+            LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this,v->{
+                String bluethmac = "001B10F04B60";
+                String ecgmac = "E3ADBA1DF806";
+                String bloodmac = "A4C138421CF3";
+                String oxygen = "00A0503BD222";
+
+
+                AddressBean bean = new AddressBean();
+                bean.setMacAddress(bluethmac);
+                bean.setEcg(ecgmac);
+                bean.setBloodPressure(bloodmac);
+                bean.setMacAddress(oxygen);
+
+                btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
+            });
+
+
         } catch (Exception ex) {
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }

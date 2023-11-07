@@ -13,6 +13,10 @@ class SerialPort {
 
         val tag: String = SerialBean::class.java.name
 
+        fun sendCmdAddress(bean: AddressBean):String{
+            return bean.getAddressSerial()
+        }
+
         fun getCmdCode(//前面太复杂要一直判断type，这里自动判断
                 serialBean: SerialBean
         ): String {

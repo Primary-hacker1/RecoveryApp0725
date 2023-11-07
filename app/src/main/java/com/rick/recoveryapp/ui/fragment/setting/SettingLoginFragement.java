@@ -43,7 +43,7 @@ public class SettingLoginFragement extends Fragment {
 
     public void initClinck() {
         binding.imageView.setOnClickListener(v -> {
-            if (isHideFirst == true) {
+            if (isHideFirst) {
                 binding.imageView.setImageResource(R.drawable.eyeb);
                 //密文
                 HideReturnsTransformationMethod method1 = HideReturnsTransformationMethod.getInstance();

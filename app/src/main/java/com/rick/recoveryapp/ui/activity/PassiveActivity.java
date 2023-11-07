@@ -713,12 +713,12 @@ public class PassiveActivity extends XPageActivity {
                     dialog.dismiss();
                     if (modleType == 1) {
                         LocalConfig.ModType = 0;
-//                        ActiveXActivity.newActiveXActivity(this, ActiveXActivity.Type.ACTIVE);
+                        Intent in = new Intent(context, ActiveActivity.class);
+                        startActivity(in);
                         finish();
                     } else if (modleType == 2) {
                         LocalConfig.ModType = 2;
                         Intent in = new Intent(context, IntelligenceActivity.class);
-                        //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }

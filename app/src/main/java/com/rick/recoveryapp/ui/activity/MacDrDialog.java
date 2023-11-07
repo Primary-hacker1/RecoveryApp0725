@@ -15,6 +15,8 @@ import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
+import com.rick.recoveryapp.ui.activity.helper.UriConfig;
+import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -53,6 +55,19 @@ public class MacDrDialog extends XPageActivity {
         macdialog_oxygen = findViewById(R.id.macdialog_oxygen);
         macdialog_close = findViewById(R.id.macdialog_close);
         macdialog_save = findViewById(R.id.macdialog_save);
+
+
+        if(UriConfig.test){
+            String macAddress= "001B10F04B60";
+            String ecgAddress = "E3ADBA1DF806";
+            String bloodAddress = "A4C138421CF3";
+            String oxygenAddress = "00A0503BD222";
+
+            macdialog_bule.setText(macAddress);
+            macdialog_ecg.setText(ecgAddress);
+            macdialog_blood.setText(bloodAddress);
+            macdialog_oxygen.setText(oxygenAddress);
+        }
     }
 
     public void initClick() {
@@ -122,6 +137,7 @@ public class MacDrDialog extends XPageActivity {
     public boolean SetMac() {
         boolean isSet = false;
         try {
+
             String blue = macdialog_bule.getText().toString();
             String ecg = macdialog_ecg.getText().toString();
             String blood = macdialog_blood.getText().toString();
