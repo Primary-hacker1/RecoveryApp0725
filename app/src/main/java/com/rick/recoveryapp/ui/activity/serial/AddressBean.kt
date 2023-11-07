@@ -9,10 +9,10 @@ data class AddressBean(var macAddress: String? = "",//mac地址
                        var bloodOxygen: String? = ""//血氧地址
 ) {
 
-    private val tag = AddressBean::class.java.name;
+    private val tag = AddressBean::class.java.name
 
     fun getAddressSerial(): String {
-        val head = "A8850C"
+        val head = "A88512"
         val addressBean = head + macAddress + ecg + bloodPressure + bloodOxygen
         val crc16 = CRC16Util.getCRC16(addressBean)
         val end = "ED"
