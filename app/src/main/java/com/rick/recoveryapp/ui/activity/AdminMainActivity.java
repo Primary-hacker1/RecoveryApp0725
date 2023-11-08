@@ -68,7 +68,12 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     Intent intent;
     ActivityMainBinding binding;
     BtDataPro btDataPro;
-    public static AdminMainActivity instance;
+    public static AdminMainActivity instance  ;
+
+    public static void newAdminMainActivity(Context context) {
+        Intent intent = new Intent(context, AdminMainActivity.class);
+        context.startActivity(intent);
+    }
 
     @SuppressLint("MissingPermission")
     @Override

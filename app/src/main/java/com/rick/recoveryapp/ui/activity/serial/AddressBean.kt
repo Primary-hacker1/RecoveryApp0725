@@ -18,7 +18,9 @@ data class AddressBean(var macAddress: String? = "",//mac地址
         val end = "ED"
 
         val allAddress = addressBean + crc16 + end
+
         LogUtils.d(tag + allAddress)
+
         return allAddress
     }
 }

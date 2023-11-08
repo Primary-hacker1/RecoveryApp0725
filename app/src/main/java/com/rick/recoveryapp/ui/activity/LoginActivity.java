@@ -138,6 +138,23 @@ public class LoginActivity extends XPageActivity {
 
             openBlueTooth();
 
+            String bluethmac = "001B10F04B60";
+            String ecgmac = "E3ADBA1DF806";
+            String bloodmac = "A4C138421CF3";
+            String oxygen = "00A0503BD222";
+
+//                String ecgmac = "D208AABB37AE";
+//                String bloodmac = "A4C13844160C";
+//                String oxygen = "00A0503BCBAC";
+
+            AddressBean bean = new AddressBean();
+            bean.setMacAddress(bluethmac);
+            bean.setEcg(ecgmac);
+            bean.setBloodPressure(bloodmac);
+            bean.setBloodOxygen(oxygen);
+
+            SerialPort.Companion.sendCmdAddress(bean);
+
         } catch (Exception e) {
             Log.d("1234567890", e.getMessage());
         }
@@ -506,8 +523,7 @@ public class LoginActivity extends XPageActivity {
                     sharedPreferences.edit().putBoolean("ck_password", false).apply();
                 }
                 //第二次进入跳转 进入主界面
-                Intent in = new Intent(context, AdminMainActivity.class);
-                startActivity(in);
+                AdminMainActivity.newAdminMainActivity(this);
                 finish();
             } else {
                 Toast.makeText(context, "请输入正确的登录账号或密码", Toast.LENGTH_SHORT).show();
