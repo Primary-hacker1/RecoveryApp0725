@@ -70,8 +70,11 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     BtDataPro btDataPro;
     public static AdminMainActivity instance  ;
 
-    public static void newAdminMainActivity(Context context) {
+    public static void newAdminMainActivity(Context context,AddressBean addressBean) {
         Intent intent = new Intent(context, AdminMainActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putParcelable("AddressBean", addressBean);
+        intent.putExtra("bundle", bundle);
         context.startActivity(intent);
     }
 
@@ -115,28 +118,23 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             controlBT();
 
 
+            Intent intent = getIntent();
+            if (intent == null){
+                return;
+            }
+            Bundle bundle = intent.getBundleExtra("bundle");
+
+            if (bundle == null){
+                return;
+            }
+            AddressBean bean = (AddressBean) bundle.getParcelable("AddressBean");
+
+            if(bean==null){
+                return;
+            }
+
             LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this,v->{
-                if (!UriConfig.test){
-                    return;
-                }
-
-                String bluethmac = "001B10F04B60";
-                String ecgmac = "E3ADBA1DF806";
-                String bloodmac = "A4C138421CF3";
-                String oxygen = "00A0503BD222";
-
-//                String ecgmac = "D208AABB37AE";
-//                String bloodmac = "A4C13844160C";
-//                String oxygen = "00A0503BCBAC";
-
-                AddressBean bean = new AddressBean();
-                bean.setMacAddress(bluethmac);
-                bean.setEcg(ecgmac);
-                bean.setBloodPressure(bloodmac);
-                bean.setBloodOxygen(oxygen);
-
                 btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
-
             });
 
 

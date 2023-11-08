@@ -132,7 +132,7 @@ public class LoginActivity extends XPageActivity {
             sharedPreferences = getSharedPreferences("Personal", MODE_PRIVATE);
             AgainInto();
 
-            SetMac();
+//            SetMac();
 
             initClick();
 
@@ -523,7 +523,8 @@ public class LoginActivity extends XPageActivity {
                     sharedPreferences.edit().putBoolean("ck_password", false).apply();
                 }
                 //第二次进入跳转 进入主界面
-                AdminMainActivity.newAdminMainActivity(this);
+                AdminMainActivity.newAdminMainActivity(this
+                        , new AddressBean());
                 finish();
             } else {
                 Toast.makeText(context, "请输入正确的登录账号或密码", Toast.LENGTH_SHORT).show();

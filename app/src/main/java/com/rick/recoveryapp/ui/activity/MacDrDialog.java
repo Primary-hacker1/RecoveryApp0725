@@ -16,6 +16,7 @@ import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -57,11 +58,18 @@ public class MacDrDialog extends XPageActivity {
         macdialog_save = findViewById(R.id.macdialog_save);
 
 
-        if(UriConfig.test){
-            String macAddress= "001B10F04B60";
-            String ecgAddress = "E3ADBA1DF806";
-            String bloodAddress = "A4C138421CF3";
-            String oxygenAddress = "00A0503BD222";
+        if (UriConfig.test) {
+//            String macAddress = "001B10F04B60";
+            String macAddress = "001B10F1EE79";
+
+
+//            String ecgAddress = "E3ADBA1DF806";
+//            String bloodAddress = "A4C138421CF3";
+//            String oxygenAddress = "00A0503BD222";
+
+            String ecgAddress = "D208AABB37AE";
+            String bloodAddress = "A4C13844160C";
+            String oxygenAddress = "00A0503BCBAC";
 
             macdialog_bule.setText(macAddress);
             macdialog_ecg.setText(ecgAddress);
@@ -79,12 +87,16 @@ public class MacDrDialog extends XPageActivity {
             @Override
             public void onClick(View v) {
                 if (SetMac()) {
-                    if(isfer==null){
+                    if (isfer == null) {
                         return;
                     }
                     if (isfer.equals("Y")) {
-                        Intent in = new Intent(context, AdminMainActivity.class);
-                        startActivity(in);
+                        String macAddress = macdialog_bule.getText().toString();
+                        String ecgAddress = macdialog_ecg.getText().toString();
+                        String bloodAddress = macdialog_blood.getText().toString();
+                        String oxygenAddress = macdialog_oxygen.getText().toString();
+                        AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
+                                ecgAddress, bloodAddress, oxygenAddress));
                         finish();
                     } else if (isfer.equals("setting")) {
                         DialogLoader.getInstance().showConfirmDialog(

@@ -78,22 +78,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
 
     public void initClinck() {
 
-//        binding.settingBtnRefresh.setOnClickListener(new View.OnClickListener() {
-//            @SuppressLint("MissingPermission")
-//            @Override
-//            public void onClick(View v) {
-//                //开始刷新蓝牙列表
-//                if (isLock) {
-//                    Toast.makeText(LocalConfig.SettingContext, "请先解锁按钮！", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    binding.rvList.setLayoutManager(new LinearLayoutManager(LocalConfig.SettingContext));
-//                    binding.rvList.setAdapter(mBtDevAdapter);
-//                    BluetoothAdapter.getDefaultAdapter().startDiscovery();
-//                }
-//
-//            }
-//        });
-
         binding.settingBtnUnlock.setOnClickListener(v -> DialogLoader.getInstance().showInputDialog(
                 LocalConfig.SettingContext,
                 R.drawable.icon_warning,
@@ -112,10 +96,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
                         assert ((MaterialDialog) dialog).getInputEditText() != null;
                         String changePass = ((MaterialDialog) dialog).getInputEditText().getText().toString();
                         if (changePass.equals("654321")) {
-//                                    isLock = false;
-//                                    binding.settingBtnUnlock.setEnabled(false);
-//                                    binding.settingTxtStact.setCenterString("");
-                            //    binding.settingTxtStact.setCenterTextColor(#299EE3);
                             Intent in = new Intent(LocalConfig.SettingContext, MacDrDialog.class);
                             in.putExtra("isfer", "setting");
                             startActivity(in);
@@ -130,33 +110,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
                     KeyboardUtils.hideSoftInput(dialog);
                     dialog.dismiss();
                 }));
-
-//        binding.settingBtnSave.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //setmac();
-//                if (isLock) {
-//                    Toast.makeText(LocalConfig.SettingContext, "请先解锁按钮！", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    isLock = true;
-//                    binding.settingBtnUnlock.setEnabled(true);
-//                    binding.settingTxtStact.setCenterString("按钮锁定中");
-//                    binding.settingTxtStact.setCenterTextColor(R.color.xui_config_color_gray_7);
-//                    SetMac();
-//                    List<MacDr> macDrList = macDrDao.loadAll();
-//                    if (macDrList.size() > 0) {
-//                        for (int i = 0; i < macDrList.size(); i++) {
-//                            LocalConfig.bluemac = BaseApplication.deleteCharString(macDrList.get(0).getBlueThMac());
-//                            LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
-//                            LocalConfig.bloodmac = macDrList.get(0).getBloodMac();
-//                            LocalConfig.oxygenmac = macDrList.get(0).getOxygenMac();
-//                        }
-//                    } else {
-//                        Toast.makeText(LocalConfig.SettingContext, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
     }
 
     public void GetMac() {
@@ -171,38 +124,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
             }
         } else {
             Toast.makeText(LocalConfig.SettingContext, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void SetMac() {
-        try {
-            String blue = binding.settingMacBluetooth.getCenterString();
-            String ecg = binding.settingMacEcgmac.getCenterString();
-            String blood = binding.settingMacBloodmac.getCenterString();
-            String oxygen = binding.settingMacOxygenmac.getCenterString();
-
-
-            macDrDao.deleteAll();
-            List<MacDr> macDrList = macDrDao.loadAll();
-            if (macDrList.size() <= 0) {
-//                    String bluethmac = "00:1B:10:F1:EE:88";
-//                    String ecgmac = "D2:08:AA:BB:37:AE";
-//                    String bloodmac = "A4:C1:38:44:16:0C";
-//                    String oxygen = "00:A0:50:3B:CB:AC";
-                MacDr macDr = new MacDr();
-                macDr.setBlueThMac(blue);
-                macDr.setEcgMac(ecg);
-                macDr.setBloodMac(blood);
-                macDr.setOxygenMac(oxygen);
-                macDrDao.insert(macDr);
-                Toast.makeText(LocalConfig.SettingContext, "保存成功！", Toast.LENGTH_LONG).show();
-            }
-            //先查询数据库是否有Mac地址记录
-
-
-        } catch (Exception ex) {
-            Toast.makeText(LocalConfig.SettingContext, "数据库错误" + ex.getMessage(), Toast.LENGTH_SHORT).show();
-
         }
     }
 
