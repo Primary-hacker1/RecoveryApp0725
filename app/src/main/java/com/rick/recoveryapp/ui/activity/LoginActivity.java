@@ -543,28 +543,17 @@ public class LoginActivity extends XPageActivity {
             //先查询数据库是否有Mac地址记录
             List<MacDr> macDrList = macDrDao.loadAll();
             if (macDrList.isEmpty()) {
-//                String bluethmac = "001B10F1EE68";
-//                String ecgmac = "D208AABB37AE";
-//                String bloodmac = "A4C13844160C";
-//                String oxygen = "00A0503BCBAC";
 
-//                String bluethmac = "001B10F04B5E";
-//                String ecgmac = "D208AABB37AE";
-//                String bloodmac = "A4C13844160C";s
-//                String oxygen = "00A0503BCBAC";
-
-                // My E76B581B5164  A4C138402A4D 00A0503D0264
-//                String bluethmac = "001B10F1EE6B";
-//                String ecgmac = "E76B581B5164";
-//                String bloodmac = "A4C138402A4D";
-//                String oxygen = "00A0503D0264";
-
-
-                String bluethmac = "001B10F04B60";
+                String bluethmac = "001B10F1EE79";
+//                String bluethmac = "001B10F04B60";
 //                String bluethmac = "001B10F04B5E";
                 String ecgmac = "E3ADBA1DF806";
                 String bloodmac = "A4C138421CF3";
                 String oxygen = "00A0503BD222";
+
+//                String ecgmac = "D208AABB37AE";
+//                String bloodmac = "A4C13844160C";
+//                String oxygen = "00A0503BCBAC";
 
                 MacDr macDr = new MacDr();
                 macDr.setBlueThMac(bluethmac);

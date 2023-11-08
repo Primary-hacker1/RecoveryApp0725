@@ -93,9 +93,11 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         super.onCreate();
 
         context = getApplicationContext();
-        // initDreenDao(new GreenDaoContext());
+
         btDataPro = new BtDataPro();
+
         initUpdate();
+
         setDatabase(new GreenDaoContext());
 
         //友盟SDK
@@ -109,8 +111,6 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                 .config()
                 .lifecycleObserverAlwaysActive(true);
         //蓝牙初始化
-        //   initBt();
-        // initPermission();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBtReceiver = new BtReceiver(context, this);//注册蓝牙广播
         mConversationView = new TextView(context);
@@ -242,28 +242,10 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             break;
 
                         case BluetoothChatService.STATE_LISTEN:
-//                            liveMessage = new LiveMessage();
-//                            liveMessage.setIsConnt(false);
-//                            liveMessage.setState("蓝牙未连接");
-////                            LiveEventBus.get("BT_CONNECTED")
-////                                    .post(liveMessage);
-//                            if (mConnectedDeviceName != null) {
-//                                liveMessage.setMessage("与" + mConnectedDeviceName +
-//                                        msg.getData().getString(TOAST));
-//                            } else {
-//                           //     liveMessage.setMessage("蓝牙连接失败！");
-//                                liveMessage.setMessage("无法连接到设备");
-//                            }
-//                            if (mConnectService != null) {
-//                                mConnectService.stop();
-//                            }
                             mConnectedDeviceName = null;
-//                            LiveEventBus.get("BT_CONNECTED")
-//                                    .post(liveMessage);
                             break;
 
                         case BluetoothChatService.STATE_NONE:
-                            //  Log.d("123456","lalalalallalala" );
                             break;
                     }
                     break;
@@ -352,26 +334,16 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         } else {
             Toast.makeText(context, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
         }
-//        LogUtils.d("macDrList="+macDrList.get(0).getBlueThMac().toString());
-//        LogUtils.d("macDrList="+macDrList.get(0).getEcgMac().toString());
-//        LogUtils.d("macDrList="+macDrList.get(0).getBloodMac().toString());
-//        LogUtils.d("macDrList="+macDrList.get(0).getOxygenMac().toString());
-
     }
 
     public static String deleteCharString(String sourceString) {
         StringBuilder deleteString = new StringBuilder();
         for (int i = 0; i < sourceString.length(); i++) {
-
-
             if (i < 11 && i % 2 == 1) {
                 deleteString.append(sourceString.charAt(i)).append(":");
             } else {
                 deleteString.append(sourceString.charAt(i));
             }
-//            if (sourceString.charAt(i) != chElemData) {
-//                deleteString += sourceString.charAt(i);
-//            }
         }
         return deleteString.toString();
     }
@@ -381,11 +353,6 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     public static void AutoConnect() {
         mConnectService = new BluetoothChatService(mHandler);
         try {
-            //        String address = data.getExtras().getString(DeviceListActivity.DEVICE_ADDRESS);
-            //        我的    String address ="00:1B:10:F1:EE:68";
-
-            //   String address = "00:1B:10:F1:EE:68";
-            //   String address = "00:1B:10:F1:EE:88";
             GetMac();
             String address = LocalConfig.bluemac;
             // ZXJ_BL_006  00:1B:10:F1:EE:7E
@@ -397,19 +364,13 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                     //  Toast.makeText(this, "已连接" + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // 提示正在连接设备
-                //  Toast.makeText(this, "正在连接" + target_device_name, Toast.LENGTH_SHORT).show();
-                // 连接设备
                 mConnectService.connect(device);
             }
             LogUtils.e(tag + address + "--" + "地址获取失败！");
 
         } catch (Exception e) {
-            //  Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            //java.lang.NullPointerException: Attempt to invoke virtual method 'void com.example.bluetooth.BluetoothService.connect(android.bluetooth.BluetoothDevice)' on a null object reference
             LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
         }
-//java.lang.NullPointerException: Attempt to invoke virtual method 'boolean java.lang.String.equals(java.lang.Object)' on a null object reference
     }
 
     private void initPermission() {
