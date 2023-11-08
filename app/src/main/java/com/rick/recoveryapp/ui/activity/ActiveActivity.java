@@ -33,7 +33,6 @@ import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.TimeCountTool;
-import com.xuexiang.xui.utils.CountDownButtonHelper;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 
@@ -70,7 +69,6 @@ public class ActiveActivity extends XPageActivity {
     String timecount = "";
     double Total_mileage, Calories;
     String Active_B_Diastole_Shrink = "0/0", Active_L_Diastole_Shrink = "0/0";
-    private CountDownButtonHelper mCountDownHelper1;
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
 
     @Override
@@ -86,7 +84,7 @@ public class ActiveActivity extends XPageActivity {
         btDataPro = new BtDataPro();
         itinClick();
         binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
-        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber + "");
+        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber);
         BaseApplication myApp = (BaseApplication) getApplication();
         LocalConfig.daoSession = myApp.getDaoSession();
         activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
@@ -116,7 +114,7 @@ public class ActiveActivity extends XPageActivity {
             public void run() {
                 try {
                     if (OftenListData != null) {
-                        if (OftenListData.size() > 0) {
+                        if (!OftenListData.isEmpty()) {
                             float cooY = OftenListData.get(0);
                             binding.activeWaveviewOne.showLine(cooY);
                             OftenListData.remove(0);
@@ -271,9 +269,6 @@ public class ActiveActivity extends XPageActivity {
         double average_speed;
         double resistance = 0;
         double resistanceVal = 0;
-        /**
-         * 查询转速不为“0” 的所有记录集合。集合不为大于0时取平均值
-         * */
         List<RecordDetailed> recordList = recordDetailedDao.queryBuilder().where(
                         RecordDetailedDao.Properties.Speed.notEq("0"),
                         RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID))
@@ -290,13 +285,12 @@ public class ActiveActivity extends XPageActivity {
 
         double perimeter = (float) (3.14 * 0.102 * 2);
         Total_mileage = average_speed * time * perimeter;//总里程
-        /*********************************************/
         List<RecordDetailed> DetailedList = recordDetailedDao.queryBuilder().where(
                         RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID),
                         RecordDetailedDao.Properties.Resistance.notEq(0))
                 .list();
 
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
             for (int i = 0; i < DetailedList.size(); i++) {
                 resistance = resistance + DetailedList.get(i).getResistance();
             }
