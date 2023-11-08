@@ -138,23 +138,6 @@ public class LoginActivity extends XPageActivity {
 
             openBlueTooth();
 
-            String bluethmac = "001B10F04B60";
-            String ecgmac = "E3ADBA1DF806";
-            String bloodmac = "A4C138421CF3";
-            String oxygen = "00A0503BD222";
-
-//                String ecgmac = "D208AABB37AE";
-//                String bloodmac = "A4C13844160C";
-//                String oxygen = "00A0503BCBAC";
-
-            AddressBean bean = new AddressBean();
-            bean.setMacAddress(bluethmac);
-            bean.setEcg(ecgmac);
-            bean.setBloodPressure(bloodmac);
-            bean.setBloodOxygen(oxygen);
-
-            SerialPort.Companion.sendCmdAddress(bean);
-
         } catch (Exception e) {
             Log.d("1234567890", e.getMessage());
         }
@@ -175,32 +158,6 @@ public class LoginActivity extends XPageActivity {
         }
     }
 
-
-    //    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // 查看请求打开蓝牙
-//        if (!BaseApplication.mBluetoothAdapter.isEnabled()) {
-////            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-////            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-//            //直接开启蓝牙
-//            BaseApplication.mBluetoothAdapter.enable();
-//        } //否则创建蓝牙连接服务对象
-//        else if (BaseApplication.mConnectService == null) {
-//            BaseApplication.mConnectService = new BtService(BaseApplication.mHandler);
-//            BaseApplication.AutoConnect(BaseApplication.mConnectService);
-//            LiveEventBus
-//                    .get("BT_CONNECTED", LiveMessage.class)
-//                    .observe(this, new Observer<LiveMessage>() {
-//                        @Override
-//                        public void onChanged(@Nullable LiveMessage msg) {
-//                            if (msg != null) {
-//                                Toast.makeText(LoginActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        }
-//                    });
-//        }
-//
     @SuppressLint("MissingPermission")
     private void openBlueTooth() {
 
