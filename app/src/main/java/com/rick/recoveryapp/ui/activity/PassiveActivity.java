@@ -47,6 +47,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,7 +58,10 @@ import java.util.TimerTask;
 public class PassiveActivity extends XPageActivity {
 
     private final String tag = PassiveActivity.class.getName();
-    private boolean isCloseDialog = false;//如果是运动后停止
+    private static boolean isCloseDialog = false;//如果是运动后停止
+    String motionHeight;//运动前的高压
+
+    String motionLow;//运动后的低压
     int modleType = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -88,7 +92,6 @@ public class PassiveActivity extends XPageActivity {
     String Passive_B_Diastole_Shrink = "0/0", Passive_L_Diastole_Shrink = "0/0";
     int spasmCount = 0;
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
-
     boolean isNotBt = false;
 
     @Override
@@ -769,9 +772,9 @@ public class PassiveActivity extends XPageActivity {
         return CMD_CODE;
     }
 
-    public void DataDisplay(String msg,String ObjectJson) {
+    public void DataDisplay(String msg, String ObjectJson) {
 
-        if(msg.isEmpty()){
+        if (msg.isEmpty()) {
             return;
         }
 
@@ -791,17 +794,20 @@ public class PassiveActivity extends XPageActivity {
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 
                 Observer<String> observerHigh = s -> {//运动完需要重新测量血压，血压那边一直传值，不同的话再跳转到结束页面
+
                     BloodEndState = 2;
-                    LogUtils.e(tag + "结束测量血压值成功！");
+
+                    LogUtils.e(tag + "第二次结束测量血压值结束！");
                 };
 
                 if (UriConfig.test) {
                     uploadData.setBlood("已连接");
-                    uploadData.setHigh("120");
-                    uploadData.setLow("60");
                     if (isCloseDialog) {
-                        uploadData.setHigh("150");
-                        uploadData.setLow("80");
+//                        uploadData.setHigh("150");
+//                        uploadData.setLow("80");
+                    } else {
+                        uploadData.setHigh("120");
+                        uploadData.setLow("60");
                     }
                 }
 
@@ -854,9 +860,17 @@ public class PassiveActivity extends XPageActivity {
                         if (!uploadData.getHigh().equals("0")) {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
-                            if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
-                                observerHigh.onChanged(uploadData.getHigh());
+
+                            LogUtils.e(tag + "uploadData.getHigh()==" + uploadData.getHigh());
+
+                            if (!Objects.equals(motionHeight, uploadData.getHigh())) {
+                                motionHeight = uploadData.getHigh();
+                                if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
+                                    observerHigh.onChanged(motionHeight);
+                                }
                             }
+
+                            LogUtils.e(tag + "motionHeight==" + motionHeight + motionLow);
                         }
                         binding.passiveTxtBloodstate1.setCenterString("");
                         binding.passiveTxtBloodstate2.setCenterString("");

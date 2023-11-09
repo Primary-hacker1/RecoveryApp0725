@@ -346,19 +346,24 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
         String target_device_name = device.getName();
 
-
-        if (target_device_name == null) {
-            mConnectService.connect(device);
-        } else {
-            if (mConnectedDeviceName == null) {
-                return;
-            }
-            if (target_device_name.equals(mConnectedDeviceName)) {
-                return;
-            } else {
-                mConnectService.connect(device);
-            }
+        if (target_device_name.equals(mConnectedDeviceName)) {
+            return;
         }
+
+        mConnectService.connect(device);
+
+//        if (target_device_name == null) {
+//            mConnectService.connect(device);
+//        } else {
+//            if (mConnectedDeviceName == null) {
+//                return;
+//            }
+//            if (target_device_name.equals(mConnectedDeviceName)) {
+//                return;
+//            } else {
+//                mConnectService.connect(device);
+//            }
+//        }
     }
 
     public static String deleteCharString(String sourceString) {

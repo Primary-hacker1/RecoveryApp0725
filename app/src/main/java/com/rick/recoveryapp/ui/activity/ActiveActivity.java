@@ -9,12 +9,15 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 
+import androidx.lifecycle.Observer;
+
 import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
+import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
 import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
@@ -43,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,6 +54,9 @@ import java.util.TimerTask;
 public class ActiveActivity extends XPageActivity {
 
     private String tag = ActiveActivity.class.getName();
+    private boolean isCloseDialog = false;//如果是运动后停止
+
+    String motionHeight;//运动前的高压
     int resiDta = 1, modletype = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -161,6 +168,9 @@ public class ActiveActivity extends XPageActivity {
                             binding.trainButO2.setBackgroundResource(R.drawable.o2_no);
                         }
                         DataDisplay(msg.getObjectName(), msg.getObjectJson());
+                        if (isBegin) {
+                            UpdatProgress();
+                        }
                     }
                 } else {
                     Log.d("BT", "没有任何数据");
@@ -172,9 +182,6 @@ public class ActiveActivity extends XPageActivity {
             if (v instanceof PoolMessage) {
                 PoolMessage msg = (PoolMessage) v;
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
-                if (isBegin) {
-                    UpdatProgress();
-                }
             }
         });
 
@@ -558,6 +565,25 @@ public class ActiveActivity extends XPageActivity {
         switch (mark) {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
+
+                Observer<String> observerHigh = s -> {//运动完需要重新测量血压，血压那边一直传值，不同的话再跳转到结束页面
+
+                    BloodEndState = 2;
+
+                    LogUtils.e(tag + "结束测量血压值成功！");
+                };
+
+                if (UriConfig.test) {
+                    uploadData.setBlood("已连接");
+                    if (isCloseDialog) {
+                        uploadData.setHigh("150");
+                        uploadData.setLow("80");
+                    } else {
+                        uploadData.setHigh("120");
+                        uploadData.setLow("60");
+                    }
+                }
+
                 if (uploadData.getBlood_oxy().equals("已连接")) {
                     if (uploadData.getOxy_vaulestr().equals("手指未插入")
                             || uploadData.getOxy_vaulestr().equals("探头脱落")
@@ -604,6 +630,18 @@ public class ActiveActivity extends XPageActivity {
                         }
                         binding.activeTxtBloodstate1.setCenterString("");
                         binding.activeTxtBloodstate2.setCenterString("");
+
+                        LogUtils.e(tag + "uploadData.getHigh()==" + uploadData.getHigh());
+
+                        if (!Objects.equals(motionHeight, uploadData.getHigh())) {
+                            motionHeight = uploadData.getHigh();
+                            if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
+                                observerHigh.onChanged(motionHeight);
+                            }
+                        }
+
+                        LogUtils.e(tag + "motionHeight==" + motionHeight);
+
                     }
                 } else {
                     binding.activeTxtHigh.setCenterString(LocalConfig.BloodHight);
@@ -653,6 +691,7 @@ public class ActiveActivity extends XPageActivity {
                                 (dialog, which) -> {
                                     dialog.dismiss();
                                     BloodEndState = 1;
+                                    isCloseDialog = true;
                                     if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                                         if (ContorlState.equals("00") || ContorlState.equals("52")) {
                                             btDataPro.sendBTMessage(GetCmdCode(resiDta, "51", false));
