@@ -27,7 +27,7 @@ import androidx.fragment.app.Fragment;
 
 
 import com.rick.recoveryapp.ui.activity.DataResultsActivity;
-import com.rick.recoveryapp.adapter.HistoryAdpater;
+import com.rick.recoveryapp.ui.adapter.HistoryAdpater;
 import com.rick.recoveryapp.databinding.FragmentHistoryBinding;
 import com.rick.recoveryapp.entity.HistoryData;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;

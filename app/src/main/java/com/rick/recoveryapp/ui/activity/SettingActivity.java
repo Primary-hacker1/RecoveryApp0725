@@ -29,7 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.viewpager.widget.ViewPager;
 
-import com.rick.recoveryapp.adapter.MyFragmentPagerAdapter;
+import com.rick.recoveryapp.ui.adapter.MyFragmentPagerAdapter;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.databinding.ActivitySettingBinding;
 import com.rick.recoveryapp.ui.fragment.setting.SettingFragment;

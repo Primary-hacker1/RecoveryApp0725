@@ -32,7 +32,7 @@ import androidx.fragment.app.Fragment;
 import com.efs.sdk.base.core.util.Log;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.activity.MacDrDialog;
-import com.rick.recoveryapp.adapter.BtDevAdapter;
+import com.rick.recoveryapp.ui.adapter.BtDevAdapter;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.databinding.FragmentSettingBinding;

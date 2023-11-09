@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 
-import com.rick.recoveryapp.adapter.HistoryAdpater;
+import com.rick.recoveryapp.ui.adapter.HistoryAdpater;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.databinding.FragmentHistoryBinding;
 import com.rick.recoveryapp.entity.HistoryData;

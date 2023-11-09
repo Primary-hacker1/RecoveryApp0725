@@ -15,7 +15,7 @@
  *
  */
 
-package com.rick.recoveryapp.adapter;
+package com.rick.recoveryapp.ui.adapter;
 
 import android.view.ViewGroup;
 

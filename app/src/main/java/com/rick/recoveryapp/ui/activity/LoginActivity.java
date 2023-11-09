@@ -18,8 +18,6 @@ package com.rick.recoveryapp.ui.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-import static com.rick.recoveryapp.ui.activity.helper.Constants.Mac_Bt_Update;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -135,9 +133,9 @@ public class LoginActivity extends XPageActivity {
             sharedPreferences = getSharedPreferences("Personal", MODE_PRIVATE);
             AgainInto();
 
-            initClick();
+            initPermission();
 
-            LiveDataBus.get().with(Mac_Bt_Update).setValue("");
+            initClick();
 
             openBlueTooth();
 
