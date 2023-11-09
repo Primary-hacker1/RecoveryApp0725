@@ -18,6 +18,8 @@ package com.rick.recoveryapp.ui.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
+import static com.rick.recoveryapp.entity.Constants.Mac_Bt_Update;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -64,9 +66,9 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
-import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.HideKeyboard;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.view.WaveUtil;
 import com.xuexiang.xui.utils.StatusBarUtils;
@@ -134,6 +136,8 @@ public class LoginActivity extends XPageActivity {
             AgainInto();
 
             initClick();
+
+            LiveDataBus.get().with(Mac_Bt_Update).setValue("");
 
             openBlueTooth();
 

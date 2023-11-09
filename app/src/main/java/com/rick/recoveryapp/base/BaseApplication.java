@@ -1,5 +1,6 @@
 package com.rick.recoveryapp.base;
 
+import static com.rick.recoveryapp.entity.Constants.Mac_Bt_Update;
 import static com.unity3d.splash.services.core.properties.ClientProperties.getActivity;
 import static com.xuexiang.xupdate.entity.UpdateError.ERROR.CHECK_NO_NEW_VERSION;
 
@@ -21,10 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.activity.MacDrDialog;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
@@ -58,7 +61,7 @@ import java.util.Objects;
  * Created by Administrator on 2017/4/5.
  */
 
-public class BaseApplication extends Application implements BtReceiver.Listener  {
+public class BaseApplication extends Application implements BtReceiver.Listener{
 
     private static final String tag = BaseApplication.class.getName();
     private static DaoSession daoSession;
@@ -326,8 +329,10 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     //自动连接
     @SuppressLint("MissingPermission")
     public static void AutoConnect() {
+
         mConnectService = new BluetoothChatService(mHandler);
-        try {
+
+//        try {
 
            AddressBean addressBean =  SharedPreferencesUtils.Companion.getInstance().getAddressString();
 
@@ -360,9 +365,9 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
             mConnectService.connect(device);
 
-        } catch (Exception e) {
-            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
-        }
+//        } catch (Exception e) {
+//            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
+//        }
     }
 
     public static String deleteCharString(String sourceString) {
@@ -386,4 +391,5 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     public void foundBT() {
 
     }
+
 }

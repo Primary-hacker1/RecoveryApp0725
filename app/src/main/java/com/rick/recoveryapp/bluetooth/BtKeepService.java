@@ -7,6 +7,7 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.common.network.LogUtils;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.utils.LocalConfig;
 
@@ -14,6 +15,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class BtKeepService extends Service {
+
+    private String tag = BtKeepService.class.getName();
 
     ConnectThread ct;
     Thread thread;
@@ -71,6 +74,7 @@ public class BtKeepService extends Service {
                     }
                     BaseApplication.AutoConnect();
                 } catch (Exception e) {
+                    LogUtils.e(tag + e.getMessage());
                 }
             }
         };

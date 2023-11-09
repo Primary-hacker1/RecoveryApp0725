@@ -1,6 +1,9 @@
 package com.rick.recoveryapp.ui.activity;
 
+import static com.rick.recoveryapp.entity.Constants.Mac_Bt_Update;
+
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.bluetooth.BtReceiver;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
@@ -20,6 +24,7 @@ import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.HideKeyboard;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
 import com.xuexiang.xui.widget.button.ButtonView;

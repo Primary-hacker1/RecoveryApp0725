@@ -8,5 +8,6 @@ public interface Constants {
     String active = "主动模式";
     String passive = "被动模式";
     String intelligence = "智能模式";
+    String Mac_Bt_Update = "Mac_Bt_Update";//蓝牙连接
 
 }
