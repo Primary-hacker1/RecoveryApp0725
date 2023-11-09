@@ -69,7 +69,7 @@ public class BtReceiver extends BroadcastReceiver {
                     liveMessage = new LiveMessage();
                     liveMessage.setIsConnt(false);
                     liveMessage.setState("蓝牙设备未连接");
-                    BaseApplication.mConnectedDeviceName = null;
+                    BaseApplication.mConnectedDeviceName = "";
                     LiveDataBus.get().with(Constants.BT_CONNECTED).setValue(liveMessage);
                 }
 
@@ -136,7 +136,7 @@ public class BtReceiver extends BroadcastReceiver {
                 liveMessage = new LiveMessage();
                 liveMessage.setIsConnt(false);
                 liveMessage.setState("蓝牙设备未连接");
-                BaseApplication.mConnectedDeviceName = null;
+                BaseApplication.mConnectedDeviceName = "";
                 LocalConfig.isControl = false;
                 LiveDataBus.get().with(Constants.BT_CONNECTED).setValue(liveMessage);
 

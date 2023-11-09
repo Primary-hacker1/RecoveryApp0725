@@ -220,15 +220,15 @@ public class U3DActivity extends UnityPlayerActivity {
 
                                 U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(1, "53", false, 5, 1));
 
-                                Timer timer = new Timer();
-                                timer.schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        AdminMainActivity.newAdminMainActivity(context, new AddressBean());
-                                        finish();
-                                    }
-                                }, 2000);
-
+//                                Timer timer = new Timer();
+//                                timer.schedule(new TimerTask() {
+//                                    @Override
+//                                    public void run() {
+//                                        AdminMainActivity.newAdminMainActivity(context, new AddressBean());
+//
+//                                        finish();
+//                                    }
+//                                }, 2000);
 
                             }
                             initView();

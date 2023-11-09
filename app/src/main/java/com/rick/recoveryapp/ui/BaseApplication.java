@@ -48,7 +48,7 @@ import java.util.Objects;
  * Created by Administrator on 2017/4/5.
  */
 
-public class BaseApplication extends Application implements BtReceiver.Listener{
+public class BaseApplication extends Application implements BtReceiver.Listener {
 
     private static final String tag = BaseApplication.class.getName();
     private static DaoSession daoSession;
@@ -70,7 +70,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener{
 
     public static BluetoothChatService mConnectService = null;
     // 已连接设备的名字
-    public static String mConnectedDeviceName = null;
+    public static String mConnectedDeviceName = "";
     public static BluetoothAdapter mBluetoothAdapter = null;
 
     static BtDataPro btDataPro;
@@ -234,7 +234,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener{
                             break;
 
                         case BluetoothChatService.STATE_LISTEN:
-                            mConnectedDeviceName = null;
+                            mConnectedDeviceName = "";
                             break;
 
                         case BluetoothChatService.STATE_NONE:
@@ -299,14 +299,14 @@ public class BaseApplication extends Application implements BtReceiver.Listener{
                     liveMessage = new LiveMessage();
                     liveMessage.setIsConnt(false);
                     liveMessage.setState("蓝牙设备未连接");
-                    if (mConnectedDeviceName == null) {
+                    if (Objects.equals(mConnectedDeviceName, "")) {
                         liveMessage.setMessage(msg.getData().getString(TOAST));
                     }
                     if (mConnectService != null) {
                         mConnectService.stop();
                     }
                     LocalConfig.isControl = false;
-                    mConnectedDeviceName = null;
+                    mConnectedDeviceName = "";
                     LiveDataBus.get().with(Constants.BT_CONNECTED).postValue(liveMessage);
                     break;
             }
@@ -321,40 +321,44 @@ public class BaseApplication extends Application implements BtReceiver.Listener{
 
 //        try {
 
-           AddressBean addressBean =  SharedPreferencesUtils.Companion.getInstance().getAddressString();
+        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 
-            if(addressBean==null){
-                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+        if (addressBean == null) {
+            LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+            return;
+        }
+
+        String address = addressBean.getMacAddress();
+
+        if (address == null) {
+            LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+            return;
+        }
+
+        if (address.isEmpty()) {
+            LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+            return;
+        }
+
+        address = deleteCharString(address);
+
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+
+        String target_device_name = device.getName();
+
+
+        if (target_device_name == null) {
+            mConnectService.connect(device);
+        } else {
+            if (mConnectedDeviceName == null) {
                 return;
             }
-
-            String address = addressBean.getMacAddress();
-
-            if(address == null){
-                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
-                return;
-            }
-
-            if(address.isEmpty()){
-                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
-                return;
-            }
-
-            address = deleteCharString(address);
-
-            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-
-            String target_device_name = device.getName();
-
             if (target_device_name.equals(mConnectedDeviceName)) {
                 return;
+            } else {
+                mConnectService.connect(device);
             }
-
-            mConnectService.connect(device);
-
-//        } catch (Exception e) {
-//            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
-//        }
+        }
     }
 
     public static String deleteCharString(String sourceString) {

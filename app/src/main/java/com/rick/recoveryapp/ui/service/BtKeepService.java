@@ -81,23 +81,6 @@ public class BtKeepService extends Service {
         timer.schedule(timerTask, 100, 20000);
     }
 
-    //    public boolean BtConnectState(){
-//        Intent intent=new Intent();
-//        isControls=intent.getBooleanExtra("isControl",false);
-////        LiveEventBus
-////                .get("BT_CONNECTED", LiveMessage.class)
-////                .observe(this, new Observer<LiveMessage>() {
-////                    @Override
-////                    public void onChanged(@Nullable LiveMessage msg) {
-////                        try {
-////                            msg.getIsConnt();
-////                        } catch (Exception e) {
-////                            Log.d("AdminMainActivity", e.getMessage());
-////                        }
-////                    }
-////                });
-//        return isControls;
-//    }
 
     @Override
     public void onDestroy() {
