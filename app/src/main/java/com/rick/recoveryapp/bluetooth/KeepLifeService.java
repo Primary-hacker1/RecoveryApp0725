@@ -7,11 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.BaseApplication;
 
 import java.io.BufferedReader;
 import java.io.File;

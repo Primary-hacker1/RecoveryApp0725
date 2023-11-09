@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.activity.AdminMainActivity;
 import com.rick.recoveryapp.ui.activity.DataResultsActivity;
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtKeepService;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.entity.EcgData;

@@ -1,7 +1,6 @@
 package com.rick.recoveryapp.bluetooth;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -14,8 +13,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.common.network.LogUtils;
-import com.rick.recoveryapp.base.BaseApplication;
-import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.BaseApplication;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.RDMessage;
 import com.rick.recoveryapp.utils.LiveDataBus;

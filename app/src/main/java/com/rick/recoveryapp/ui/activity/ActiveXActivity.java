@@ -3,7 +3,6 @@ package com.rick.recoveryapp.ui.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,12 +16,12 @@ import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort.Type;
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteXBinding;
@@ -53,7 +52,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /*
  * "主动模式需要重构界面冗余"

@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.entity;
+package com.rick.recoveryapp.ui.activity.helper;
 
 public interface Constants {
     String BT_CONNECTED = "BT_CONNECTED";//连接状态

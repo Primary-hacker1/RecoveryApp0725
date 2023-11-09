@@ -7,6 +7,7 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.utils.LocalConfig;
 
 import java.util.Timer;

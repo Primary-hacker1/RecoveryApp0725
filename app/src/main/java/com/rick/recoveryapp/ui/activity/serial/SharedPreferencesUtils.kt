@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
-import com.rick.recoveryapp.base.BaseApplication
+import com.rick.recoveryapp.ui.BaseApplication
 
 
 /**

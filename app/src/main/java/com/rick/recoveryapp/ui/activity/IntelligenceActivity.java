@@ -5,24 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 
 import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityIntelligenceBinding;
-import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;

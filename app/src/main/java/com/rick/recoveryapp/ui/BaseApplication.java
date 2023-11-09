@@ -1,33 +1,22 @@
-package com.rick.recoveryapp.base;
+package com.rick.recoveryapp.ui;
 
-import static com.rick.recoveryapp.entity.Constants.Mac_Bt_Update;
-import static com.unity3d.splash.services.core.properties.ClientProperties.getActivity;
 import static com.xuexiang.xupdate.entity.UpdateError.ERROR.CHECK_NO_NEW_VERSION;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.rick.recoveryapp.entity.Constants;
-import com.rick.recoveryapp.ui.activity.MacDrDialog;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.bluetooth.BluetoothChatService;
 import com.rick.recoveryapp.bluetooth.BtReceiver;
@@ -37,7 +26,6 @@ import com.rick.recoveryapp.greendao.DaoSession;
 import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
-import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
@@ -54,7 +42,6 @@ import com.xuexiang.xutil.tip.ToastUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**

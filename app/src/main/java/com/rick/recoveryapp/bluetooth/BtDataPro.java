@@ -1,13 +1,11 @@
 package com.rick.recoveryapp.bluetooth;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.base.BaseApplication;
-import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.BaseApplication;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
 import com.rick.recoveryapp.entity.protocol.UploadData;

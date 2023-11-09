@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.BaseApplication;
 
 import java.io.File;
 import java.io.IOException;

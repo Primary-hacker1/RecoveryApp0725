@@ -18,7 +18,7 @@ package com.rick.recoveryapp.ui.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-import static com.rick.recoveryapp.entity.Constants.Mac_Bt_Update;
+import static com.rick.recoveryapp.ui.activity.helper.Constants.Mac_Bt_Update;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -53,7 +53,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.base.BaseApplication;
+import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
 import com.rick.recoveryapp.databinding.ActivityLoginBinding;
