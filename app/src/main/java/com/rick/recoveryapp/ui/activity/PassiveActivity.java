@@ -223,6 +223,9 @@ public class PassiveActivity extends XPageActivity {
             if (v instanceof PoolMessage) {
                 PoolMessage msg = (PoolMessage) v;
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
+                if (isBegin) {
+                    UpdatProgress();
+                }
             }
         });
 
@@ -287,8 +290,6 @@ public class PassiveActivity extends XPageActivity {
         double time = timeCountTool.GetSecond();
         double speed = 0;
         double average_speed;
-        double resistance = 0;
-        double resistanceVal = 0;
         /**
          * 查询转速不为“0” 的所有记录集合。集合不为大于0时取平均值
          * */
@@ -306,27 +307,12 @@ public class PassiveActivity extends XPageActivity {
             average_speed = 0;
         }
 
+        LogUtils.e(tag + "recordList" + recordList + "平均转速==" + average_speed);
+
         double perimeter = (float) (3.14 * 0.102 * 2);
         Total_mileage = average_speed * time * perimeter;//总里程
-        /*********************************************/
-//        List<RecordDetailed> DetailedList = recordDetailedDao.queryBuilder().where(
-//                        RecordDetailedDao.Properties.RecordID.eq(LocalConfig.UserID),
-//                        RecordDetailedDao.Properties.Resistance.notEq(0))
-//                .list();
-//
-//        if (DetailedList.size() > 0) {
-//            for (int i = 0; i < DetailedList.size(); i++) {
-//                resistance = resistance + DetailedList.get(i).getResistance();
-//            }
-//            //平均阻力
-//            int Avg = (int) Math.ceil(resistance / DetailedList.size());
-////            String.format("%.2f", resistance);
-//            resistanceVal = LocalConfig.Getvalue(Avg);
-//        }
-//        double perimeter = (float) (3.14 * 0.102 * 2);
 
         if (time > 0) {
-//            double K_index = 30d / (400d / (Math.ceil(Total_mileage) / Math.ceil(time)));//指数K
             Calories = 5 * (time / 60) * average_speed;
         } else {
             Calories = 0;

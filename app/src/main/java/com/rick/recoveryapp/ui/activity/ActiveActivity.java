@@ -172,6 +172,9 @@ public class ActiveActivity extends XPageActivity {
             if (v instanceof PoolMessage) {
                 PoolMessage msg = (PoolMessage) v;
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
+                if (isBegin) {
+                    UpdatProgress();
+                }
             }
         });
 
@@ -470,18 +473,7 @@ public class ActiveActivity extends XPageActivity {
                     binding.activeImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
                 }
             } else {
-//                stop();
                 btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
-//                timecount = timeCountTool.stopCount();
-//                getCalories_mileage();
-//                timeCountTool.setTime(0);
-//                SaveRecord();
-
-                //   btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-//                Intent in = new Intent(context, DataResultsActivity.class);
-//                in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(in);
-//                finish();
             }
         } catch (Exception e) {
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -504,19 +496,6 @@ public class ActiveActivity extends XPageActivity {
                 getString(R.string.lab_yes),
                 (dialog, which) -> {
                     dialog.dismiss();
-//                        btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
-//                        stop();
-//
-//                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-//                        timecount = timeCountTool.stopCount();
-//                        getCalories_mileage();
-//                        timeCountTool.setTime(0);
-//                        SaveRecord();
-//
-//                        Date date = new Date();
-//                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//                        String sim = dateFormat.format(date);
-//                        LocalConfig.UserID = Long.valueOf(sim).longValue();
                     if (modletype == 1) {
                         LocalConfig.ModType = 1;
                         Intent in = new Intent(context, PassiveActivity.class);
@@ -530,20 +509,6 @@ public class ActiveActivity extends XPageActivity {
                         startActivity(in);
                         finish();
                     }
-//
-//                    if (modletype == 1) {
-//                        LocalConfig.ModType = 1;
-//                        Intent in = new Intent(context, PassiveActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
-//                    } else if (modletype == 2) {
-//                        LocalConfig.ModType = 2;
-//                        Intent in = new Intent(context, IntelligenceActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
-//                    }
                 },
                 getString(R.string.lab_no),
                 (dialog, which) -> {
@@ -575,7 +540,7 @@ public class ActiveActivity extends XPageActivity {
 
     public void DataDisplay(String msg, String ObjectJson) {
 
-        if(msg.isEmpty()){
+        if (msg.isEmpty()) {
             return;
         }
 
@@ -593,8 +558,6 @@ public class ActiveActivity extends XPageActivity {
         switch (mark) {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
-//                String stresistance = uploadData.getSTresistance();
-//                 binding.activeTxtResistance.setCenterString(stresistance);
                 if (uploadData.getBlood_oxy().equals("已连接")) {
                     if (uploadData.getOxy_vaulestr().equals("手指未插入")
                             || uploadData.getOxy_vaulestr().equals("探头脱落")
@@ -658,28 +621,16 @@ public class ActiveActivity extends XPageActivity {
                     binding.activeTxtEcgstate.setCenterString(uploadData.getECG());
                 }
                 if (isBegin) {
-                    //    int speed = Integer.parseInt(uploadData.getSpeed());
                     binding.progressViewZhuansuActicve.setGraduatedEnabled(true);
-//                    binding.progressViewZhuansuActicve.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) speed, (float) 60)));
-//                    binding.progressViewZhuansuActicve.startProgressAnimation();
                     binding.activeTxtZhuansu.setCenterString(uploadData.getSpeed());
 
-                    //   int left = Integer.parseInt(uploadData.getLeft());
                     binding.progressViewLeft.setGraduatedEnabled(true);
-//                    binding.progressViewLeft.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) left, (float) 50)));
-//                    binding.progressViewLeft.startProgressAnimation();
                     binding.activeTxtLeft.setCenterString(uploadData.getLeft());
 
-                    // int right = Integer.parseInt(uploadData.getRight());
                     binding.progressViewRight.setGraduatedEnabled(true);
-//                    binding.progressViewRight.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) right, (float) 50)));
-//                    binding.progressViewRight.startProgressAnimation();
                     binding.activeTxtRight.setCenterString(uploadData.getRight());
 
-                    //  int resiDtas = Integer.parseInt(uploadData.getSTresistance());
                     binding.progressViewResistance.setGraduatedEnabled(true);
-//                    binding.progressViewResistance.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) resiDta, (float) 12)));
-//                    binding.progressViewResistance.startProgressAnimation();
                     binding.activeTxtResistance.setCenterString(uploadData.getSTresistance());
                 }
                 if (uploadData.getActiveState().equals("停机状态")) {
@@ -720,10 +671,6 @@ public class ActiveActivity extends XPageActivity {
                                     BloodEndState = 2;
                                 }
                         );
-//                        Intent in = new Intent(context, DataResultsActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
                     }
 
                 } else if (uploadData.getActiveState().equals("运行状态")) {

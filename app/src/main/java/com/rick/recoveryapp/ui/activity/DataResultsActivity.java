@@ -136,7 +136,7 @@ public class DataResultsActivity extends XPageActivity {
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.Speed.notEq(0)
         ).orderDesc(RecordDetailedDao.Properties.RecordTime).list();
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
 
             speed = DetailedList.get(0).getSpeed();
             //平均转速
@@ -150,7 +150,7 @@ public class DataResultsActivity extends XPageActivity {
                 RecordDetailedDao.Properties.Spasm.notEq(0)
         ).orderDesc(RecordDetailedDao.Properties.RecordTime).list();
 
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
             spasm = DetailedList.get(0).getSpasm();
 
             //平均痉挛强度
@@ -163,7 +163,7 @@ public class DataResultsActivity extends XPageActivity {
         /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.Hbo2.notEq(0)).orderAsc(RecordDetailedDao.Properties.Hbo2).list();
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
             //血氧高低
             binding.dataTxtO2.setCenterString("    " + DetailedList.get(0).getHbo2());
             binding.dataTxtO2.setCenterBottomString("    " + DetailedList.get(DetailedList.size() - 1).getHbo2() + "");
@@ -176,7 +176,7 @@ public class DataResultsActivity extends XPageActivity {
         /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.HeartRate.notEq(0)).orderAsc(RecordDetailedDao.Properties.HeartRate).list();
-        if (DetailedList.size() > 0) {
+        if (!DetailedList.isEmpty()) {
             //血氧高低
             binding.dataTxtHeartRate.setCenterString(DetailedList.get(0).getHeartRate() + "");
             binding.dataTxtHeartRate.setCenterBottomString(DetailedList.get(DetailedList.size() - 1).getHeartRate() + "");

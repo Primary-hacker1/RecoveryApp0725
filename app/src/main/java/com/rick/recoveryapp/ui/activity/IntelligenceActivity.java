@@ -178,6 +178,9 @@ public class IntelligenceActivity extends XPageActivity {
             if (v instanceof PoolMessage) {
                 PoolMessage msg = (PoolMessage) v;
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
+                if (isBegin) {
+                    UpdatProgress();
+                }
             }
         });
 
