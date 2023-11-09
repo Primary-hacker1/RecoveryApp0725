@@ -79,13 +79,13 @@ public class MacDrDialog extends XPageActivity {
 //            String macAddress = "001B10F04B60";
             String macAddress = "001B10F1EE6E";
 
-//            String ecgAddress = "E3ADBA1DF806";
-//            String bloodAddress = "A4C138421CF3";
-//            String oxygenAddress = "00A0503BD222";
+            String ecgAddress = "E3ADBA1DF806";
+            String bloodAddress = "A4C138421CF3";
+            String oxygenAddress = "00A0503BD222";
 
-            String ecgAddress = "D208AABB37AE";
-            String bloodAddress = "A4C13844160C";
-            String oxygenAddress = "00A0503BCBAC";
+//            String ecgAddress = "D208AABB37AE";
+//            String bloodAddress = "A4C13844160C";
+//            String oxygenAddress = "00A0503BCBAC";
 
             macdialog_bule.setText(macAddress);
             macdialog_ecg.setText(ecgAddress);
