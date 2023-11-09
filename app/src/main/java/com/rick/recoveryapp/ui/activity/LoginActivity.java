@@ -53,7 +53,7 @@ import com.google.gson.JsonParser;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.databinding.ActivityLoginBinding;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;
@@ -66,7 +66,6 @@ import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.HideKeyboard;
-import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.view.WaveUtil;
 import com.xuexiang.xui.utils.StatusBarUtils;
@@ -132,8 +131,6 @@ public class LoginActivity extends XPageActivity {
             activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
             sharedPreferences = getSharedPreferences("Personal", MODE_PRIVATE);
             AgainInto();
-
-            initPermission();
 
             initClick();
 

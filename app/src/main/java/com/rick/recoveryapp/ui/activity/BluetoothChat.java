@@ -36,7 +36,7 @@ import android.widget.Toast;
 
 
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.bluetooth.BluetoothChatService;
+import com.rick.recoveryapp.ui.service.BluetoothChatService;
 
 import java.io.UnsupportedEncodingException;
 

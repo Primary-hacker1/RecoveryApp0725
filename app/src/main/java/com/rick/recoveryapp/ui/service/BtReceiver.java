@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.bluetooth;
+package com.rick.recoveryapp.ui.service;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothA2dp;

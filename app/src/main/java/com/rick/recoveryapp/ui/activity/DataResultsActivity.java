@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import com.github.mikephil.charting.data.Entry;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.chart.ChartStyle;
 import com.rick.recoveryapp.databinding.ActivityDataresultsBinding;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;

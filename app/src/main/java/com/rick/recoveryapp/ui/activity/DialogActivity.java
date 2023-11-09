@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.rick.recoveryapp.R;
 
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
-import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;

@@ -53,7 +53,7 @@
         </activity>
 
         <receiver
-            android:name=".bluetooth.BluetoothConnectActivityReceiver"
+            android:name=".ui.service.BluetoothConnectActivityReceiver"
             android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
@@ -61,12 +61,12 @@
         </receiver>
 
         <service
-            android:name=".bluetooth.BtKeepService"
+            android:name=".ui.service.BtKeepService"
             android:enabled="true"
             android:exported="true" />
 
         <service
-            android:name=".bluetooth.KeepLifeService"
+            android:name=".ui.service.KeepLifeService"
             android:process=":keepLife" />
 
         <activity

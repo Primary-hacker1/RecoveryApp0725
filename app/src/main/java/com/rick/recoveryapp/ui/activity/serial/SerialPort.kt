@@ -1,7 +1,7 @@
 package com.rick.recoveryapp.ui.activity.serial
 
 import com.common.network.LogUtils
-import com.rick.recoveryapp.bluetooth.BtDataPro
+import com.rick.recoveryapp.ui.service.BtDataPro
 import com.rick.recoveryapp.utils.CRC16Util
 
 class SerialPort {

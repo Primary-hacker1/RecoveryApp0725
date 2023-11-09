@@ -22,7 +22,7 @@ import com.rick.recoveryapp.ui.activity.serial.SerialBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort.Type;
 import com.rick.recoveryapp.ui.BaseApplication;
-import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteXBinding;
 import com.rick.recoveryapp.databinding.ActivityManagerBinding;
