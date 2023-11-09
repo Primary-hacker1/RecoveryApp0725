@@ -35,8 +35,8 @@ allprojects {
         androidApplicationId = 'com.rick.recoveryapp'
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         releaseVersionNameSuffix = 33
-        androidVersionName = "1.0.2"
-        androidVersionCode = 2
+        androidVersionName = "1.0.3"
+        androidVersionCode = 3
         apkVersion = "" + androidVersionName
         androidNdkVersion = '22.1.7171670'
         androidMultiDexEnabled = true

@@ -803,8 +803,8 @@ public class PassiveActivity extends XPageActivity {
                 if (UriConfig.test) {
                     uploadData.setBlood("已连接");
                     if (isCloseDialog) {
-//                        uploadData.setHigh("150");
-//                        uploadData.setLow("80");
+                        uploadData.setHigh("150");
+                        uploadData.setLow("80");
                     } else {
                         uploadData.setHigh("120");
                         uploadData.setLow("60");
