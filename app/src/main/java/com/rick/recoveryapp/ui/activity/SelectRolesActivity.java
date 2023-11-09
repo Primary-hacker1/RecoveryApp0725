@@ -60,55 +60,39 @@ public class SelectRolesActivity extends XPageActivity {
     }
 
     public void initClick() {
-        binding.initTxtSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent in = new Intent(context, U3DDialogActivity.class);
-                startActivity(in);
-            }
+        binding.initTxtSetting.setOnClickListener(v -> {
+            Intent in = new Intent(context, U3DDialogActivity.class);
+            startActivity(in);
         });
 
-        binding.initTxtNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!LocalConfig.netWorkCheck(context)) {
-                    Toast.makeText(context, "当前网络异常，请检查网络连接", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        binding.initTxtNext.setOnClickListener(v -> {
+            if (!LocalConfig.netWorkCheck(context)) {
+                Toast.makeText(context, "当前网络异常，请检查网络连接", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                if (LocalConfig.sex < 0) {
-                    Toast.makeText(context, "请先选择角色，再进入情景模式", Toast.LENGTH_SHORT).show();
-                } else {
-                    System.out.println("111111111111111111");
+            if (LocalConfig.sex < 0) {
+                Toast.makeText(context, "请先选择角色，再进入情景模式", Toast.LENGTH_SHORT).show();
+            } else {
+                System.out.println("111111111111111111");
 //                    if (BaseApplication.mConnectService != null)
-                    btDataPro = null;
-                    AdminMainActivity.instance.finish();
-                    Intent intent = new Intent(context, U3DActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putInt("sex", LocalConfig.sex);
-//                    bundle.putString("ip", LocalConfig.ip);
-//                    bundle.putString("medicalNumber", LocalConfig.medicalNumber);
-//                    bundle.putString("userName", LocalConfig.userName);
-//                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    finish();
-                }
+                btDataPro = null;
+                AdminMainActivity.instance.finish();
+                U3DActivity.newU3DActivity(this);
+                finish();
             }
         });
 
-        binding.initImgRole1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (LocalConfig.sex >= 0 && LocalConfig.sex == 3) {
-                    binding.Box1.setChecked(false);
-                    LocalConfig.sex = -1;
-                } else {
-                    LocalConfig.sex = 3;
-                    binding.Box1.setChecked(true);
-                    binding.Box2.setChecked(false);
-                    binding.Box3.setChecked(false);
-                    binding.Box4.setChecked(false);
-                }
+        binding.initImgRole1.setOnClickListener(v -> {
+            if (LocalConfig.sex >= 0 && LocalConfig.sex == 3) {
+                binding.Box1.setChecked(false);
+                LocalConfig.sex = -1;
+            } else {
+                LocalConfig.sex = 3;
+                binding.Box1.setChecked(true);
+                binding.Box2.setChecked(false);
+                binding.Box3.setChecked(false);
+                binding.Box4.setChecked(false);
             }
         });
 

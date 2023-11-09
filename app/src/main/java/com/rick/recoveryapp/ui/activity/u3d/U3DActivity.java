@@ -16,6 +16,8 @@ import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.activity.AdminMainActivity;
 import com.rick.recoveryapp.ui.activity.DataResultsActivity;
 import com.rick.recoveryapp.ui.BaseApplication;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.service.BtKeepService;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.entity.EcgData;
@@ -27,6 +29,7 @@ import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.ActiveTimeTool;
+import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.rick.recoveryapp.utils.view.WaveShowView;
@@ -83,6 +86,10 @@ public class U3DActivity extends UnityPlayerActivity {
     String timecount = "";
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
 
+    public static void newU3DActivity(Context context) {
+        Intent intent = new Intent(context, U3DActivity.class);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,13 +213,23 @@ public class U3DActivity extends UnityPlayerActivity {
                             if (isBegin) {
                                 U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, 5, 1));
                             } else {
-                                U3DActivity.this.runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        u3d_linear_data.setVisibility(View.GONE);
-                                    }
+                                U3DActivity.this.runOnUiThread(() -> {
+                                    u3d_linear_data.setVisibility(View.GONE);
                                 });
                                 UnityPlayer.UnitySendMessage("GameMenue", "OnAndStop", "");
+
                                 U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(1, "53", false, 5, 1));
+
+                                Timer timer = new Timer();
+                                timer.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        AdminMainActivity.newAdminMainActivity(context, new AddressBean());
+                                        finish();
+                                    }
+                                }, 2000);
+
+
                             }
                             initView();
                         },
@@ -800,11 +817,7 @@ public class U3DActivity extends UnityPlayerActivity {
     public String onTimeOut() {
         UnityPlayer.UnitySendMessage("GameMenue", "OnAndPause", "");
 
-        U3DActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                u3d_linear_data.setVisibility(View.VISIBLE);
-            }
-        });
+        U3DActivity.this.runOnUiThread(() -> u3d_linear_data.setVisibility(View.VISIBLE));
         U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(1, "50", false, 5, 1));
         return "倒计时结束";
     }

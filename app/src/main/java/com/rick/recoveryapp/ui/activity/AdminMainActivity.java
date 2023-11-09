@@ -126,6 +126,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             if (bundle == null){
                 return;
             }
+
             AddressBean bean = (AddressBean) bundle.getParcelable("AddressBean");
 
             if(bean==null){
@@ -133,7 +134,16 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             }
 
             LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this,v->{
-                btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
+                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+                if (addressBean != null) {
+                    btDataPro.sendBTMessage(btDataPro.
+                            GetCmdCode(addressBean.getEcg(),
+                                    addressBean.getBloodPressure(),
+                                    addressBean.getBloodOxygen()));
+                }else {
+                    btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
+                }
+
             });
 
 
