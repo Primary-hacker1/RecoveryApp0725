@@ -37,6 +37,8 @@ import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
 import com.rick.recoveryapp.bluetooth.BtDataPro;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
+import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.umeng.commonsdk.UMConfigure;
@@ -56,7 +58,7 @@ import java.util.Objects;
  * Created by Administrator on 2017/4/5.
  */
 
-public class BaseApplication extends Application implements BtReceiver.Listener {
+public class BaseApplication extends Application implements BtReceiver.Listener  {
 
     private static final String tag = BaseApplication.class.getName();
     private static DaoSession daoSession;
@@ -321,18 +323,45 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         }
     };
 
-    public static void GetMac() {
-        macDrDao = daoSession.getMacDrDao();
-        List<MacDr> macDrList = macDrDao.loadAll();
-        if (!macDrList.isEmpty()) {
-            for (int i = 0; i < macDrList.size(); i++) {
-                LocalConfig.bluemac = deleteCharString(macDrList.get(0).getBlueThMac());
-                LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
-                LocalConfig.bloodmac = macDrList.get(0).getBloodMac();
-                LocalConfig.oxygenmac = macDrList.get(0).getOxygenMac();
+    //自动连接
+    @SuppressLint("MissingPermission")
+    public static void AutoConnect() {
+        mConnectService = new BluetoothChatService(mHandler);
+        try {
+
+           AddressBean addressBean =  SharedPreferencesUtils.Companion.getInstance().getAddressString();
+
+            if(addressBean==null){
+                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+                return;
             }
-        } else {
-            Toast.makeText(context, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
+
+            String address = addressBean.getMacAddress();
+
+            if(address == null){
+                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+                return;
+            }
+
+            if(address.isEmpty()){
+                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+                return;
+            }
+
+            address = deleteCharString(address);
+
+            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+
+            String target_device_name = device.getName();
+
+            if (target_device_name.equals(mConnectedDeviceName)) {
+                return;
+            }
+
+            mConnectService.connect(device);
+
+        } catch (Exception e) {
+            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
         }
     }
 
@@ -348,47 +377,6 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         return deleteString.toString();
     }
 
-    //自动连接
-    @SuppressLint("MissingPermission")
-    public static void AutoConnect() {
-        mConnectService = new BluetoothChatService(mHandler);
-        try {
-            GetMac();
-            String address = LocalConfig.bluemac;
-            // ZXJ_BL_006  00:1B:10:F1:EE:7E
-            // 获取设备F
-            if (!address.isEmpty()) {
-                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-                String target_device_name = device.getName();
-                if (target_device_name.equals(mConnectedDeviceName)) {
-                    //  Toast.makeText(this, "已连接" + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                mConnectService.connect(device);
-            }
-            LogUtils.e(tag + address + "--" + "地址获取失败！");
-
-        } catch (Exception e) {
-            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
-        }
-    }
-
-    private void initPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 版本大于等于 Android12 时
-            // 只包括蓝牙这部分的权限，其余的需要什么权限自己添加
-            mPermissionList.add(Manifest.permission.BLUETOOTH_SCAN);
-            mPermissionList.add(Manifest.permission.BLUETOOTH_ADVERTISE);
-            mPermissionList.add(Manifest.permission.BLUETOOTH_CONNECT);
-        } else {
-            // Android 版本小于 Android12 及以下版本
-            mPermissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            mPermissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-
-        ActivityCompat.requestPermissions(getActivity(), mPermissionList.toArray(new String[0]), 1001);
-    }
-
     @Override
     public void foundDev(BluetoothDevice dev) {
 
@@ -396,28 +384,6 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
     @Override
     public void foundBT() {
-        LogUtils.e(tag + "重联蓝牙设备");
-        mConnectService = new BluetoothChatService(mHandler);
-        try {
-            GetMac();
-            String address = LocalConfig.bluemac;
-            // ZXJ_BL_006  00:1B:10:F1:EE:7E
-            if (!address.isEmpty()) {
-                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                String target_device_name = device.getName();
-                if (target_device_name.equals(mConnectedDeviceName)) {
-                    return;
-                }
 
-                mConnectService.connect(device);
-            }
-            LogUtils.e(tag + address + "--" + "地址获取失败！");
-
-        } catch (Exception e) {
-            LogUtils.e(tag + Objects.requireNonNull(e.getMessage()));
-        }
     }
 }

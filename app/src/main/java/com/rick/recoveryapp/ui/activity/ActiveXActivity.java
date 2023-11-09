@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.entity.Constants;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort.Type;
@@ -35,6 +36,7 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
+import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.ActiveTimeTool;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -431,13 +433,26 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     public void initClick() {
         managerBinding.btnTest.setOnClickListener(v -> {
             if (type == Type.SUBJECT) {//被动模式直接发送
-                btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+
+                if (addressBean != null) {
+                    btDataPro.sendBTMessage(btDataPro.
+                            GetCmdCode(addressBean.getEcg(),
+                                    addressBean.getBloodPressure(),
+                                    addressBean.getBloodOxygen()));
+                }
                 return;
             }
 
             if (type == Type.ACTIVE) {//主动模式要判断一下是否可以发送
                 if (LocalConfig.isControl) {
-                    btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                    AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+                    if (addressBean != null) {
+                        btDataPro.sendBTMessage(btDataPro.
+                                GetCmdCode(addressBean.getEcg(),
+                                        addressBean.getBloodPressure(),
+                                        addressBean.getBloodOxygen()));
+                    }
                 }
             }
 

@@ -29,6 +29,8 @@ import com.rick.recoveryapp.greendao.EcgDataDBDao;
 import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
+import com.rick.recoveryapp.ui.activity.serial.AddressBean;
+import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -313,7 +315,13 @@ public class ActiveActivity extends XPageActivity {
             if (!LocalConfig.isControl) {
 
             } else {
-                btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+                if (addressBean != null) {
+                    btDataPro.sendBTMessage(btDataPro.
+                            GetCmdCode(addressBean.getEcg(),
+                                    addressBean.getBloodPressure(),
+                                    addressBean.getBloodOxygen()));
+                }
             }
 
         });

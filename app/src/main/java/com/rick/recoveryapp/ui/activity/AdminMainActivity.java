@@ -42,6 +42,7 @@ import com.rick.recoveryapp.entity.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
+import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.base.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
@@ -185,6 +186,8 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 //    }
 
     public void controlBT() {
+
+
         LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
             if (v instanceof LiveMessage) {
                 LiveMessage msg = (LiveMessage) v;
@@ -195,7 +198,13 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
                         btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-                        btDataPro.sendBTMessage(btDataPro.GetCmdCode(LocalConfig.ecgmac, LocalConfig.bloodmac, LocalConfig.oxygenmac));
+                        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+                        if (addressBean != null) {
+                            btDataPro.sendBTMessage(btDataPro.
+                                    GetCmdCode(addressBean.getEcg(),
+                                            addressBean.getBloodPressure(),
+                                            addressBean.getBloodOxygen()));
+                        }
                     } else {
                         Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
                         binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);

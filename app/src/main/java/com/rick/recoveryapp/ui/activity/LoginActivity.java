@@ -65,6 +65,7 @@ import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
+import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.view.WaveUtil;
@@ -131,8 +132,6 @@ public class LoginActivity extends XPageActivity {
             activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
             sharedPreferences = getSharedPreferences("Personal", MODE_PRIVATE);
             AgainInto();
-
-//            SetMac();
 
             initClick();
 
@@ -285,6 +284,9 @@ public class LoginActivity extends XPageActivity {
                 getString(R.string.lab_yes),
                 (dialog, which) -> {
                     dialog.dismiss();
+
+                    SharedPreferencesUtils.Companion.getInstance().logout();
+
                     XUtil.exitApp();
                 },
                 getString(R.string.lab_no),
@@ -445,7 +447,6 @@ public class LoginActivity extends XPageActivity {
         if (isfer) {
             if (user.equals("admin") && password.equals("123456")) {
                 deleteTime();
-                //  GetMac();
                 if (binding.savePassword.isChecked()) {
                     //把用户名和密码保存在SharedPreferences中
                     sharedPreferences.edit().putBoolean("ck_password", true).apply();
@@ -470,7 +471,6 @@ public class LoginActivity extends XPageActivity {
             String Shpassword = sharedPreferences.getString("password", "");
             if (user.equals(Shname) && password.equals(Shpassword)) {
                 deleteTime();
-                //  GetMac();
                 if (binding.savePassword.isChecked()) {
                     //把用户名和密码保存在SharedPreferences中
                     sharedPreferences.edit().putString("name", user).apply();
@@ -522,20 +522,6 @@ public class LoginActivity extends XPageActivity {
             }
         } catch (Exception ex) {
             Toast.makeText(context, "数据库错误" + ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void GetMac() {
-        List<MacDr> macDrList = macDrDao.loadAll();
-        if (!macDrList.isEmpty()) {
-            for (int i = 0; i < macDrList.size(); i++) {
-                LocalConfig.bluemac = macDrList.get(0).getBlueThMac();
-                LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
-                LocalConfig.bloodmac = macDrList.get(0).getBloodMac();
-                LocalConfig.oxygenmac = macDrList.get(0).getOxygenMac();
-            }
-        } else {
-            Toast.makeText(context, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
         }
     }
 

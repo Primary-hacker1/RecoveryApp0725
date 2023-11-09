@@ -18,6 +18,7 @@ import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.serial.AddressBean;
 import com.rick.recoveryapp.ui.activity.serial.SerialPort;
+import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -45,8 +46,24 @@ public class MacDrDialog extends XPageActivity {
         isfer = intent.getStringExtra("isfer");
 
         macDrDao = LocalConfig.daoSession.getMacDrDao();
-        GetMac();
+
         initClick();
+
+        SharedPreferencesUtils sharedPreferencesUtils =  SharedPreferencesUtils.Companion.getInstance();
+
+        AddressBean addressBean = sharedPreferencesUtils.getAddressString();
+
+        if (addressBean != null) {
+
+            macdialog_bule.setText(addressBean.getMacAddress());
+            macdialog_ecg.setText(addressBean.getEcg());
+            macdialog_blood.setText(addressBean.getBloodPressure());
+            macdialog_oxygen.setText(addressBean.getBloodOxygen());
+
+        } else {
+            Toast.makeText(context, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void initViwe() {
@@ -60,16 +77,15 @@ public class MacDrDialog extends XPageActivity {
 
         if (UriConfig.test) {
 //            String macAddress = "001B10F04B60";
-            String macAddress = "001B10F1EE79";
+            String macAddress = "001B10F1EE6E";
 
+//            String ecgAddress = "E3ADBA1DF806";
+//            String bloodAddress = "A4C138421CF3";
+//            String oxygenAddress = "00A0503BD222";
 
-            String ecgAddress = "E3ADBA1DF806";
-            String bloodAddress = "A4C138421CF3";
-            String oxygenAddress = "00A0503BD222";
-
-//            String ecgAddress = "D208AABB37AE";
-//            String bloodAddress = "A4C13844160C";
-//            String oxygenAddress = "00A0503BCBAC";
+            String ecgAddress = "D208AABB37AE";
+            String bloodAddress = "A4C13844160C";
+            String oxygenAddress = "00A0503BCBAC";
 
             macdialog_bule.setText(macAddress);
             macdialog_ecg.setText(ecgAddress);
@@ -86,104 +102,60 @@ public class MacDrDialog extends XPageActivity {
             @SuppressLint("MissingPermission")
             @Override
             public void onClick(View v) {
-                if (SetMac()) {
-                    if (isfer == null) {
-                        return;
-                    }
-                    if (isfer.equals("Y")) {
-                        String macAddress = macdialog_bule.getText().toString();
-                        String ecgAddress = macdialog_ecg.getText().toString();
-                        String bloodAddress = macdialog_blood.getText().toString();
-                        String oxygenAddress = macdialog_oxygen.getText().toString();
-                        AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
-                                ecgAddress, bloodAddress, oxygenAddress));
-                        finish();
-                    } else if (isfer.equals("setting")) {
-                        DialogLoader.getInstance().showConfirmDialog(
-                                context,
-                                getString(R.string.setting_out),
-                                getString(R.string.lab_ok),
-                                (dialog, which) -> {
-                                    dialog.dismiss();
-                                    if (BaseApplication.mConnectService != null)
-                                        BaseApplication.mConnectService.stop();
-                                    BaseApplication.mBluetoothAdapter.enable();
+                String blue = macdialog_bule.getText().toString();
+                String ecg = macdialog_ecg.getText().toString();
+                String blood = macdialog_blood.getText().toString();
+                String oxygen = macdialog_oxygen.getText().toString();
 
-                                    android.os.Process.killProcess(android.os.Process.myPid());
-                                    System.exit(0);
-                                    XUtil.exitApp();
+                if (blue.length() != 12 || ecg.length() != 12 || blood.length() != 12 || oxygen.length() != 12) {
+                    Toast.makeText(context, "输入框内容不足12位，请检查！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                                },
-                                getString(R.string.lab_null),
-                                (dialog, which) -> dialog.dismiss()
-                        );
+                if (isfer == null) {
+                    return;
+                }
 
-                    }
+                String macAddress = macdialog_bule.getText().toString();
+                String ecgAddress = macdialog_ecg.getText().toString();
+                String bloodAddress = macdialog_blood.getText().toString();
+                String oxygenAddress = macdialog_oxygen.getText().toString();
+
+                SharedPreferencesUtils.Companion.getInstance()
+                        .setAddressString(new AddressBean(macAddress,
+                                ecgAddress,
+                                bloodAddress,
+                                oxygenAddress
+                        ));//sp储存
+
+                if (isfer.equals("Y")) {
+
+                    AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
+                            ecgAddress, bloodAddress, oxygenAddress));
+                    finish();
+                } else if (isfer.equals("setting")) {
+                    DialogLoader.getInstance().showConfirmDialog(
+                            context,
+                            getString(R.string.setting_out),
+                            getString(R.string.lab_ok),
+                            (dialog, which) -> {
+                                dialog.dismiss();
+                                if (BaseApplication.mConnectService != null)
+                                    BaseApplication.mConnectService.stop();
+                                BaseApplication.mBluetoothAdapter.enable();
+
+                                android.os.Process.killProcess(android.os.Process.myPid());
+                                System.exit(0);
+                                XUtil.exitApp();
+
+                            },
+                            getString(R.string.lab_null),
+                            (dialog, which) -> dialog.dismiss()
+                    );
+
                 }
             }
         });
-    }
-
-
-    public void GetMac() {
-        List<MacDr> macDrList = macDrDao.loadAll();
-        if (!macDrList.isEmpty()) {
-            for (int i = 0; i < macDrList.size(); i++) {
-                LocalConfig.bluemac = macDrList.get(0).getBlueThMac();
-                LocalConfig.ecgmac = macDrList.get(0).getEcgMac();
-                LocalConfig.bloodmac = macDrList.get(0).getBloodMac();
-                LocalConfig.oxygenmac = macDrList.get(0).getOxygenMac();
-
-                macdialog_bule.setText(LocalConfig.bluemac);
-                macdialog_ecg.setText(LocalConfig.ecgmac);
-                macdialog_blood.setText(LocalConfig.bloodmac);
-                macdialog_oxygen.setText(LocalConfig.oxygenmac);
-            }
-        } else {
-            Toast.makeText(context, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
-
-        }
-
-    }
-
-    public boolean SetMac() {
-        boolean isSet = false;
-        try {
-
-            String blue = macdialog_bule.getText().toString();
-            String ecg = macdialog_ecg.getText().toString();
-            String blood = macdialog_blood.getText().toString();
-            String oxygen = macdialog_oxygen.getText().toString();
-
-            if (blue.length() != 12 || ecg.length() != 12 || blood.length() != 12 || oxygen.length() != 12) {
-                isSet = false;
-                Toast.makeText(context, "输入框内容不足12位，请检查！", Toast.LENGTH_SHORT).show();
-            } else {
-                macDrDao.deleteAll();
-                List<MacDr> macDrList = macDrDao.loadAll();
-                if (macDrList.size() <= 0) {
-//                    String bluethmac = "00:1B:10:F1:EE:88";
-//                    String ecgmac = "D2:08:AA:BB:37:AE";
-//                    String bloodmac = "A4:C1:38:44:16:0C";
-//                    String oxygen = "00:A0:50:3B:CB:AC";
-                    MacDr macDr = new MacDr();
-                    macDr.setBlueThMac(blue);
-                    macDr.setEcgMac(ecg);
-                    macDr.setBloodMac(blood);
-                    macDr.setOxygenMac(oxygen);
-                    macDrDao.insert(macDr);
-                    Toast.makeText(context, "保存成功！", Toast.LENGTH_LONG).show();
-//                    finish();
-                    isSet = true;
-                }
-            }
-            //先查询数据库是否有Mac地址记录
-        } catch (Exception ex) {
-            isSet = false;
-            Toast.makeText(context, "数据库错误" + ex.getMessage(), Toast.LENGTH_SHORT).show();
-
-        }
-        return isSet;
     }
 
     @Override
