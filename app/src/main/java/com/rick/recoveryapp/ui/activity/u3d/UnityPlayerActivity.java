@@ -75,11 +75,7 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try {
-            mUnityPlayer.destroy();
-        } catch (Exception e){
-            LogUtils.e(e.getMessage());
-        }
+        mUnityPlayer.destroy();
     }
 
     // If the activity is in multi window mode or resizing the activity is allowed we will use
@@ -89,10 +85,8 @@ public class UnityPlayerActivity extends Activity implements IUnityPlayerLifecyc
     @Override
     protected void onStop() {
         super.onStop();
-
         if (!MultiWindowSupport.getAllowResizableWindow(this))
             return;
-
         mUnityPlayer.pause();
     }
 
