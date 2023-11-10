@@ -34,6 +34,7 @@ import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
+import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -405,6 +406,9 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.activeImgBegin.setOnClickListener(v -> {
+            if(BaseUtil.isFastDoubleClick()){
+                return;
+            }
             if (!LocalConfig.isControl) {
                 Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
