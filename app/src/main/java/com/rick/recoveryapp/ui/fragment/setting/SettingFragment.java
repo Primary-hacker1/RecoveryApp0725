@@ -79,7 +79,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
     }
 
     public void initClinck() {
-
         binding.settingBtnUnlock.setOnClickListener(v -> DialogLoader.getInstance().showInputDialog(
                 LocalConfig.SettingContext,
                 R.drawable.icon_warning,
@@ -132,14 +131,12 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
         time = System.currentTimeMillis() - time;//记录时间差
         if (i == 1) {
             flag = dev.getAddress();//第一次点击，获取当前position
-            //    Toast.makeText(LocalConfig.SettingContext, "第一次点击" + flag, Toast.LENGTH_SHORT).show();
             Log.d("onItemClick", "第一次点击" + flag);
         } else {
             //第二次点击，判断是否是当前position
             if (Objects.equals(flag, dev.getAddress())) {
                 if (time < 1000) {
                     //是双击操作
-                    //  Toast.makeText(LocalConfig.SettingContext, "双击了" + flag, Toast.LENGTH_SHORT).show();
                     i = 0;
                     time = 0;
                     Log.d("onItemClick", "双击了" + flag);
@@ -158,7 +155,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
                     i++;//记录点击次数
                     time = System.currentTimeMillis() - time;//继续记录时间差
                     Log.d("onItemClick", "2次点击时间间隔大于1s" + flag);
-                    // Toast.makeText(LocalConfig.SettingContext, "2次点击时间间隔大于1s" + flag, Toast.LENGTH_SHORT).show();
                 }
             } else {
                 //不是，初始化
@@ -221,9 +217,6 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
 
     @Override
     public void foundDev(BluetoothDevice dev) {
-//        if (dev.getName() != null) {
-//            mBtDevAdapter.add(dev);
-//        }
         mBtDevAdapter.add(dev);
     }
 
@@ -237,15 +230,4 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
     public void onDestroy() {
         super.onDestroy();
     }
-
-
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Log.d("position",position+"");
-//    }
-
-//    @Override
-//    public void onItemClick(BluetoothDevice dev) {
-//        Toast.makeText(LocalConfig.SettingContext, "2次点击时间间隔大于1s" + dev.getAddress(), Toast.LENGTH_SHORT).show();
-//    }
 }
