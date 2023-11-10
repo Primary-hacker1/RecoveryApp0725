@@ -18,6 +18,7 @@ package com.rick.recoveryapp.ui.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
@@ -25,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -325,6 +327,17 @@ public class LoginActivity extends XPageActivity {
 //                Intent in = new Intent(context, MacDrDialog.class);
 //                in.putExtra("isfer", "Y");
 //                startActivity(in);
+
+                if (BaseApplication.mConnectService != null)
+                    BaseApplication.mConnectService.stop();
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+
+                BaseApplication.mBluetoothAdapter.enable();
+
+
                 AdminMainActivity.newAdminMainActivity(context, new AddressBean());
                 finish();
             } else {

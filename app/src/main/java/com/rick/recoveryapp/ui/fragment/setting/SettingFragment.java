@@ -31,6 +31,7 @@ import androidx.fragment.app.Fragment;
 
 import com.efs.sdk.base.core.util.Log;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.ui.activity.LoginActivity;
 import com.rick.recoveryapp.ui.activity.MacDrDialog;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
@@ -55,6 +56,8 @@ import java.util.Objects;
 
 public class SettingFragment extends Fragment implements BtReceiver.Listener, BtDevAdapter.Listener {
 
+    public static SettingFragment settingFragment;
+
     FragmentSettingBinding binding;
     MacDrDao macDrDao;
     public static BtReceiver mBtReceiver;
@@ -67,11 +70,13 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        settingFragment = this;
         binding = FragmentSettingBinding.inflate(getLayoutInflater(), container, false);
         macDrDao = LocalConfig.daoSession.getMacDrDao();
         btDataPro = new BtDataPro();
         initClinck();
         GetMac();
+
 
         mBtReceiver = new BtReceiver(LocalConfig.SettingContext, this);//注册蓝牙广播
 

@@ -18,12 +18,15 @@ import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
+import com.rick.recoveryapp.ui.fragment.setting.SettingFragment;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
 import com.xuexiang.xui.widget.button.ButtonView;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xutil.XUtil;
+
+import java.util.Objects;
 
 public class MacDrDialog extends XPageActivity {
     private String tag = MacDrDialog.class.getName();
@@ -146,7 +149,11 @@ public class MacDrDialog extends XPageActivity {
 
                     AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
                             ecgAddress, bloodAddress, oxygenAddress));
+
+                    Objects.requireNonNull(SettingFragment.settingFragment.getActivity()).finish();
+
                     finish();
+
 
 //                    DialogLoader.getInstance().showConfirmDialog(
 //                            context,
