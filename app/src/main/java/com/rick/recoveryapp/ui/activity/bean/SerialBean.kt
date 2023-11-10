@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.ui.activity.serial
+package com.rick.recoveryapp.ui.activity.bean
 
 import com.common.network.LogUtils
 

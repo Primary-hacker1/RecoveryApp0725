@@ -38,9 +38,9 @@ import androidx.core.content.ContextCompat;
 
 
 import com.rick.recoveryapp.ui.activity.helper.Constants;
-import com.rick.recoveryapp.ui.activity.serial.AddressBean;
-import com.rick.recoveryapp.ui.activity.serial.SerialPort;
-import com.rick.recoveryapp.ui.activity.serial.SharedPreferencesUtils;
+import com.rick.recoveryapp.ui.activity.bean.AddressBean;
+import com.rick.recoveryapp.ui.activity.bean.SerialPort;
+import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;

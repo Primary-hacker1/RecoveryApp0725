@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import com.common.base.BaseFrameLayout;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.activity.serial.SerialPort;
+import com.rick.recoveryapp.ui.activity.bean.SerialPort;
 import com.rick.recoveryapp.databinding.ActivityManagerBinding;
 
 

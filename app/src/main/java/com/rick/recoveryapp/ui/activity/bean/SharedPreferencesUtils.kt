@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.ui.activity.serial
+package com.rick.recoveryapp.ui.activity.bean
 
 import android.app.Activity
 import android.content.Context
