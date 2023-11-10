@@ -118,7 +118,7 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 
         if (addressBean != null) {
-            binding.settingMacBloodmac.setCenterString(addressBean.getMacAddress());
+            binding.settingMacBluetooth.setCenterString(addressBean.getMacAddress());
             binding.settingMacEcgmac.setCenterString(addressBean.getEcg());
             binding.settingMacBloodmac.setCenterString(addressBean.getBloodPressure());
             binding.settingMacOxygenmac.setCenterString(addressBean.getBloodOxygen());
