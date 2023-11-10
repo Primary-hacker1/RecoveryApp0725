@@ -18,7 +18,6 @@ package com.rick.recoveryapp.ui.activity;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
@@ -27,7 +26,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -45,29 +43,19 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.databinding.ActivityLoginBinding;
-import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
-import com.rick.recoveryapp.greendao.entity.EcgDataDB;
 import com.rick.recoveryapp.greendao.EcgDataDBDao;
-import com.rick.recoveryapp.greendao.entity.MacDr;
-import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
-import com.rick.recoveryapp.utils.view.WaveUtil;
 import com.xuexiang.xui.utils.StatusBarUtils;
 import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xutil.XUtil;
@@ -76,9 +64,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -93,14 +81,11 @@ public class LoginActivity extends XPageActivity {
     private boolean isHideFirst = true;  // 输入框密码是否是隐藏的，默认为true
     Context context;
     ActivityLoginBinding binding;
-    private final List<String> mPermissionList = new ArrayList<>();
     private static final int REQUEST_COARSE_LOCATION = 0;
     // MiniLoadingDialog mMiniLoadingDialog;
     LocationManager locationManager;
     EcgDataDBDao ecgDataDao;
     MacDrDao macDrDao;
-
-    BtDataPro btDataPro;
     ActivitRecordDao activitRecordDao;
     int uid = 0;
     public static LoginActivity loginActivity;
@@ -176,9 +161,6 @@ public class LoginActivity extends XPageActivity {
 
     //Android12蓝牙权限申请
     private boolean bluePermission() {
-        //compileSdkVersion项目中编译SDK版本大于30申请以下权限可使用
-        //Manifest.permission.BLUETOOTH_SCAN、Manifest.permission.BLUETOOTH_ADVERTISE、Manifest.permission.BLUETOOTH_CONNECT
-        //若小于30可以直接使用权限对应的字符串
         if (Build.VERSION.SDK_INT > 30) {
             if (ContextCompat.checkSelfPermission(this,
                     "android.permission.BLUETOOTH_SCAN")
@@ -309,128 +291,13 @@ public class LoginActivity extends XPageActivity {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    class EcgDataAsyn extends AsyncTask<String, Integer, float[]> {
-
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //mMiniLoadingDialog.show();
-            //  dialog.show();
-        }
-
-        protected void onPostExecute(float[] values) {
-            try {
-                //   mMiniLoadingDialog.dismiss();
-                LoginJudgment();
-                // dialog.dismiss();
-                //checkPermisson();
-                // Toast.makeText(LoginActivity.this, "存储完成！", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-
-            }
-        }
-
-        @Override
-        protected float[] doInBackground(String... params) {
-            //开启事务，提高数据存储效率
-//            dbManager.open();
-//            dbManager.db.beginTransaction();
-            try {
-                String result = WaveUtil.parseJson(context, "ecgData.json");
-                JsonParser parser = new JsonParser();
-                JsonArray jsonArray = parser.parse(result).getAsJsonArray();
-                //   java.lang.IllegalStateException: Not a JSON Array: null
-                Gson gson = new Gson();
-                for (JsonElement obj : jsonArray) {
-                    EcgData ecgData = gson.fromJson(obj, EcgData.class);
-                    Float coorY = ecgData.getCoorY();
-                    EcgDataDB ecgDataDB = new EcgDataDB();
-                    ecgDataDB.setCooY(coorY);
-                    ecgDataDao.insertInTx(ecgDataDB);
-                }
-                List<EcgDataDB> ecgDataDBList;
-                ecgDataDBList = ecgDataDao.loadAll();
-                if (!ecgDataDBList.isEmpty()) {
-                    LocalConfig.ecgDataDBList = ecgDataDBList;
-                    LoginJudgment();
-                }
-            } catch (Exception e) {
-                Log.d("out", Objects.requireNonNull(e.getMessage()));
-            }
-//            float[] ecgdata = new float[jsonArray.size()];
-//
-//            String sql = "delete from tb_EcgData";
-//            // dbManager.exeSqlA(sql);
-//
-//            int i = 0;
-//            //循环遍历获取
-//            try {
-//                for (JsonElement obj : jsonArray) {
-//                    EcgData ecgData = gson.fromJson(obj, EcgData.class);
-//                    Float coorY = ecgData.getCoorY();
-//
-//                    sql = "insert into tb_EcgData (ID,CoorY)values('" + i + "','" + coorY + "')";
-//                    // dbManager.exeSqlA(sql);
-//                    ecgdata[i] = coorY;
-//                    i++;
-//                }
-//                //  dbManager.db.setTransactionSuccessful();
-//
-//            } catch (Exception ex) {
-//                Log.d("tag", ex.getMessage());
-//            } finally {
-////                dbManager.db.endTransaction();
-////                dbManager.closeDB();
-//            }
-            return null;
-        }
-    }
-
-    // 动态申请权限
-    private void initPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 版本大于等于 Android12 时
-            // 只包括蓝牙这部分的权限，其余的需要什么权限自己添加
-            mPermissionList.add(Manifest.permission.BLUETOOTH_SCAN);
-            mPermissionList.add(Manifest.permission.BLUETOOTH_ADVERTISE);
-            mPermissionList.add(Manifest.permission.BLUETOOTH_CONNECT);
-        } else {
-            // Android 版本小于 Android12 及以下版本
-            mPermissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            mPermissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-
-        //    ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 1001);
-        ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 10000);
-
-    }
-
-    public void checkPermisson() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-            if (checkCallPhonePermission != PERMISSION_GRANTED) {
-                //判断是否需要 向用户解释，为什么要申请该权限
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION))
-                    Toast.makeText(this, "动态请求权限", Toast.LENGTH_LONG).show();
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_COARSE_LOCATION);
-                return;
-            } else {
-            }
-        } else {
-        }
-    }
-
     //系统方法,从requestPermissions()方法回调结果
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         //确保是我们的请求
         if (requestCode == REQUEST_COARSE_LOCATION) {
             if (grantResults[0] == PERMISSION_GRANTED) {
-                //  Toast.makeText(this, "权限被授予", Toast.LENGTH_SHORT).show();
                 LocalConfig.falg = true;
-//                if (!isGrantExternalRW(this)) {
-//                    return;
-//                }
             } else {
                 LocalConfig.falg = false;
                 Toast.makeText(context, "权限开启失败，无法连接到蓝牙设备！", Toast.LENGTH_SHORT).show();
@@ -492,38 +359,6 @@ public class LoginActivity extends XPageActivity {
 
     }
 
-    public void SetMac() {
-        if (!UriConfig.test) {
-            return;
-        }
-        try {
-            //先查询数据库是否有Mac地址记录
-            List<MacDr> macDrList = macDrDao.loadAll();
-            if (macDrList.isEmpty()) {
-
-                String bluethmac = "001B10F1EE79";
-//                String bluethmac = "001B10F04B60";
-//                String bluethmac = "001B10F04B5E";
-                String ecgmac = "E3ADBA1DF806";
-                String bloodmac = "A4C138421CF3";
-                String oxygen = "00A0503BD222";
-
-//                String ecgmac = "D208AABB37AE";
-//                String bloodmac = "A4C13844160C";
-//                String oxygen = "00A0503BCBAC";
-
-                MacDr macDr = new MacDr();
-                macDr.setBlueThMac(bluethmac);
-                macDr.setEcgMac(ecgmac);
-                macDr.setBloodMac(bloodmac);
-                macDr.setOxygenMac(oxygen);
-                macDrDao.insert(macDr);
-            }
-        } catch (Exception ex) {
-            Toast.makeText(context, "数据库错误" + ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
     //自动删除2个月前的数据
     public void deleteTime() {
         try {
@@ -533,7 +368,7 @@ public class LoginActivity extends XPageActivity {
             //循环比较时长
             for (ActivitRecord Alist : Rlist) {
 
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd" ,Locale.CHINA);
                 Date curDate = new Date(System.currentTimeMillis());
                 String crentime = formatter.format(curDate);
 
@@ -543,46 +378,10 @@ public class LoginActivity extends XPageActivity {
                 //设置删除的过期时长
                 if (difference >= 7) {
                     activitRecordDao.deleteByKey(RecordID);
-//                    List<RecordDetailed> recordDetailed = recordDetailedDao.queryBuilder().
-//                            where(RecordDetailedDao.Properties.RecordID.eq(RecordID)).build().list();
-//                    recordDetailedDao.deleteInTx(recordDetailed);
                 }
             }
-            //  recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.Id.eq(user.getId())).list();
-
-//            String sql = "select PACKINGSLIPID,UpTime from WMS_PACKING where UPstatic='Y'";
-//            Cursor cursor = dbManager.exeSql(sql);
-//            if (cursor != null && cursor.moveToFirst()) {
-//                //已上传数据的上传时间和pn号=
-//                do {
-//                    String uptime = cursor.getString(cursor.getColumnIndex("UpTime"));
-//                    String packid = cursor.getString(cursor.getColumnIndex("PACKINGSLIPID"));
-//                    //获取当前时间
-//
-//                    //计算时间差
-//                    long difference = dateDiff(uptime, crentime);
-//                    if (difference > 60) {//删除时间差大于60天的数据
-//                        dbManager.open();
-//                        sql = "delete from WMS_PACKING where PACKINGSLIPID='" + packid + "'";
-//                        dbManager.exeSqlA(sql);
-//
-//                        sql = "delete from WMS_PACKINGLINE where PACKINGSLIPID='" + packid + "'";
-//                        dbManager.exeSqlA(sql);
-//
-//                        sql = "delete from WMS_RECORDING where PACKINGSLIPID='" + packid + "'";
-//                        dbManager.exeSqlA(sql);
-//                    }
-//                } while (cursor.moveToNext());
-//            }
-//            //  }
-//            cursor.close();
         } catch (Exception e) {
-            //   toast.setText(e.getMessage());
-            //  org.greenrobot.greendao.DaoException: com.rick.recoveryapp.greendao.ActivitRecordDao@513f3c2 (ACTIVIT_RECORD) does not have a single-column primary key
-            //   android.database.sqlite.SQLiteException: no such column: T._id (code 1 SQLITE_ERROR): , while compiling: SELECT T."_id",T."USER_NAME",T."USER_NUMBER",T."RECORD_TIME" FROM "ACTIVIT_RECORD" T
             Log.d("1", Objects.requireNonNull(e.getMessage()));
-        } finally {
-            // dbManager.closeDB();
         }
     }
 
@@ -590,7 +389,7 @@ public class LoginActivity extends XPageActivity {
     public long dateDiff(String startTime, String endTime) {
         // 按照传入的格式生成一个simpledateformate对象
         //  SimpleDateFormat sd = new SimpleDateFormat(format);
-        SimpleDateFormat sd = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         long nd = 1000 * 24 * 60 * 60;// 一天的毫秒数
         long diff;
         long day = 0;
@@ -608,8 +407,6 @@ public class LoginActivity extends XPageActivity {
                 }
             }
         } catch (Exception e) {
-//            toast.setText(e.getMessage());
-//            toast.show();
         }
         return 0;
     }
@@ -626,9 +423,7 @@ public class LoginActivity extends XPageActivity {
     }
 
     /**
-     * 获取InputMethodManager，隐藏软键盘
-     *
-     * @param token
+     * @param token 获取InputMethodManager，隐藏软键盘
      */
     private void hideKeyboard(IBinder token) {
         if (token != null) {
@@ -651,12 +446,7 @@ public class LoginActivity extends XPageActivity {
                 //指定包名的程序未在运行中
                 Log.d("LoginActivity", "指定包名的程序未在运行中");
             }
-        } else {
-            //应用未安装
-        }
-        // 停止蓝牙通信连接服务
-//        if (BaseApplication.mConnectService  != null)
-//            BaseApplication.mConnectService .stop();
+        }  //应用未安装
     }
 
     /**

@@ -18,7 +18,6 @@ package com.rick.recoveryapp.ui.activity;
 
 import static com.rick.recoveryapp.R.*;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -26,15 +25,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 
 import com.common.network.LogUtils;
@@ -61,6 +56,7 @@ import com.xuexiang.xutil.tip.ToastUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class AdminMainActivity extends XPageActivity implements ClickUtils.OnClick2ExitListener, BtReceiver.Listener {
 
@@ -145,7 +141,6 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                 }else {
                     btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
                 }
-
             });
 
 
@@ -176,47 +171,6 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
         }
     }
 
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        super.onNewIntent(intent);
-//        setIntent(intent);
-//        try {
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            context = this;
-//
-//            //   mBtReceiver = new BtReceiver(context, this);//注册蓝牙广播
-//            // binding.mainTxtBt.setCenterString("蓝牙未连接");
-//            btDataPro = new BtDataPro();
-//            if (LocalConfig.daoSession == null) {
-//                BaseApplication myApp = (BaseApplication) getApplication();
-//                LocalConfig.daoSession = myApp.getDaoSession();
-//
-//            }
-//            initClick();
-//            init();
-//
-//            if (!LocalConfig.isControl) {
-//
-//                binding.mainTxtDate.setCenterString(DateUtil.getWeekOfDate(new Date()));
-//                binding.mainTxtDate.setCenterBottomString(DateUtil.getNowDate());
-////                if (!BaseApplication.mBluetoothAdapter.isEnabled()) {
-////                    //直接开启蓝牙
-////                    BaseApplication.mBluetoothAdapter.enable();
-////                } //否则创建蓝牙连接服务对象
-////                else if (BaseApplication.mConnectService == null) {
-////                    //  BaseApplication.mConnectService = new BluetoothService(BaseApplication.mHandler);
-////                    BaseApplication.AutoConnect();
-////                }
-//                Intent intents = new Intent(this, BtKeepService.class);
-//                startService(intents);
-//            }
-//            controlBT();
-//
-//        } catch (Exception ex) {
-//            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     public void controlBT() {
 
 
@@ -241,12 +195,12 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                         Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
                         binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);
                         binding.mainImgLink.setEnabled(true);
-                        if (!msg.getMessage().equals("")) {
+                        if (!msg.getMessage().isEmpty()) {
                             Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 } catch (Exception e) {
-                    Log.d("AdminMainActivity", e.getMessage());
+                    Log.d("AdminMainActivity", Objects.requireNonNull(e.getMessage()));
                 }
             }
                 });
@@ -276,13 +230,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     }
 
     public void initClick() {
-        //获取GPS现在的状态（打开或是关闭状态）
-        //   boolean gpsEnabled = Settings.Secure.isLocationProviderEnabled(getContentResolver(), LocationManager.GPS_PROVIDER);
-
         binding.mainImgLink.setOnClickListener(v -> {
-//                if (BaseApplication.mConnectService != null) {
-//                    BaseApplication.AutoConnect();
-//                }
             BaseApplication.AutoConnect();
         });
 
@@ -342,47 +290,6 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             startActivity(intent);
             finish();
         });
-    }
-
-//    public void OpenBluetooh() {
-//
-//        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//        if (bluetoothAdapter == null) {
-//            return;
-//        }
-//        if (!bluetoothAdapter.isEnabled()) {
-//            boolean res = bluetoothAdapter.enable();
-//            if (res == true) {
-//                XToastUtils.success("蓝牙已开启");
-//            } else {
-//                XToastUtils.warning("蓝牙开启失败");
-//            }
-//        } else if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
-//            XToastUtils.success("蓝牙已开启");
-//        } else {
-//            XToastUtils.warning("蓝牙开启失败");
-//        }
-//    }
-
-    private void mayRequestLocation() {
-        //  需要定位权限
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(AdminMainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
-        }
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-//            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
-//                //判断是否需要 向用户解释，为什么要申请该权限
-//                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION))
-//                    Toast.makeText(this, "动态请求权限", Toast.LENGTH_LONG).show();
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_COARSE_LOCATION);
-//                return;
-//            } else {
-
-//            }
-//        } else {
-//
-//        }
     }
 
     // 初始化方法
@@ -449,8 +356,6 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
         super.onDestroy();
         Log.d("ActivitytTest", "onDestroy");
         btDataPro = null;
-//        Intent stopIntent = new Intent(this, BtKeepService.class);
-//        stopService(stopIntent);
     }
 
     @Override
