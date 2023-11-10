@@ -32,6 +32,8 @@ import androidx.fragment.app.Fragment;
 import com.efs.sdk.base.core.util.Log;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.activity.MacDrDialog;
+import com.rick.recoveryapp.ui.activity.bean.AddressBean;
+import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.adapter.BtDevAdapter;
 import com.rick.recoveryapp.ui.service.BtDataPro;
 import com.rick.recoveryapp.ui.service.BtReceiver;
@@ -113,17 +115,13 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
     }
 
     public void GetMac() {
-        List<MacDr> macDrList = macDrDao.loadAll();
-        if (!macDrList.isEmpty()) {
-            for (int i = 0; i < macDrList.size(); i++) {
+        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 
-                binding.settingMacBluetooth.setCenterString(macDrList.get(0).getBlueThMac());
-                binding.settingMacEcgmac.setCenterString(macDrList.get(0).getEcgMac());
-                binding.settingMacBloodmac.setCenterString(macDrList.get(0).getBloodMac());
-                binding.settingMacOxygenmac.setCenterString(macDrList.get(0).getOxygenMac());
-            }
-        } else {
-            Toast.makeText(LocalConfig.SettingContext, "蓝牙地址获取失败！", Toast.LENGTH_SHORT).show();
+        if (addressBean != null) {
+            binding.settingMacBloodmac.setCenterString(addressBean.getMacAddress());
+            binding.settingMacEcgmac.setCenterString(addressBean.getEcg());
+            binding.settingMacBloodmac.setCenterString(addressBean.getBloodPressure());
+            binding.settingMacOxygenmac.setCenterString(addressBean.getBloodOxygen());
         }
     }
 
