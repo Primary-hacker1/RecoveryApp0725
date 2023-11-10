@@ -125,6 +125,7 @@ public class MacDrDialog extends XPageActivity {
                                 oxygenAddress
                         ));//sp储存
 
+
                 LogUtils.e(tag + new AddressBean(macAddress,
                         ecgAddress,
                         bloodAddress,
