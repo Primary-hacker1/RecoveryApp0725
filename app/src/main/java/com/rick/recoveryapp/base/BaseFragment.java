@@ -17,10 +17,8 @@ public abstract class BaseFragment extends Fragment {
     public View mView;
 
     /**
-     * 简化 findViewById
-     *
      * @param <T>
-     * @return
+     * @return 简化 findViewById
      */
     protected <T extends View> T find(int viewId) {
         return (T) mView.findViewById(viewId);
