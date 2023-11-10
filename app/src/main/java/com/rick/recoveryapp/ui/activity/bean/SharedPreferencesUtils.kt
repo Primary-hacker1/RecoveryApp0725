@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.fragment.app.Fragment
+import com.common.network.LogUtils
 import com.google.gson.Gson
 import com.rick.recoveryapp.ui.BaseApplication
 
@@ -13,6 +14,8 @@ import com.rick.recoveryapp.ui.BaseApplication
  *@author zt
  */
 class SharedPreferencesUtils private constructor() {
+
+    private val tag = SharedPreferencesUtils::class.java.name
 
     companion object {
         val instance = SharedPreferencesUtils()
@@ -74,6 +77,8 @@ class SharedPreferencesUtils private constructor() {
             return field
         }
         set(phone) {
+            field = phone
+            LogUtils.e(tag + phone .toString())
             val gson = Gson()
             val json = gson.toJson(phone)
             CommonSharedPreferences.setSPValue(ADDRESSBEAN, json)

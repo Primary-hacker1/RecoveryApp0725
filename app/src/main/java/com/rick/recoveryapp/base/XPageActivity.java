@@ -48,7 +48,7 @@ import java.util.List;
  * @since 2018/5/24 下午3:36
  */
 public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
-    private String tag = XPageActivity.class.getSimpleName();
+    public String tag = XPageActivity.class.getSimpleName();
 
     /**
      * 应用中所有XPageActivity的引用

@@ -340,6 +340,8 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
             return;
         }
 
+        LogUtils.e(tag + addressBean);
+
         address = deleteCharString(address);
 
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);

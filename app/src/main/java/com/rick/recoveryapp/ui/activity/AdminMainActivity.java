@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 
+import com.common.network.LogUtils;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SerialPort;
@@ -62,6 +63,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AdminMainActivity extends XPageActivity implements ClickUtils.OnClick2ExitListener, BtReceiver.Listener {
+
 
     Context context;
     Intent intent;
@@ -145,6 +147,28 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                 }
 
             });
+
+
+            AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+
+            if (addressBean == null) {
+                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+                return;
+            }
+
+            String address = addressBean.getMacAddress();
+
+            if (address == null) {
+                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+                return;
+            }
+
+            if (address.isEmpty()) {
+                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+                return;
+            }
+
+            LogUtils.e(tag + addressBean);
 
 
         } catch (Exception ex) {

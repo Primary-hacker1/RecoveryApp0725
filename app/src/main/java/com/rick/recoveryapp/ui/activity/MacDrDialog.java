@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.common.network.LogUtils;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.greendao.MacDrDao;
@@ -25,7 +26,7 @@ import com.xuexiang.xui.widget.dialog.DialogLoader;
 import com.xuexiang.xutil.XUtil;
 
 public class MacDrDialog extends XPageActivity {
-
+    private String tag = MacDrDialog.class.getName();
     EditText macdialog_bule, macdialog_ecg, macdialog_blood, macdialog_oxygen;
     ButtonView macdialog_close, macdialog_save;
     Context context;
@@ -45,7 +46,7 @@ public class MacDrDialog extends XPageActivity {
 
         initClick();
 
-        SharedPreferencesUtils sharedPreferencesUtils =  SharedPreferencesUtils.Companion.getInstance();
+        SharedPreferencesUtils sharedPreferencesUtils = SharedPreferencesUtils.Companion.getInstance();
 
         AddressBean addressBean = sharedPreferencesUtils.getAddressString();
 
@@ -124,30 +125,41 @@ public class MacDrDialog extends XPageActivity {
                                 oxygenAddress
                         ));//sp储存
 
+                LogUtils.e(tag + new AddressBean(macAddress,
+                        ecgAddress,
+                        bloodAddress,
+                        oxygenAddress
+                ));
+
                 if (isfer.equals("Y")) {
 
                     AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
                             ecgAddress, bloodAddress, oxygenAddress));
                     finish();
                 } else if (isfer.equals("setting")) {
-                    DialogLoader.getInstance().showConfirmDialog(
-                            context,
-                            getString(R.string.setting_out),
-                            getString(R.string.lab_ok),
-                            (dialog, which) -> {
-                                dialog.dismiss();
-                                if (BaseApplication.mConnectService != null)
-                                    BaseApplication.mConnectService.stop();
-                                BaseApplication.mBluetoothAdapter.enable();
 
-                                android.os.Process.killProcess(android.os.Process.myPid());
-                                System.exit(0);
-                                XUtil.exitApp();
+                    if (BaseApplication.mConnectService != null)
+                        BaseApplication.mConnectService.stop();
 
-                            },
-                            getString(R.string.lab_null),
-                            (dialog, which) -> dialog.dismiss()
-                    );
+                    BaseApplication.mBluetoothAdapter.enable();
+
+                    AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
+                            ecgAddress, bloodAddress, oxygenAddress));
+                    finish();
+
+//                    DialogLoader.getInstance().showConfirmDialog(
+//                            context,
+//                            getString(R.string.setting_out),
+//                            getString(R.string.lab_ok),
+//                            (dialog, which) -> {
+//                                dialog.dismiss();
+//                                android.os.Process.killProcess(android.os.Process.myPid());
+//                                System.exit(0);
+//                                XUtil.exitApp();
+//                            },
+//                            getString(R.string.lab_null),
+//                            (dialog, which) -> dialog.dismiss()
+//                    );
 
                 }
             }
