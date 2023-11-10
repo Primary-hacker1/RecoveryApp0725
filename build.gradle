@@ -24,7 +24,7 @@ allprojects {
 
     }
     // 兼容m1芯片
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             force 'org.xerial:sqlite-jdbc:3.34.0'
         }
@@ -35,8 +35,8 @@ allprojects {
         androidApplicationId = 'com.rick.recoveryapp'
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         releaseVersionNameSuffix = 33
-        androidVersionName = "1.0.4"
-        androidVersionCode = 4
+        androidVersionName = "1.0.5"
+        androidVersionCode = 5
         apkVersion = "" + androidVersionName
         androidNdkVersion = '22.1.7171670'
         androidMultiDexEnabled = true

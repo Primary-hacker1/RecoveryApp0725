@@ -322,10 +322,11 @@ public class LoginActivity extends XPageActivity {
                 sharedPreferences.edit().putString("name", user).apply();
                 sharedPreferences.edit().putString("password", password).apply();
                 //第一次进入跳转 进入设备蓝牙绑定界面
-                Intent in = new Intent(context, MacDrDialog.class);
-                in.putExtra("isfer", "Y");
-                startActivity(in);
-
+//                Intent in = new Intent(context, MacDrDialog.class);
+//                in.putExtra("isfer", "Y");
+//                startActivity(in);
+                AdminMainActivity.newAdminMainActivity(context, new AddressBean());
+                finish();
             } else {
                 Toast.makeText(context, "请输入正确的登录账号或密码", Toast.LENGTH_SHORT).show();
                 binding.loginEtxtUser.setText("");

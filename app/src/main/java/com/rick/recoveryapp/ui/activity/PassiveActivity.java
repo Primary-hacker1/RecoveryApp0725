@@ -59,7 +59,7 @@ import java.util.TimerTask;
 public class PassiveActivity extends XPageActivity {
 
     private final String tag = PassiveActivity.class.getName();
-    private static boolean isCloseDialog = false;//如果是运动后停止
+    private boolean isCloseDialog = false;//如果是运动后停止
     String motionHeight;//运动前的高压
 
     String motionLow;//运动后的低压
