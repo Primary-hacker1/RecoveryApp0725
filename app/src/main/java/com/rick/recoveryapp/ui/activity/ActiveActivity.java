@@ -116,6 +116,63 @@ public class ActiveActivity extends XPageActivity {
         }
     }
 
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+
+        if (BaseApplication.mConnectService != null) {
+            //蓝牙闲置状态
+            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+                if (BaseApplication.liveMessage != null) {
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
+                    binding.mainImgLink.setEnabled(true);
+                    //监听其他蓝牙主设备
+                    BaseApplication.mConnectService.start();
+                }
+                //蓝牙已连接
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+                if (BaseApplication.liveMessage != null) {
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
+                    binding.mainImgLink.setEnabled(false);
+                }
+            }
+        }
+    }
+
+
+    public void controlBT() {
+        LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
+            if (v instanceof LiveMessage) {
+                LiveMessage msg = (LiveMessage) v;
+                try {
+                    if (msg.getIsConnt()) {
+                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
+                        binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
+                        binding.mainImgLink.setEnabled(false);
+                        Toast.makeText(ActiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
+                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+                        if (addressBean != null) {
+                            btDataPro.sendBTMessage(btDataPro.
+                                    GetCmdCode(addressBean.getEcg(),
+                                            addressBean.getBloodPressure(),
+                                            addressBean.getBloodOxygen()));
+                        }
+                    } else {
+                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
+                        binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
+                        binding.mainImgLink.setEnabled(true);
+                        if (!msg.getMessage().isEmpty()) {
+                            Toast.makeText(ActiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.d("AdminMainActivity", e.getMessage());
+                }
+            }
+        });
+    }
+
     public void PassEcg() {
         timer1 = new Timer();
         timerTask1 = new TimerTask() {
@@ -190,6 +247,10 @@ public class ActiveActivity extends XPageActivity {
                 LiveMessage msg = (LiveMessage) v;
                 if (msg.getState().equals("蓝牙设备未连接")) {
                     isBegin = false;//恢复不然退出不了界面
+                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
+                    binding.mainImgLink.setEnabled(true);
+                    //监听其他蓝牙主设备
+                    BaseApplication.mConnectService.start();
                 }
 
                 if (!msg.getIsConnt()) {
@@ -219,6 +280,9 @@ public class ActiveActivity extends XPageActivity {
                 }
             }
         });
+
+        controlBT();
+
     }
 
     public void SaveRecord() {
@@ -249,29 +313,6 @@ public class ActiveActivity extends XPageActivity {
         Active_B_Diastole_Shrink = "0/0";
         Active_L_Diastole_Shrink = "0/0";
         timeCountTool.setTime(0);
-    }
-
-    @Override
-    public synchronized void onResume() {
-        super.onResume();
-
-        if (BaseApplication.mConnectService != null) {
-            //蓝牙闲置状态
-            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
-                if (BaseApplication.liveMessage != null) {
-                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
-                    binding.mainImgLink.setEnabled(true);
-                    //监听其他蓝牙主设备
-                    BaseApplication.mConnectService.start();
-                }
-                //蓝牙已连接
-            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
-                if (BaseApplication.liveMessage != null) {
-                    binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
-                    binding.mainImgLink.setEnabled(false);
-                }
-            }
-        }
     }
 
     //计算总里程,卡路里

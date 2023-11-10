@@ -2,6 +2,8 @@ package com.rick.recoveryapp.ui.activity.helper;
 
 public interface Constants {
     String BT_CONNECTED = "BT_CONNECTED";//连接状态
+
+    String BLUETOOTH_DISCONNECTS = "BLUETOOTH_DISCONNECTS";//蓝牙断开
     String BT_PROTOCOL = "BT_PROTOCOL";
     String BT_ECG = "BT_ECG";
     String BT_RECONNECTED = "BT_RECONNECTED";//重新连接
