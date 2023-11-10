@@ -135,24 +135,36 @@ public class MacDrDialog extends XPageActivity {
                         oxygenAddress
                 ));
 
-                if (isfer.equals("Y")) {
+                if (BaseApplication.mConnectService != null)
+                    BaseApplication.mConnectService.stop();
 
-                    AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
-                            ecgAddress, bloodAddress, oxygenAddress));
-                    finish();
-                } else if (isfer.equals("setting")) {
+                BaseApplication.mBluetoothAdapter.enable();
 
-                    if (BaseApplication.mConnectService != null)
-                        BaseApplication.mConnectService.stop();
+                AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
+                        ecgAddress, bloodAddress, oxygenAddress));
 
-                    BaseApplication.mBluetoothAdapter.enable();
+                Objects.requireNonNull(SettingFragment.settingFragment.getActivity()).finish();
 
-                    AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
-                            ecgAddress, bloodAddress, oxygenAddress));
+                finish();
 
-                    Objects.requireNonNull(SettingFragment.settingFragment.getActivity()).finish();
-
-                    finish();
+//                if (isfer.equals("Y")) {
+//
+//                    AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
+//                            ecgAddress, bloodAddress, oxygenAddress));
+//                    finish();
+//                } else if (isfer.equals("setting")) {
+//
+//                    if (BaseApplication.mConnectService != null)
+//                        BaseApplication.mConnectService.stop();
+//
+//                    BaseApplication.mBluetoothAdapter.enable();
+//
+//                    AdminMainActivity.newAdminMainActivity(context, new AddressBean(macAddress,
+//                            ecgAddress, bloodAddress, oxygenAddress));
+//
+//                    Objects.requireNonNull(SettingFragment.settingFragment.getActivity()).finish();
+//
+//                    finish();
 
 
 //                    DialogLoader.getInstance().showConfirmDialog(
@@ -169,7 +181,7 @@ public class MacDrDialog extends XPageActivity {
 //                            (dialog, which) -> dialog.dismiss()
 //                    );
 
-                }
+//                }
             }
         });
     }

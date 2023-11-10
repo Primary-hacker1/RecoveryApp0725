@@ -348,9 +348,9 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
         String target_device_name = device.getName();
 
-        if (target_device_name.equals(mConnectedDeviceName)) {
-            return;
-        }
+//        if (target_device_name.equals(mConnectedDeviceName)) {
+//            return;
+//        }
 
         mConnectService.connect(device);
 
