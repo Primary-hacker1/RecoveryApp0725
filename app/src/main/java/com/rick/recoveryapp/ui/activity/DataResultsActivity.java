@@ -105,8 +105,8 @@ public class DataResultsActivity extends XPageActivity {
         List<PowerAVG> avgList = powerAVGDao.queryBuilder().where(PowerAVGDao.Properties.RecordID.eq(RecordID)).list();
         if (!avgList.isEmpty()) {
             for (int i = 0; i < avgList.size(); i++) {
-                left.add(new Entry(i, Float.parseFloat(avgList.get(i).getLeftAvg() + "")));
-                right.add(new Entry(i, Float.parseFloat(avgList.get(i).getRightAvg() + "")));
+                left.add(new Entry(i, Float.parseFloat(avgList.get(i).getLeftAvg())));
+                right.add(new Entry(i, Float.parseFloat(avgList.get(i).getRightAvg())));
                 ReTime.add(i + "");
             }
         }
@@ -116,7 +116,6 @@ public class DataResultsActivity extends XPageActivity {
 
     public void getDetailed() {
         recordDetailedDao = LocalConfig.daoSession.getRecordDetailedDao();
-        /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                         RecordDetailedDao.Properties.Resistance.notEq(0)
                 ).orderDesc(RecordDetailedDao.Properties.RecordTime)
@@ -132,7 +131,6 @@ public class DataResultsActivity extends XPageActivity {
         binding.dataTxtResistance.setCenterString(resistance + "");
 
         DetailedList = null;
-        /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.Speed.notEq(0)
         ).orderDesc(RecordDetailedDao.Properties.RecordTime).list();
@@ -145,7 +143,6 @@ public class DataResultsActivity extends XPageActivity {
         binding.dataTxtSpeed.setCenterString(speed + "");
 
         DetailedList = null;
-        /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.Spasm.notEq(0)
         ).orderDesc(RecordDetailedDao.Properties.RecordTime).list();
@@ -160,20 +157,18 @@ public class DataResultsActivity extends XPageActivity {
         binding.dataTxtSpasm.setCenterString(spasm + "");
 
         DetailedList = null;
-        /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.Hbo2.notEq(0)).orderAsc(RecordDetailedDao.Properties.Hbo2).list();
         if (!DetailedList.isEmpty()) {
             //血氧高低
             binding.dataTxtO2.setCenterString("    " + DetailedList.get(0).getHbo2());
-            binding.dataTxtO2.setCenterBottomString("    " + DetailedList.get(DetailedList.size() - 1).getHbo2() + "");
+            binding.dataTxtO2.setCenterBottomString("    " + DetailedList.get(DetailedList.size() - 1).getHbo2());
         } else {
             binding.dataTxtO2.setCenterString("    0");
             binding.dataTxtO2.setCenterBottomString("    0");
         }
 
         DetailedList = null;
-        /*********************************************/
         DetailedList = recordDetailedDao.queryBuilder().where(RecordDetailedDao.Properties.RecordID.eq(RecordID),
                 RecordDetailedDao.Properties.HeartRate.notEq(0)).orderAsc(RecordDetailedDao.Properties.HeartRate).list();
         if (!DetailedList.isEmpty()) {
@@ -260,7 +255,7 @@ public class DataResultsActivity extends XPageActivity {
                     }
                 }
             } catch (Exception e) {
-                Log.d("Data_db", e.getMessage());
+                Log.d("Data_db", Objects.requireNonNull(e.getMessage()));
             }
         });
 
@@ -292,9 +287,7 @@ public class DataResultsActivity extends XPageActivity {
                     finish();
                 },
                 getString(R.string.lab_no),
-                (dialog, which) -> {
-                    dialog.dismiss();
-                }
+                (dialog, which) -> dialog.dismiss()
         );
 
     }
