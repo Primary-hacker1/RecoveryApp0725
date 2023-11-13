@@ -28,11 +28,6 @@ public class U3DdataActivity extends XPageActivity {
         context = this;
         u3DdataActivity=this;
 
-        binding.u3dBtClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        binding.u3dBtClose.setOnClickListener(v -> finish());
     }
 }

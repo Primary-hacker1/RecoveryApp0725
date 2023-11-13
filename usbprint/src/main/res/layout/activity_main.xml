@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text="返回上一级"
+                tools:layout_editor_absoluteX="142dp"
+                tools:layout_editor_absoluteY="34dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="59dp"
+                    android:onClick="openFile"
+                    android:text="打开"
+                    tools:ignore="OnClick"
+                    tools:layout_editor_absoluteX="142dp"
+                    tools:layout_editor_absoluteY="34dp" />
+
+                <TextView
+                    android:id="@+id/showFilePath"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="选择文件" />
+            </LinearLayout>
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:onClick="doPrintFile"
+                android:text="测试文件打印"
+                tools:ignore="OnClick"
+                tools:layout_editor_absoluteX="142dp"
+                tools:layout_editor_absoluteY="34dp" />
+
+
+
+            <!--            <Button-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:gravity="left|center_vertical"-->
+            <!--                android:onClick="setPrinter"-->
+            <!--                android:text="设置网络打印机"-->
+            <!--                android:visibility="gone"-->
+            <!--                tools:ignore="OnClick"-->
+            <!--                tools:layout_editor_absoluteX="142dp"-->
+            <!--                tools:layout_editor_absoluteY="34dp" />-->
+
+            <Button
+                android:id="@+id/settingbt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:onClick="setUsbPriter"
+                android:text="设置USB打印机"
+                tools:layout_editor_absoluteX="142dp"
+                tools:layout_editor_absoluteY="34dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="打印机列表：" />
+
+            <LinearLayout
+                android:id="@+id/printList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="驱动列表：" />
+
+            <LinearLayout
+                android:id="@+id/driverList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="驱动详细列表：" />
+
+            <LinearLayout
+                android:id="@+id/driverDetailList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
