@@ -467,6 +467,9 @@ public class IntelligenceActivity extends XPageActivity {
         });
 
         binding.inteImgBlood.setOnClickListener(v -> {
+            if(BaseUtil.isFastDoubleClick()){
+                return;
+            }
             if (!LocalConfig.isControl) {
                 Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;

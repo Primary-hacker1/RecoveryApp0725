@@ -28,6 +28,7 @@ import com.rick.recoveryapp.greendao.RecordDetailedDao;
 import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.utils.ActiveTimeTool;
+import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.TimeCountTool;
 import com.rick.recoveryapp.utils.view.WaveShowView;
@@ -198,6 +199,9 @@ public class U3DActivity extends UnityPlayerActivity {
     public void initClick() {
 
         u3d_btn_return.setOnClickListener(v -> {
+            if(BaseUtil.isFastDoubleClick()){
+                return;
+            }
             if (BloodEndState == 1) {
                 //取消测量运动后血压
                 BloodEndState = 2;
@@ -229,6 +233,9 @@ public class U3DActivity extends UnityPlayerActivity {
 
         //开始按钮点击事件
         u3d_img_begin.setOnClickListener(v -> {
+            if(BaseUtil.isFastDoubleClick()){
+                return;
+            }
             try {
                 if (BloodEndState == 1) {
                     Toast.makeText(context, "还未测量运动后血压！", Toast.LENGTH_SHORT).show();
@@ -269,6 +276,9 @@ public class U3DActivity extends UnityPlayerActivity {
 
         //血压测量按钮
         u3d_img_blood.setOnClickListener(v -> {
+            if(BaseUtil.isFastDoubleClick()){
+                return;
+            }
             try {
                 if (isBegin) {
                     Toast.makeText(context, "运动中，请勿测量血压！", Toast.LENGTH_SHORT).show();

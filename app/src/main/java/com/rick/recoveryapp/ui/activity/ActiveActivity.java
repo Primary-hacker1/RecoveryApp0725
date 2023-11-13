@@ -120,7 +120,6 @@ public class ActiveActivity extends XPageActivity {
     @Override
     public synchronized void onResume() {
         super.onResume();
-
         if (BaseApplication.mConnectService != null) {
             //蓝牙闲置状态
             if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
@@ -287,7 +286,6 @@ public class ActiveActivity extends XPageActivity {
     }
 
     public void SaveRecord() {
-
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         String sim = dateFormat.format(date);
@@ -911,7 +909,6 @@ public class ActiveActivity extends XPageActivity {
         );
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -919,5 +916,6 @@ public class ActiveActivity extends XPageActivity {
         LocalConfig.BloodHight = "0";
         LocalConfig.BloodLow = "0";
         TimeCountTool.setClean();
+        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
     }
 }

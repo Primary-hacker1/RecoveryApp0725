@@ -66,14 +66,19 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     Intent intent;
     ActivityMainBinding binding;
     BtDataPro btDataPro;
-    public static AdminMainActivity instance  ;
+    public static AdminMainActivity instance;
 
-    public static void newAdminMainActivity(Context context,AddressBean addressBean) {
+    public static void newAdminMainActivity(Context context, AddressBean addressBean) {
         Intent intent = new Intent(context, AdminMainActivity.class);
-        Bundle bundle=new Bundle();
+        Bundle bundle = new Bundle();
         bundle.putParcelable("AddressBean", addressBean);
         intent.putExtra("bundle", bundle);
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @SuppressLint("MissingPermission")
@@ -88,6 +93,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             context = this;
             instance = this;
+            btDataPro = new BtDataPro();
 
             SharedPreferences shared = getSharedPreferences("Personal", MODE_PRIVATE);
             boolean isfer = shared.getBoolean("isfer", true);
@@ -99,7 +105,6 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             }
             // mBtReceiver = new BtReceiver(context, this);//注册蓝牙广播
             // binding.mainTxtBt.setCenterString("蓝牙未连接");
-            btDataPro = new BtDataPro();
             if (LocalConfig.daoSession == null) {
                 BaseApplication myApp = (BaseApplication) getApplication();
                 LocalConfig.daoSession = myApp.getDaoSession();
@@ -117,29 +122,29 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 
 
             Intent intent = getIntent();
-            if (intent == null){
+            if (intent == null) {
                 return;
             }
             Bundle bundle = intent.getBundleExtra("bundle");
 
-            if (bundle == null){
+            if (bundle == null) {
                 return;
             }
 
             AddressBean bean = (AddressBean) bundle.getParcelable("AddressBean");
 
-            if(bean==null){
+            if (bean == null) {
                 return;
             }
 
-            LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this,v->{
+            LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {
                 AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
                 if (addressBean != null) {
                     btDataPro.sendBTMessage(btDataPro.
                             GetCmdCode(addressBean.getEcg(),
                                     addressBean.getBloodPressure(),
                                     addressBean.getBloodOxygen()));
-                }else {
+                } else {
                     btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
                 }
             });
@@ -173,8 +178,6 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     }
 
     public void controlBT() {
-
-
         LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
             if (v instanceof LiveMessage) {
                 LiveMessage msg = (LiveMessage) v;
@@ -204,13 +207,12 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                     Log.d("AdminMainActivity", Objects.requireNonNull(e.getMessage()));
                 }
             }
-                });
+        });
     }
 
     @Override
     public synchronized void onResume() {
         super.onResume();
-
         if (BaseApplication.mConnectService != null) {
             //蓝牙闲置状态
             if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
@@ -232,7 +234,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 
     public void initClick() {
         binding.mainImgLink.setOnClickListener(v -> {
-            if(BaseUtil.isFastDoubleClick()){
+            if (BaseUtil.isFastDoubleClick()) {
                 return;
             }
             BaseApplication.AutoConnect();
