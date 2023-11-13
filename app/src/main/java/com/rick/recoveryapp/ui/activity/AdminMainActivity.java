@@ -46,6 +46,7 @@ import com.rick.recoveryapp.ui.service.BtKeepService;
 import com.rick.recoveryapp.ui.service.BtReceiver;
 import com.rick.recoveryapp.databinding.ActivityMainBinding;
 import com.rick.recoveryapp.entity.LiveMessage;
+import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.DateUtil;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -231,6 +232,9 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 
     public void initClick() {
         binding.mainImgLink.setOnClickListener(v -> {
+            if(BaseUtil.isFastDoubleClick()){
+                return;
+            }
             BaseApplication.AutoConnect();
         });
 
