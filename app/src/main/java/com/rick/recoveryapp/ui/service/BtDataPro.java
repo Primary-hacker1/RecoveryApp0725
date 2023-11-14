@@ -10,6 +10,7 @@ import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
 import com.rick.recoveryapp.entity.protocol.UploadData;
+import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -57,8 +58,8 @@ public class BtDataPro {
 
     int count = 0;
 
-    int corePoolSize = 1;
-    int maxPoolSize = 1;
+    int corePoolSize = 2;
+    int maxPoolSize = 2;
     long keepAliveTime = 0L;
 
     public String GetCmdCode(String ecgMac, String bloodMac, String oygrenMac) {
@@ -72,6 +73,7 @@ public class BtDataPro {
     }
 
     public void sendBTMessage(String message) {//重写发送函数，参数不同。
+
         if (message.isEmpty()) {
             return;
         }
@@ -87,7 +89,7 @@ public class BtDataPro {
         );
 
         try{
-            executor.execute(new Producer(myQueue));
+            executor.execute(new Producer(myQueue,message));
         }catch (Exception e){
             executor = new ThreadPoolExecutor(
                     corePoolSize,
@@ -96,7 +98,7 @@ public class BtDataPro {
                     TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<>()
             );
-            executor.execute(new Producer(myQueue));
+            executor.execute(new Producer(myQueue,message));
         }
 
         try {
@@ -110,17 +112,6 @@ public class BtDataPro {
             e.printStackTrace();
         }
 
-        byte[] send = new byte[0];// 获取 字符串并告诉BluetoothChatService发送
-
-        try {
-            send = hexStr2Bytes(message);
-        } catch (Exception e) {
-            Log.d("hexStr2Bytes", Objects.requireNonNull(e.getMessage()));
-        }
-
-        BaseApplication.mConnectService.write(send);//回调service
-
-        LogUtils.e("发送完毕: " + Arrays.toString(send));
         // 清空输出缓冲区
         //     mOutStringBuffer.setLength(0);
         //                    Toast.LENGTH_SHORT).show();
@@ -579,19 +570,33 @@ public class BtDataPro {
 
 
     static class Producer implements Runnable {
-        private BlockingQueue<String> queue;
+        private final BlockingQueue<String> queue;
+        private final String data;
 
-        public Producer(BlockingQueue<String> queue) {
+        public Producer(BlockingQueue<String> queue,String data) {
             this.queue = queue;
+            this.data = data;
         }
 
         @Override
         public void run() {
             try {
-                String data = "一个延时的任务，没有任何作用！！";
                 queue.put(data);
+
+                byte[] send = new byte[0];// 获取 字符串并告诉BluetoothChatService发送
+
+                try {
+                    send = hexStr2Bytes(data);
+                } catch (Exception e) {
+                    Log.d("hexStr2Bytes", Objects.requireNonNull(e.getMessage()));
+                }
+
+                BaseApplication.mConnectService.write(send);//回调service
+
                 // 延时300毫秒
                 Thread.sleep(300);
+
+                LogUtils.e("发送完毕: " + Arrays.toString(send));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

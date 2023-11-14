@@ -30,6 +30,7 @@ import com.rick.recoveryapp.R;
 
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -91,6 +92,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                 break;
             case R.id.dialog_next:
                 try {
+//                    if (BaseUtil.isFastDoubleClick()) return;
                     LocalConfig.userName = dialog_name.getText().toString();
                     LocalConfig.medicalNumber = dialog_medicalNumber.getText().toString();
                     LocalConfig.UserID = Long.parseLong(dialog_userid.getText().toString());
@@ -108,7 +110,9 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                         Toast.makeText(context, "患者姓名要求字母或汉字的组合", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+
                     if (LocalConfig.ModType == 0) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);
                         Intent intent = new Intent(this,ActiveActivity.class);
