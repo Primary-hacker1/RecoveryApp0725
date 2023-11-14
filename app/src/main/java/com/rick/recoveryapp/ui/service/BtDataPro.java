@@ -2,6 +2,7 @@ package com.rick.recoveryapp.ui.service;
 
 import android.util.Log;
 
+import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.ui.BaseApplication;
@@ -15,10 +16,12 @@ import com.rick.recoveryapp.utils.LocalConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.*;
 
 public class BtDataPro {
 
@@ -54,6 +57,10 @@ public class BtDataPro {
 
     int count = 0;
 
+    int corePoolSize = 1;
+    int maxPoolSize = 1;
+    long keepAliveTime = 0L;
+
     public String GetCmdCode(String ecgMac, String bloodMac, String oygrenMac) {
         String cmd_head = "A88512",              //包头
                 cmd_end = "ED";                   //结尾
@@ -65,29 +72,63 @@ public class BtDataPro {
     }
 
     public void sendBTMessage(String message) {//重写发送函数，参数不同。
-        // 确保已连接
-        //        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-        //            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
-        //                    .show();
-        //            return;
-        //        }
-        if (!message.isEmpty()) {
-            byte[] send = new byte[0];// 获取 字符串并告诉BluetoothChatService发送
-            try {
-                send = hexStr2Bytes(message);
-            } catch (Exception e) {
-                Log.d("hexStr2Bytes", Objects.requireNonNull(e.getMessage()));
-            }
-            BaseApplication.mConnectService.write(send);//回调service
-            // 清空输出缓冲区
-            //     mOutStringBuffer.setLength(0);
-        }   //            Toast.makeText(this,"发送内容不能为空",
+        if (message.isEmpty()) {
+            return;
+        }
+
+        BlockingQueue<String> myQueue = new LinkedBlockingQueue<>();
+
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                corePoolSize,
+                maxPoolSize,
+                keepAliveTime,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>()
+        );
+
+        try{
+            executor.execute(new Producer(myQueue));
+        }catch (Exception e){
+            executor = new ThreadPoolExecutor(
+                    corePoolSize,
+                    maxPoolSize,
+                    keepAliveTime,
+                    TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>()
+            );
+            executor.execute(new Producer(myQueue));
+        }
+
+        try {
+            // 等待生产者线程完成
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            // 向队列发送停止信号
+            myQueue.put("STOP");
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        byte[] send = new byte[0];// 获取 字符串并告诉BluetoothChatService发送
+
+        try {
+            send = hexStr2Bytes(message);
+        } catch (Exception e) {
+            Log.d("hexStr2Bytes", Objects.requireNonNull(e.getMessage()));
+        }
+
+        BaseApplication.mConnectService.write(send);//回调service
+
+        LogUtils.e("发送完毕: " + Arrays.toString(send));
+        // 清空输出缓冲区
+        //     mOutStringBuffer.setLength(0);
         //                    Toast.LENGTH_SHORT).show();
 
     }
 
     // 将16进制字符串转化为字节数组
-    public static byte[] hexStr2Bytes(String paramString) throws Exception {
+    public static byte[] hexStr2Bytes(String paramString) {
 
         int i = paramString.length() / 2;
         byte[] arrayOfByte = new byte[i];
@@ -404,32 +445,31 @@ public class BtDataPro {
         if (hexstr.size() < 4) {
             return "52";
         } else {
-            String controlState = hexstr.get(3);
-            return controlState;
+            return hexstr.get(3);
         }
 
     }
 
     public static String decToHex(int n) {
-        String r = "";//空字符串
+        StringBuilder r = new StringBuilder();//空字符串
         while (n >= 16) {
             int yushu = n % 16;
             int shang = n / 16;
             if (yushu > 9) {//特殊处理
                 char c = (char) ((yushu - 10) + 'A');
-                r += c;//连接字符c
+                r.append(c);//连接字符c
             } else {
-                r += yushu;
+                r.append(yushu);
             }
             n = shang;
         }
         if (n > 9) {
             char c = (char) ((n - 10) + 'A');
-            r += c;
+            r.append(c);
         } else {
-            r += n;
+            r.append(n);
         }
-        return reverse(r);
+        return reverse(r.toString());
     }
 
     //反转字符串（反转后就是正确顺序的十六进制数：从下到上的顺序）
@@ -492,9 +532,6 @@ public class BtDataPro {
 
     /**
      * 十六进制字符串高低位转换
-     *
-     * @param
-     * @return
      */
     public String reverseHex(String hex) {
         char[] charArray = hex.toCharArray();
@@ -538,6 +575,27 @@ public class BtDataPro {
             number += map.get(str[i]) * Math.pow(16, str.length - 1 - i);
         }
         return number;
+    }
+
+
+    static class Producer implements Runnable {
+        private BlockingQueue<String> queue;
+
+        public Producer(BlockingQueue<String> queue) {
+            this.queue = queue;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String data = "一个延时的任务，没有任何作用！！";
+                queue.put(data);
+                // 延时300毫秒
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
