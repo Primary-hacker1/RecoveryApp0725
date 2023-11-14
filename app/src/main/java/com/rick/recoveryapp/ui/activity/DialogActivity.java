@@ -116,12 +116,12 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
 
                     AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 
-                    if (addressBean != null) {
-                        btDataPro.sendBTMessage(btDataPro.
-                                GetCmdCode(addressBean.getEcg(),
-                                        addressBean.getBloodPressure(),
-                                        addressBean.getBloodOxygen()));
-                    }
+//                    if (addressBean != null) {
+//                        btDataPro.sendBTMessage(btDataPro.
+//                                GetCmdCode(addressBean.getEcg(),
+//                                        addressBean.getBloodPressure(),
+//                                        addressBean.getBloodOxygen()));
+//                    }
 
                     if (LocalConfig.ModType == 0) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);

@@ -194,17 +194,6 @@ public class PassiveActivity extends XPageActivity {
 
                     DataDisplay(msg.getObjectName(), msg.getObjectJson());
 
-                    int mark = 0;
-                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                        mark = 1;
-                    } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
-                        mark = 2;
-                    } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
-                        mark = 3;
-                    }
-
-//                    LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
-
                 } else {
                     Log.d("BT", "没有任何数据");
                 }
@@ -219,17 +208,6 @@ public class PassiveActivity extends XPageActivity {
                 PoolMessage msg = (PoolMessage) v;
 
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
-
-                int mark = 0;
-                if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
-                    mark = 1;
-                } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
-                    mark = 2;
-                } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
-                    mark = 3;
-                }
-
-//                LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
 
                 if (isBegin) {
                     UpdatProgress();
@@ -850,7 +828,7 @@ public class PassiveActivity extends XPageActivity {
             mark = 3;
         }
 
-//        LogUtils.e(tag + "mark" + mark + ObjectJson);
+        LogUtils.e(tag + "mark" + mark + ObjectJson);
 
         switch (mark) {
             case 1:
