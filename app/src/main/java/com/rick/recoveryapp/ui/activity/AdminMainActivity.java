@@ -138,38 +138,20 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             }
 
             LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {
-                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
-                if (addressBean != null) {
-                    btDataPro.sendBTMessage(btDataPro.
-                            GetCmdCode(addressBean.getEcg(),
-                                    addressBean.getBloodPressure(),
-                                    addressBean.getBloodOxygen()));
-                } else {
-                    btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
+                if(BaseUtil.isFastDoubleClick()){
+                    return;
                 }
+//                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+//                if (addressBean != null) {
+//                    btDataPro.sendBTMessage(btDataPro.
+//                            GetCmdCode(addressBean.getEcg(),
+//                                    addressBean.getBloodPressure(),
+//                                    addressBean.getBloodOxygen()));
+//                } else {
+//                    btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
+//                }
+//                LogUtils.e(tag + addressBean);
             });
-
-
-            AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
-
-            if (addressBean == null) {
-                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
-                return;
-            }
-
-            String address = addressBean.getMacAddress();
-
-            if (address == null) {
-                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
-                return;
-            }
-
-            if (address.isEmpty()) {
-                LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
-                return;
-            }
-
-            LogUtils.e(tag + addressBean);
 
 
         } catch (Exception ex) {
@@ -188,13 +170,13 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
                         btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-                        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
-                        if (addressBean != null) {
-                            btDataPro.sendBTMessage(btDataPro.
-                                    GetCmdCode(addressBean.getEcg(),
-                                            addressBean.getBloodPressure(),
-                                            addressBean.getBloodOxygen()));
-                        }
+//                        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+//                        if (addressBean != null) {
+//                            btDataPro.sendBTMessage(btDataPro.
+//                                    GetCmdCode(addressBean.getEcg(),
+//                                            addressBean.getBloodPressure(),
+//                                            addressBean.getBloodOxygen()));
+//                        }
                     } else {
                         Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
                         binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);

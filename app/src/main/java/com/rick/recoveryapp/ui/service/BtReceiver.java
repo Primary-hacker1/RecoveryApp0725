@@ -84,7 +84,7 @@ public class BtReceiver extends BroadcastReceiver {
                 }
 
 
-                LogUtils.e(TAG + "STATE:  " + state + "---"+ "LocalConfig.isControl= "
+                LogUtils.e(TAG + "STATE:  " + state + "---" + "LocalConfig.isControl= "
                         + LocalConfig.isControl);
                 break;
             case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
@@ -121,15 +121,7 @@ public class BtReceiver extends BroadcastReceiver {
                 rdMessage = new RDMessage();
                 rdMessage.setIsConnt(false);
                 rdMessage.setState("蓝牙设备已重联");
-
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        LiveDataBus.get().with(Constants.BT_RECONNECTED).postValue(rdMessage);
-                    }
-                }, 2000);
-
+                LiveDataBus.get().with(Constants.BT_RECONNECTED).postValue(rdMessage);
 
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:

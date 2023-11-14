@@ -15,6 +15,7 @@ import com.common.network.LogUtils;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.greendao.MacDrDao;
+import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
@@ -76,21 +77,10 @@ public class MacDrDialog extends XPageActivity {
 
 
         if (UriConfig.test) {
-//            String macAddress = "001B10F04B60";
-            String macAddress = "001B10F1EE6E";
-
-            String ecgAddress = "E3ADBA1DF806";
-            String bloodAddress = "A4C138421CF3";
-            String oxygenAddress = "00A0503BD222";
-
-//            String ecgAddress = "D208AABB37AE";
-//            String bloodAddress = "A4C13844160C";
-//            String oxygenAddress = "00A0503BCBAC";
-
-            macdialog_bule.setText(macAddress);
-            macdialog_ecg.setText(ecgAddress);
-            macdialog_blood.setText(bloodAddress);
-            macdialog_oxygen.setText(oxygenAddress);
+            macdialog_bule.setText(Constants.macAddress);
+            macdialog_ecg.setText(Constants.ecgAddress);
+            macdialog_blood.setText(Constants.bloodAddress);
+            macdialog_oxygen.setText(Constants.oxygenAddress);
         }
     }
 

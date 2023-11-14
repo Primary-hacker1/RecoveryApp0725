@@ -194,6 +194,17 @@ public class PassiveActivity extends XPageActivity {
 
                     DataDisplay(msg.getObjectName(), msg.getObjectJson());
 
+                    int mark = 0;
+                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                        mark = 1;
+                    } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
+                        mark = 2;
+                    } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
+                        mark = 3;
+                    }
+
+                    LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
+
                 } else {
                     Log.d("BT", "没有任何数据");
                 }
@@ -206,7 +217,20 @@ public class PassiveActivity extends XPageActivity {
         LiveDataBus.get().with(Constants.BT_ECG).observe(this, v -> {
             if (v instanceof PoolMessage) {
                 PoolMessage msg = (PoolMessage) v;
+
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
+
+                int mark = 0;
+                if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                    mark = 1;
+                } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
+                    mark = 2;
+                } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
+                    mark = 3;
+                }
+
+                LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
+
                 if (isBegin) {
                     UpdatProgress();
                 }
@@ -281,7 +305,7 @@ public class PassiveActivity extends XPageActivity {
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(PassiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+//                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
                         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
                         if (addressBean != null) {
                             btDataPro.sendBTMessage(btDataPro.
@@ -826,7 +850,7 @@ public class PassiveActivity extends XPageActivity {
             mark = 3;
         }
 
-        LogUtils.e(tag + "mark" + mark + ObjectJson);
+//        LogUtils.e(tag + "mark" + mark + ObjectJson);
 
         switch (mark) {
             case 1:
