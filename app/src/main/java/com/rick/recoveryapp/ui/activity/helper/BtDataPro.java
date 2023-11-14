@@ -6,18 +6,15 @@ import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.ui.BaseApplication;
-import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
 import com.rick.recoveryapp.entity.protocol.UploadData;
-import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -596,10 +593,22 @@ public class BtDataPro {
                 // 延时300毫秒
                 Thread.sleep(300);
 
-                LogUtils.e("发送完毕: " + Arrays.toString(send));
+                LogUtils.e("发送串口消息完毕: " + deleteCharString(data));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+
+        public String deleteCharString(String sourceString) {
+            StringBuilder deleteString = new StringBuilder();
+            for (int i = 0; i < sourceString.length(); i++) {
+                if (i % 2 == 1) {
+                    deleteString.append(sourceString.charAt(i)).append(" ");
+                } else {
+                    deleteString.append(sourceString.charAt(i));
+                }
+            }
+            return deleteString.toString();
         }
     }
 

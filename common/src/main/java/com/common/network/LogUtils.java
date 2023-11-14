@@ -31,9 +31,9 @@ public class LogUtils {
     }
 
     private static String createLog(String log) {
-        return "================" +
+        return "==========" +
                 methodName +
-                "(" + className + ":" + lineNumber + ")================:" +
+                "(" + className + ":" + lineNumber + ")==========:" +
                 log;
     }
 

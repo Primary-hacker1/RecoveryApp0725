@@ -418,7 +418,7 @@ public class PassiveActivity extends XPageActivity {
             if (BaseUtil.isFastDoubleClick()) {
                 return;
             }
-            LogUtils.e(tag + "点击了一次开始");
+//            LogUtils.e(tag + "点击了一次开始");
             if (!LocalConfig.isControl) {
                 Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
@@ -826,7 +826,7 @@ public class PassiveActivity extends XPageActivity {
             mark = 3;
         }
 
-//        LogUtils.e(tag + "mark" + mark + ObjectJson);
+        LogUtils.e(tag + "mark" + mark + ObjectJson);
 
         switch (mark) {
             case 1:

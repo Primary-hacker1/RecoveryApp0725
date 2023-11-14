@@ -221,7 +221,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             liveMessage.setMessage("已连接到 " + mConnectedDeviceName);
                             liveMessage.setState(mConnectedDeviceName);
                             LiveDataBus.get().with(Constants.BT_CONNECTED).postValue(liveMessage);
-                            LogUtils.e(tag + "已连接到 " + mConnectedDeviceName);
+                            LogUtils.d(tag + "已连接到 " + mConnectedDeviceName);
                             break;
 
                         case BluetoothChatService.STATE_CONNECTING:
@@ -230,7 +230,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             liveMessage.setMessage("");//正在连接。。。
                             liveMessage.setState("");
                             LiveDataBus.get().with(Constants.BT_CONNECTED).postValue(liveMessage);
-                            LogUtils.e(tag + "正在连接。。。 ");
+                            LogUtils.d(tag + "正在连接。。。 ");
                             break;
 
                         case BluetoothChatService.STATE_LISTEN:
@@ -324,23 +324,23 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 
         if (addressBean == null) {
-            LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+            LogUtils.d(tag + addressBean + "--" + "地址获取失败！");
             return;
         }
 
         String address = addressBean.getMacAddress();
 
         if (address == null) {
-            LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+            LogUtils.d(tag + addressBean + "--" + "地址获取失败！");
             return;
         }
 
         if (address.isEmpty()) {
-            LogUtils.e(tag + addressBean + "--" + "地址获取失败！");
+            LogUtils.d(tag + addressBean + "--" + "地址获取失败！");
             return;
         }
 
-        LogUtils.e(tag + addressBean);
+        LogUtils.d(tag + addressBean);
 
         address = deleteCharString(address);
 
