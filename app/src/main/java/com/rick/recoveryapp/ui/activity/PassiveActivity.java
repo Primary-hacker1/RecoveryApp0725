@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 
 import com.common.network.LogUtils;
@@ -48,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -110,7 +112,7 @@ public class PassiveActivity extends XPageActivity {
         btDataPro = new BtDataPro();
         itinClick();
         binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
-        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber + "");
+        binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber);
         BaseApplication myApp = (BaseApplication) getApplication();
         LocalConfig.daoSession = myApp.getDaoSession();
         activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
@@ -296,7 +298,7 @@ public class PassiveActivity extends XPageActivity {
                         }
                     }
                 } catch (Exception e) {
-                    Log.d("AdminMainActivity", e.getMessage());
+                    Log.d("AdminMainActivity", Objects.requireNonNull(e.getMessage()));
                 }
             }
         });
@@ -305,7 +307,7 @@ public class PassiveActivity extends XPageActivity {
     public void SaveRecord() {
 
         Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         String sim = dateFormat.format(date);
         ActivitRecord activitRecord = new ActivitRecord();
         activitRecord.setRecordID(LocalConfig.UserID);
@@ -386,7 +388,7 @@ public class PassiveActivity extends XPageActivity {
                 //取消测量运动后血压
                 BloodEndState = 2;
             } else if (BloodEndState == 0) {
-                dialogs(true);
+                dialogs();
             }
         });
 
@@ -413,9 +415,10 @@ public class PassiveActivity extends XPageActivity {
         });
 
         binding.passiveImgBegin.setOnClickListener(v -> {
-            if(BaseUtil.isFastDoubleClick()){
+            if (BaseUtil.isFastDoubleClick()) {
                 return;
             }
+            LogUtils.e(tag + "点击了一次开始");
             if (!LocalConfig.isControl) {
                 Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
@@ -678,7 +681,10 @@ public class PassiveActivity extends XPageActivity {
 
                             binding.passiveTimeJia.setVisibility(View.INVISIBLE);
                             binding.passiveTimeJian.setVisibility(View.INVISIBLE);
-                            binding.passiveImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
+
+
+                            binding.passiveImgBegin.setBackground(ContextCompat
+                                    .getDrawable(this, R.drawable.stop));
 
                             binding.passiveTxtBegin.setCenterString("停  止");
                             initCountDownTimer(nowTime);
@@ -698,7 +704,8 @@ public class PassiveActivity extends XPageActivity {
 
                 binding.passiveTimeJia.setVisibility(View.INVISIBLE);
                 binding.passiveTimeJian.setVisibility(View.INVISIBLE);
-                binding.passiveImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
+                binding.passiveImgBegin.setBackground(ContextCompat
+                        .getDrawable(this, R.drawable.stop));
 
                 binding.passiveTxtBegin.setCenterString("停  止");
                 initCountDownTimer(nowTime);
@@ -762,19 +769,6 @@ public class PassiveActivity extends XPageActivity {
                         startActivity(in);
                         finish();
                     }
-//                    if (modleType == 1) {
-//                        LocalConfig.ModType = 0;
-//                        Intent in = new Intent(context, ActiveActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
-//                    } else if (modleType == 2) {
-//                        LocalConfig.ModType = 2;
-//                        Intent in = new Intent(context, IntelligenceActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
-//                    }
                 },
                 getString(R.string.lab_no),
                 (dialog, which) -> {
@@ -790,19 +784,19 @@ public class PassiveActivity extends XPageActivity {
                 //设定时间
                 cmd_end = "ED";                   //结尾
         String zuliHex = "00";
-        String spasmsHex = "0" + btDataPro.decToHex(spasms_lv);
+        String spasmsHex = "0" + BtDataPro.decToHex(spasms_lv);
         String speedHex = "";
         if (speed_lv >= 16) {
-            speedHex = btDataPro.decToHex(speed_lv);
+            speedHex = BtDataPro.decToHex(speed_lv);
         } else {
-            speedHex = "0" + btDataPro.decToHex(speed_lv);
+            speedHex = "0" + BtDataPro.decToHex(speed_lv);
         }
 
         String timeHex = "";
         if (time_lv >= 16) {
-            timeHex = btDataPro.decToHex(Math.toIntExact(time_lv));
+            timeHex = BtDataPro.decToHex(Math.toIntExact(time_lv));
         } else {
-            timeHex = "0" + btDataPro.decToHex(Math.toIntExact(time_lv));
+            timeHex = "0" + BtDataPro.decToHex(Math.toIntExact(time_lv));
         }
 
         String avtive_status = "10";
@@ -832,7 +826,7 @@ public class PassiveActivity extends XPageActivity {
             mark = 3;
         }
 
-        LogUtils.e(tag + "mark" + mark + ObjectJson);
+//        LogUtils.e(tag + "mark" + mark + ObjectJson);
 
         switch (mark) {
             case 1:
@@ -906,7 +900,7 @@ public class PassiveActivity extends XPageActivity {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
 
-                            LogUtils.e(tag + "uploadData.getHigh()==" + uploadData.getHigh());
+//                            LogUtils.e(tag + "uploadData.getHigh()==" + uploadData.getHigh());
 
                             if (!Objects.equals(motionHeight, uploadData.getHigh())) {
                                 motionHeight = uploadData.getHigh();
@@ -915,7 +909,7 @@ public class PassiveActivity extends XPageActivity {
                                 }
                             }
 
-                            LogUtils.e(tag + "motionHeight==" + motionHeight + motionLow);
+//                            LogUtils.e(tag + "motionHeight==" + motionHeight + motionLow);
                         }
                         binding.passiveTxtBloodstate1.setCenterString("");
                         binding.passiveTxtBloodstate2.setCenterString("");
@@ -941,7 +935,8 @@ public class PassiveActivity extends XPageActivity {
                     if (isBegin) {
                         isBegin = false;
                         stop();
-                        binding.passiveImgBegin.setBackground(getResources().getDrawable(R.drawable.begin));
+                        binding.passiveImgBegin.setBackground(ContextCompat
+                                .getDrawable(this, R.drawable.begin));
                         binding.passiveTxtBegin.setCenterString("开  始");
                         nowTime = Integer.parseInt(uploadData.getSTtime()) * 60 * 1000L;
                         activeTime = MyTimeUtils.Getminute(nowTime);
@@ -1013,7 +1008,8 @@ public class PassiveActivity extends XPageActivity {
 
                     binding.passiveTimeJia.setVisibility(View.INVISIBLE);
                     binding.passiveTimeJian.setVisibility(View.INVISIBLE);
-                    binding.passiveImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
+                    binding.passiveImgBegin.setBackground(ContextCompat
+                            .getDrawable(this, R.drawable.stop));
                     binding.passiveTxtBegin.setCenterString("停  止");
                     if (downTimer == null) {
                         initCountDownTimer(nowTime);
@@ -1052,24 +1048,21 @@ public class PassiveActivity extends XPageActivity {
                         //  binding.passiveWaveviewOne.showLine(0f);
                         return;
                     } else {
-                        for (int i = 0; i < EcgListData.size(); i++) {
-                            Float cooY = EcgListData.get(i);
-                            OftenListData.add(cooY);
-                        }
+                        OftenListData.addAll(EcgListData);
                     }
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d("ArrayList", e.getMessage());
+                    Log.d("ArrayList", Objects.requireNonNull(e.getMessage()));
                 }
                 break;
 
             case 3:
                 ContorlState = ObjectJson;
-                if (ContorlState.equals("51")) {
-                    //  binding.passiveTxtBlood.setCenterString("测量中");
-                } else if (ContorlState.equals("52")) {
-                    //  binding.passiveTxtBlood.setCenterString("点击开始测量血压");
-                }
+//                if (ContorlState.equals("51")) {
+                //  binding.passiveTxtBlood.setCenterString("测量中");
+//                } else if (ContorlState.equals("52")) {
+                //  binding.passiveTxtBlood.setCenterString("点击开始测量血压");
+//                }
                 break;
         }
     }
@@ -1081,7 +1074,7 @@ public class PassiveActivity extends XPageActivity {
         try {
 
             Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
             String sim = dateFormat.format(date);
 
             RecordDetailed recordDetailed = new RecordDetailed();
@@ -1125,13 +1118,13 @@ public class PassiveActivity extends XPageActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            dialogs(true);
+            dialogs();
             return false;
         }
         return true;
     }
 
-    public void dialogs(boolean isReturn) {
+    public void dialogs() {
         //  timeTask.interrupt();
         DialogLoader.getInstance().showConfirmDialog(
                 context,

@@ -1237,7 +1237,7 @@
                 android:orientation="vertical"
                 app:xui_radius="2dp">
 
-                <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/passive_img_begin"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
