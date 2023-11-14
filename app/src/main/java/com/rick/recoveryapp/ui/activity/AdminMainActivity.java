@@ -138,9 +138,10 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             }
 
             LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {
-                if(BaseUtil.isFastDoubleClick()){
+                if (BaseUtil.isFastDoubleClick()) {
                     return;
                 }
+
 //                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 //                if (addressBean != null) {
 //                    btDataPro.sendBTMessage(btDataPro.
@@ -150,6 +151,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
 //                } else {
 //                    btDataPro.sendBTMessage(SerialPort.Companion.sendCmdAddress(bean));
 //                }
+
 //                LogUtils.e(tag + addressBean);
             });
 

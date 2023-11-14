@@ -203,7 +203,7 @@ public class PassiveActivity extends XPageActivity {
                         mark = 3;
                     }
 
-                    LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
+//                    LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
 
                 } else {
                     Log.d("BT", "没有任何数据");
@@ -229,7 +229,7 @@ public class PassiveActivity extends XPageActivity {
                     mark = 3;
                 }
 
-                LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
+//                LogUtils.e(tag + "mark" + mark + msg.getObjectJson());
 
                 if (isBegin) {
                     UpdatProgress();

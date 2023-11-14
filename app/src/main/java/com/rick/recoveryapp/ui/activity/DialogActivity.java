@@ -28,6 +28,8 @@ import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
 
+import com.rick.recoveryapp.ui.activity.bean.AddressBean;
+import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.utils.HideKeyboard;
@@ -111,6 +113,15 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                     }
 
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+
+                    AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+
+                    if (addressBean != null) {
+                        btDataPro.sendBTMessage(btDataPro.
+                                GetCmdCode(addressBean.getEcg(),
+                                        addressBean.getBloodPressure(),
+                                        addressBean.getBloodOxygen()));
+                    }
 
                     if (LocalConfig.ModType == 0) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);

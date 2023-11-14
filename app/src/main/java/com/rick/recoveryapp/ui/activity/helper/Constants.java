@@ -17,6 +17,7 @@ public interface Constants {
 
     //            String ecgAddress = "D208AABB37AE";
     String bloodAddress = "A4C13844160C";
+
 //            String oxygenAddress = "00A0503BCBAC";
 
 }
