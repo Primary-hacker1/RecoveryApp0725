@@ -15,7 +15,7 @@ import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityIntelligenceBinding;
 import com.rick.recoveryapp.ui.activity.helper.Constants;

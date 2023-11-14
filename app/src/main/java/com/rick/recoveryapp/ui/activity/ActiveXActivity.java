@@ -22,7 +22,7 @@ import com.rick.recoveryapp.ui.activity.bean.SerialBean;
 import com.rick.recoveryapp.ui.activity.bean.SerialPort;
 import com.rick.recoveryapp.ui.activity.bean.SerialPort.Type;
 import com.rick.recoveryapp.ui.BaseApplication;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteXBinding;
 import com.rick.recoveryapp.databinding.ActivityManagerBinding;

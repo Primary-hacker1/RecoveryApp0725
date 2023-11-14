@@ -31,16 +31,14 @@ import androidx.fragment.app.Fragment;
 
 import com.efs.sdk.base.core.util.Log;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.activity.LoginActivity;
 import com.rick.recoveryapp.ui.activity.MacDrDialog;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.adapter.BtDevAdapter;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.ui.service.BtReceiver;
 import com.rick.recoveryapp.databinding.FragmentSettingBinding;
 import com.rick.recoveryapp.greendao.MacDrDao;
-import com.rick.recoveryapp.greendao.entity.MacDr;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.rick.recoveryapp.utils.XToastUtils;
 import com.xuexiang.xui.utils.KeyboardUtils;

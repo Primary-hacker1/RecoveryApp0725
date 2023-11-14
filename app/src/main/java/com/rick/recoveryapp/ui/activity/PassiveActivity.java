@@ -21,7 +21,7 @@ import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityPassiveBinding;
 import com.rick.recoveryapp.entity.EcgData;

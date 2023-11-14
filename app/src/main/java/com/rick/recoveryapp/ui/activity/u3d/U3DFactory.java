@@ -2,7 +2,7 @@ package com.rick.recoveryapp.ui.activity.u3d;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.entity.ConnectData;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LocalConfig;

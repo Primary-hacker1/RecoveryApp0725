@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.ui.activity.u3d.U3DDialogActivity;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.databinding.ActivitySelectrolesBinding;
 import com.rick.recoveryapp.utils.APKVersionInfoUtils;
 import com.rick.recoveryapp.utils.LocalConfig;

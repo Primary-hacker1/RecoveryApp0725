@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.ui.service;
+package com.rick.recoveryapp.ui.activity.helper;
 
 import android.util.Log;
 

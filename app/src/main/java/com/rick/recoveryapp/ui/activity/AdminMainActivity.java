@@ -41,7 +41,7 @@ import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.ui.service.BtKeepService;
 import com.rick.recoveryapp.ui.service.BtReceiver;
 import com.rick.recoveryapp.databinding.ActivityMainBinding;

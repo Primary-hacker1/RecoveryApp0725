@@ -27,7 +27,7 @@ import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
-import com.rick.recoveryapp.ui.service.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.LiveDataBus;

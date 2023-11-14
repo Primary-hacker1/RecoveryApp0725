@@ -29,8 +29,7 @@ import android.widget.Toast;
 import com.rick.recoveryapp.R;
 
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
-import com.rick.recoveryapp.ui.service.BtDataPro;
-import com.rick.recoveryapp.utils.BaseUtil;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -156,9 +155,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
     }
 
     /**
-     * 获取InputMethodManager，隐藏软键盘
-     *
-     * @param token
+     * @param token 获取InputMethodManager，隐藏软键盘
      */
     private void hideKeyboard(IBinder token) {
         if (token != null) {
