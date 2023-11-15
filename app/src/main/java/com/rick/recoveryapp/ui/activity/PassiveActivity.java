@@ -16,6 +16,8 @@ import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
+import com.rick.recoveryapp.base.BaseDialogFragment;
+import com.rick.recoveryapp.ui.fragment.DialogFragment;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
@@ -666,12 +668,12 @@ public class PassiveActivity extends XPageActivity {
     }
 
     public void HandlerMessage() {
-        String txts = binding.passiveTxtBegin.getCenterString();
-        if (txts.equals("开  始") && nowTime != 0) {
+        String txt = binding.passiveTxtBegin.getCenterString();
+        if (txt.equals("开  始") && nowTime != 0) {
 
-            String highblood = binding.passiveTxtHigh.getCenterString();
-            String lowblood = binding.passiveTxtLow.getCenterString();
-            if (highblood.equals("0") && lowblood.equals("0")) {
+            String highBlood = binding.passiveTxtHigh.getCenterString();
+            String lowBlood = binding.passiveTxtLow.getCenterString();
+            if (highBlood.equals("0") && lowBlood.equals("0")) {
                 DialogLoader.getInstance().showConfirmDialog(
                         context,
                         getString(R.string.active_blood),
@@ -683,7 +685,6 @@ public class PassiveActivity extends XPageActivity {
 
                             binding.passiveTimeJia.setVisibility(View.INVISIBLE);
                             binding.passiveTimeJian.setVisibility(View.INVISIBLE);
-
 
                             binding.passiveImgBegin.setBackground(ContextCompat
                                     .getDrawable(this, R.drawable.stop));
@@ -855,14 +856,10 @@ public class PassiveActivity extends XPageActivity {
                 if (isBegin) {
                     spasmData = Integer.parseInt(uploadData.getSTspasm());
                     binding.progressViewSpasm.setGraduatedEnabled(true);
-//                    binding.progressViewSpasm.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) spasmData, (float) 12)));
-//                    binding.progressViewSpasm.startProgressAnimation();
                     binding.passiveTxtSpasm.setCenterString(uploadData.getSTspasm());
 
                     zhuansu = Integer.parseInt(uploadData.getSTspeed());
                     binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                    binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                    binding.progressViewZhuansuPassive.startProgressAnimation();
                     binding.passiveTxtZhuansu.setCenterString(uploadData.getSTspeed());
                 }
 
@@ -933,7 +930,6 @@ public class PassiveActivity extends XPageActivity {
                 }
 
                 if (uploadData.getActiveState().equals("停机状态")) {
-
                     if (isBegin) {
                         isBegin = false;
                         stop();
@@ -947,59 +943,60 @@ public class PassiveActivity extends XPageActivity {
                         timecount = timeCountTool.stopCount();
                         getCalories_mileage();
                         if (uploadData.getSpasmState() != -1) {
+                            DialogFragment dialogFragment = new DialogFragment();
                             if (spasmCount == 5) {
-                                DialogLoader.getInstance().showConfirmDialog(
-                                        context,
-                                        getString(R.string.active_out),
-                                        getString(R.string.lab_yes),
-                                        (dialog, which) -> {
-                                            dialog.dismiss();
-                                            BloodEndState = 1;
-                                            if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                                                if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                                                    btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
-                                                } else if (ContorlState.equals("51")) {
-                                                    btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
-                                                    ContorlState = "52";
-                                                    binding.passiveTxtBlood.setCenterString("点击开始测量血压");
-                                                }
-                                            } else {
-                                                Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+                                dialogFragment.setDialogFragment(new DialogFragment.DialogListener() {
+                                    @Override
+                                    public void saveClick() {
+                                        dialogFragment.dismiss();
+                                        BloodEndState = 1;
+                                        if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                                            if (ContorlState.equals("00") || ContorlState.equals("52")) {
+                                                btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
+                                            } else if (ContorlState.equals("51")) {
+                                                btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
+                                                ContorlState = "52";
+                                                binding.passiveTxtBlood.setCenterString("点击开始测量血压");
                                             }
-                                        },
-                                        getString(R.string.lab_no),
-                                        (dialog, which) -> {
-                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                                         }
-                                );
+                                    }
+
+                                    @Override
+                                    public void closeClick() {
+                                        dialogFragment.dismiss();
+                                    }
+                                });
+
                             } else {
-                                DialogLoader.getInstance().showConfirmDialog(
-                                        context,
-                                        getString(R.string.active_blood_end),
-                                        getString(R.string.lab_yes),
-                                        (dialog, which) -> {
-                                            dialog.dismiss();
-                                            BloodEndState = 1;
-                                            isCloseDialog = true;
-                                            if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                                                if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                                                    btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
-                                                } else if (ContorlState.equals("51")) {
-                                                    btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
-                                                    ContorlState = "52";
-                                                    binding.passiveTxtBlood.setCenterString("点击开始测量血压");
-                                                }
-                                            } else {
-                                                Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+                                dialogFragment.setDialogFragment(new DialogFragment.DialogListener() {
+                                    @Override
+                                    public void saveClick() {
+                                        dialogFragment.dismiss();
+                                        BloodEndState = 1;
+                                        isCloseDialog = true;
+                                        if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                                            if (ContorlState.equals("00") || ContorlState.equals("52")) {
+                                                btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
+                                            } else if (ContorlState.equals("51")) {
+                                                btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
+                                                ContorlState = "52";
+                                                binding.passiveTxtBlood.setCenterString("点击开始测量血压");
                                             }
-                                        },
-                                        getString(R.string.lab_no),
-                                        (dialog, which) -> {
-                                            dialog.dismiss();
-                                            BloodEndState = 2;
+                                        } else {
+                                            Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                                         }
-                                );
+                                    }
+
+                                    @Override
+                                    public void closeClick() {
+                                        dialogFragment.dismiss();
+                                        BloodEndState = 2;
+                                    }
+                                });
                             }
+                            dialogFragment.show(getSupportFragmentManager(), "DialogFragment");
                         }
                     }
 

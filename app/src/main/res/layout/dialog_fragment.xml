@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/config_margin_10dp"
+            android:layout_marginEnd="@dimen/config_margin_10dp"
+            android:padding="@dimen/config_margin_20dp"
+            android:text="@string/active_blood_end"
+            android:textSize="@dimen/config_margin_20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/xui_config_color_gray_7" />
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:layout_weight="1"
+                android:padding="@dimen/config_margin_10dp"
+                android:orientation="horizontal">
+
+                <com.xuexiang.xui.widget.button.ButtonView
+                    android:id="@+id/dialog_close"
+                    style="@style/RoundButton.Auto"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/lab_no"
+                    android:textColor="@color/xui_config_color_titlebar"
+                    app:textRadius="5dp"
+                    app:textSelectedSolidColor="@color/xui_btn_blue_select_color"
+                    app:textSelectedTextColor="@color/xui_config_color_white"
+                    app:textSolidColor="@color/xui_config_color_white"
+                    app:textStrokeColor="@color/xui_config_color_gray_8"
+                    app:textStrokeWidth="1dp" />
+
+                <com.xuexiang.xui.widget.button.ButtonView
+                    android:id="@+id/dialog_save"
+                    style="@style/RoundButton.Auto"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:text="@string/lab_yes"
+                    android:textColor="@color/xui_config_color_white"
+                    app:textRadius="5dp"
+                    app:textSelectedSolidColor="@color/xui_btn_blue_select_color"
+                    app:textSelectedTextColor="@color/xui_config_color_white"
+                    app:textSolidColor="@color/xui_config_color_titlebar"
+                    app:textStrokeColor="@color/xui_config_color_white"
+                    app:textStrokeWidth="1dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+</layout>
