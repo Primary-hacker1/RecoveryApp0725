@@ -32,14 +32,12 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 
-import com.common.network.LogUtils;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
-import com.rick.recoveryapp.ui.activity.bean.SerialPort;
-import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
+import com.rick.recoveryapp.ui.dialog.DialogActivity;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
 import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.ui.service.BtKeepService;

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package com.rick.recoveryapp.ui.activity;
+package com.rick.recoveryapp.ui.dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +28,10 @@ import android.widget.Toast;
 
 import com.rick.recoveryapp.R;
 
+import com.rick.recoveryapp.ui.activity.ActiveActivity;
+import com.rick.recoveryapp.ui.activity.IntelligenceActivity;
+import com.rick.recoveryapp.ui.activity.PassiveActivity;
+import com.rick.recoveryapp.ui.activity.SelectRolesActivity;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
@@ -117,19 +121,19 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
 
                     if (LocalConfig.ModType == 0) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);
-                        Intent intent = new Intent(this,ActiveActivity.class);
+                        Intent intent = new Intent(this, ActiveActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     if (LocalConfig.ModType == 1) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.SUBJECT);
-                        Intent intent = new Intent(this,PassiveActivity.class);
+                        Intent intent = new Intent(this, PassiveActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     if (LocalConfig.ModType == 2) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.INTELLIGENT);
-                        Intent intent = new Intent(this,IntelligenceActivity.class);
+                        Intent intent = new Intent(this, IntelligenceActivity.class);
                         startActivity(intent);
                         finish();
                     }

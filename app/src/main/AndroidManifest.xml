@@ -70,7 +70,7 @@
             android:process=":keepLife" />
 
         <activity
-            android:name=".ui.activity.MacDrDialog"
+            android:name=".ui.dialog.MacDrDialog"
             android:screenOrientation="landscape"
             android:theme="@style/DialogTheme" />
 
@@ -140,7 +140,7 @@
         <!--            />-->
 
         <activity
-            android:name=".ui.activity.DialogActivity"
+            android:name=".ui.dialog.DialogActivity"
             android:screenOrientation="landscape"
             android:theme="@style/DialogTheme" />
 

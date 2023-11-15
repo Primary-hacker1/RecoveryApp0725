@@ -31,7 +31,7 @@ import androidx.fragment.app.Fragment;
 
 import com.efs.sdk.base.core.util.Log;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.activity.MacDrDialog;
+import com.rick.recoveryapp.ui.dialog.MacDrDialog;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.adapter.BtDevAdapter;

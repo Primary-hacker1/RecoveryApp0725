@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.ui.fragment
+package com.rick.recoveryapp.ui.dialog
 
 import android.app.Dialog
 import com.rick.recoveryapp.R

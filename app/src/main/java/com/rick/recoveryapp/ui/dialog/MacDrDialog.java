@@ -1,4 +1,4 @@
-package com.rick.recoveryapp.ui.activity;
+package com.rick.recoveryapp.ui.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,6 +15,7 @@ import com.common.network.LogUtils;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.greendao.MacDrDao;
+import com.rick.recoveryapp.ui.activity.AdminMainActivity;
 import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
@@ -25,8 +26,6 @@ import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
 import com.xuexiang.xui.widget.button.ButtonView;
-import com.xuexiang.xui.widget.dialog.DialogLoader;
-import com.xuexiang.xutil.XUtil;
 
 import java.util.Objects;
 
