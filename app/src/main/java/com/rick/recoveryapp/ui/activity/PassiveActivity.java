@@ -284,7 +284,7 @@ public class PassiveActivity extends XPageActivity {
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(PassiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-//                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                        btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
                         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
                         if (addressBean != null) {
                             btDataPro.sendBTMessage(btDataPro.
@@ -304,6 +304,16 @@ public class PassiveActivity extends XPageActivity {
                     Log.d("AdminMainActivity", Objects.requireNonNull(e.getMessage()));
                 }
             }
+        });
+
+        LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {//关掉mac设备也要重连
+            Timer timer  = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                }
+            }, 1000);
         });
     }
 

@@ -16,6 +16,7 @@ import com.rick.recoveryapp.ui.activity.BluetoothChat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**

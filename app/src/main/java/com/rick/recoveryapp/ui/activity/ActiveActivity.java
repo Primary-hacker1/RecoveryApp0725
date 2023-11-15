@@ -171,6 +171,16 @@ public class ActiveActivity extends XPageActivity {
                 }
             }
         });
+
+        LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {//关掉mac设备也要重连
+            Timer timer  = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                }
+            }, 1000);
+        });
     }
 
     public void PassEcg() {
