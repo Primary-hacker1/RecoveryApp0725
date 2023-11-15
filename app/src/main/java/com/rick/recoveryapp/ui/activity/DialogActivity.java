@@ -49,6 +49,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
     EditText dialog_userid, dialog_name, dialog_medicalNumber;
     Context context;
     BtDataPro btDataPro;
+
     //   public static DialogActivity dialogActivity;
     String pas = "^[a-zA-Z\u4e00-\u9fa5]{2,15}";
     String name, medicalNumber;
@@ -113,15 +114,6 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                     }
 
                     btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
-
-                    AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
-
-//                    if (addressBean != null) {
-//                        btDataPro.sendBTMessage(btDataPro.
-//                                GetCmdCode(addressBean.getEcg(),
-//                                        addressBean.getBloodPressure(),
-//                                        addressBean.getBloodOxygen()));
-//                    }
 
                     if (LocalConfig.ModType == 0) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);

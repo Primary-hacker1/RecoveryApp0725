@@ -15,6 +15,7 @@ import com.common.network.LogUtils;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.greendao.MacDrDao;
+import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
@@ -117,6 +118,17 @@ public class MacDrDialog extends XPageActivity {
                                 bloodAddress,
                                 oxygenAddress
                         ));//sp储存
+
+                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+
+                if (addressBean != null) {
+                    BtDataPro  btDataPro = new BtDataPro();
+                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                    btDataPro.sendBTMessage(btDataPro.
+                            GetCmdCode(addressBean.getEcg(),
+                                    addressBean.getBloodPressure(),
+                                    addressBean.getBloodOxygen()));
+                }
 
 
                 LogUtils.e(tag + new AddressBean(macAddress,
