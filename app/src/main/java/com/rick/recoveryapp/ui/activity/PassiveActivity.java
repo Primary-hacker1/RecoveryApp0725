@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -61,8 +60,6 @@ import java.util.TimerTask;
  * */
 @Deprecated()
 public class PassiveActivity extends XPageActivity {
-
-    private final String tag = PassiveActivity.class.getName();
     private boolean isCloseDialog = false;//如果是运动后停止
     String motionHeight;//运动前的高压
 
@@ -153,14 +150,10 @@ public class PassiveActivity extends XPageActivity {
                             float cooY = OftenListData.get(0);
                             binding.passiveWaveviewOne.showLine(cooY);
                             OftenListData.remove(0);
-                        } else {
-                            return;
                         }
-                    } else {
-                        return;
                     }
                 } catch (Exception e) {
-                    com.efs.sdk.base.core.util.Log.d("EcgError", e.getMessage());
+                    LogUtils.d(tag + "EcgError" + e.getMessage());
                 }
             }
         };
@@ -197,10 +190,10 @@ public class PassiveActivity extends XPageActivity {
                     DataDisplay(msg.getObjectName(), msg.getObjectJson());
 
                 } else {
-                    Log.d("BT", "没有任何数据");
+                    LogUtils.d(tag + "BT" + "没有任何数据");
                 }
             } else {
-                LogUtils.d("BT" + "没有任何数据");
+                LogUtils.d(tag + "BT" + "没有任何数据");
             }
 
         });
@@ -212,7 +205,7 @@ public class PassiveActivity extends XPageActivity {
                 DataDisplay(msg.getObjectName(), msg.getObjectJson());
 
                 if (isBegin) {
-                    UpdatProgress();
+                    updateProgress();
                 }
             }
         });
@@ -281,7 +274,7 @@ public class PassiveActivity extends XPageActivity {
                 LiveMessage msg = (LiveMessage) v;
                 try {
                     if (msg.getIsConnt()) {
-                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
+                        LogUtils.d(tag + "BT_CONNECTED1" + LocalConfig.isControl + " 1");
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(PassiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
@@ -294,7 +287,7 @@ public class PassiveActivity extends XPageActivity {
                                             addressBean.getBloodOxygen()));
                         }
                     } else {
-                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
+                        LogUtils.d(tag + "BT_CONNECTED1" + LocalConfig.isControl + " 2");
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
                         binding.mainImgLink.setEnabled(true);
                         if (!msg.getMessage().isEmpty()) {
@@ -302,13 +295,13 @@ public class PassiveActivity extends XPageActivity {
                         }
                     }
                 } catch (Exception e) {
-                    Log.d("AdminMainActivity", Objects.requireNonNull(e.getMessage()));
+                    LogUtils.d(tag + "AdminMainActivity" + Objects.requireNonNull(e.getMessage()));
                 }
             }
         });
 
         LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {//关掉mac设备也要重连
-            Timer timer  = new Timer();
+            Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -483,15 +476,10 @@ public class PassiveActivity extends XPageActivity {
                 } else {
                     zhuansu = zhuansu + 1;
                     binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                        binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                        binding.progressViewZhuansuPassive.startProgressAnimation();
                     binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                    //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
                 }
             } else {
                 zhuansu = 60;
-                //   btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
-                return;
             }
         });
 
@@ -586,7 +574,6 @@ public class PassiveActivity extends XPageActivity {
                 activeTime = MyTimeUtils.Getminute(nowTime);
                 btDataPro.sendBTMessage(GetCmdCode("50", false,
                         spasmData, zhuansu, activeTime));
-                return;
             }
         });
 
@@ -733,7 +720,7 @@ public class PassiveActivity extends XPageActivity {
                 active_direction = "21",          //运动方向
                 //设定时间
                 cmd_end = "ED";                   //结尾
-        String zuliHex = "00";
+        String resistanceHex = "00";//阻力
         String spasmsHex = "0" + BtDataPro.decToHex(spasms_lv);
         String speedHex;
         if (speed_lv >= 16) {
@@ -742,7 +729,7 @@ public class PassiveActivity extends XPageActivity {
             speedHex = "0" + BtDataPro.decToHex(speed_lv);
         }
 
-        String timeHex = "";
+        String timeHex;
         if (time_lv >= 16) {
             timeHex = BtDataPro.decToHex(Math.toIntExact(time_lv));
         } else {
@@ -753,11 +740,11 @@ public class PassiveActivity extends XPageActivity {
         if (isBegin) {
             avtive_status = "11";
         }
-        String splicingStr = cmd_head + sport_mode + avtive_status + active_direction + zuliHex + spasmsHex
+        String splicingStr = cmd_head + sport_mode + avtive_status + active_direction + resistanceHex + spasmsHex
                 + speedHex + timeHex + blood_measure;
         String CRC16 = CRC16Util.getCRC16(splicingStr);
         CMD_CODE = splicingStr + CRC16 + cmd_end;
-        Log.d("GetCmdCode", "PassiveFragemt,获取指令");
+        LogUtils.d(tag + "GetCmdCode" + "PassiveFragment,获取指令");
         return CMD_CODE;
     }
 
@@ -991,24 +978,18 @@ public class PassiveActivity extends XPageActivity {
                     EcgListData = ecgData.getEcgCoorY();
                     if (EcgListData == null) {
                         binding.passiveTxtEcgstate.setCenterString("心电仪佩戴异常！");
-                        //  binding.passiveWaveviewOne.showLine(0f);
                         return;
                     } else {
                         OftenListData.addAll(EcgListData);
                     }
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d("ArrayList", Objects.requireNonNull(e.getMessage()));
+                    LogUtils.d(tag + "ArrayList" + Objects.requireNonNull(e.getMessage()));
                 }
                 break;
 
             case 3:
                 ContorlState = ObjectJson;
-//                if (ContorlState.equals("51")) {
-                //  binding.passiveTxtBlood.setCenterString("测量中");
-//                } else if (ContorlState.equals("52")) {
-                //  binding.passiveTxtBlood.setCenterString("点击开始测量血压");
-//                }
                 break;
         }
     }
@@ -1016,7 +997,7 @@ public class PassiveActivity extends XPageActivity {
     /**
      * 模拟源源不断的数据源
      */
-    public void UpdatProgress() {
+    public void updateProgress() {
         try {
 
             Date date = new Date();
@@ -1027,13 +1008,9 @@ public class PassiveActivity extends XPageActivity {
             recordDetailed.setRecordID(LocalConfig.UserID);
             recordDetailed.setActivtType("被动模式");
             recordDetailed.setRecordTime(sim);
-            //  int zhuansu = Integer.parseInt(binding.passiveTxtZhuansu.getCenterString());
             recordDetailed.setSpeed(zhuansu);
-            // int leftlimb = Integer.parseInt(binding.passiveTxtLeft.getCenterString());
             recordDetailed.setLeftLimb(0);
-            //    int rightlimb = Integer.parseInt(binding.passiveTxtRight.getCenterString());
             recordDetailed.setRightLimb(0);
-//            int resistance = Integer.parseInt(binding.passiveTxtResistance.getCenterString());
             recordDetailed.setResistance(0);
 
             int heartRate;
@@ -1083,15 +1060,12 @@ public class PassiveActivity extends XPageActivity {
                     }
                     if (isNotBt) {
                         Intent in = new Intent(context, AdminMainActivity.class);
-                        //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }
                 },
                 getString(R.string.lab_no),
-                (dialog, which) -> {
-                    dialog.dismiss();
-                }
+                (dialog, which) -> dialog.dismiss()
         );
     }
 

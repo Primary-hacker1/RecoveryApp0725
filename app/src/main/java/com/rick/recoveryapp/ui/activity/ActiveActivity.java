@@ -1,14 +1,15 @@
 package com.rick.recoveryapp.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 
 import com.common.network.LogUtils;
@@ -146,7 +147,6 @@ public class ActiveActivity extends XPageActivity {
                 LiveMessage msg = (LiveMessage) v;
                 try {
                     if (msg.getIsConnt()) {
-                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 1");
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(ActiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
@@ -159,7 +159,6 @@ public class ActiveActivity extends XPageActivity {
                                             addressBean.getBloodOxygen()));
                         }
                     } else {
-                        Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
                         binding.mainImgLink.setEnabled(true);
                         if (!msg.getMessage().isEmpty()) {
@@ -167,13 +166,13 @@ public class ActiveActivity extends XPageActivity {
                         }
                     }
                 } catch (Exception e) {
-                    Log.d("AdminMainActivity", e.getMessage());
+                    LogUtils.e(tag + "AdminMainActivity" + e.getMessage());
                 }
             }
         });
 
         LiveDataBus.get().with(Constants.BT_RECONNECTED).observe(this, v -> {//关掉mac设备也要重连
-            Timer timer  = new Timer();
+            Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -214,7 +213,7 @@ public class ActiveActivity extends XPageActivity {
             if (v instanceof PoolMessage) {
                 PoolMessage msg = (PoolMessage) v;
                 if (msg.isState()) {
-                    Log.d("BT", msg.getObjectName());
+                    LogUtils.d(tag + "BT" + msg.getObjectName());
                     if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
                         UploadData uploadData;
                         uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
@@ -240,7 +239,7 @@ public class ActiveActivity extends XPageActivity {
                         }
                     }
                 } else {
-                    Log.d("BT", "没有任何数据");
+                    LogUtils.e(tag + "BT" + "没有任何数据");
                 }
             }
         });
@@ -295,6 +294,7 @@ public class ActiveActivity extends XPageActivity {
 
     }
 
+    @SuppressLint("DefaultLocale")
     public void SaveRecord() {
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
@@ -371,19 +371,17 @@ public class ActiveActivity extends XPageActivity {
     public void itinClick() {
 
         binding.btnTest.setOnClickListener(v -> {
-
             if (!LocalConfig.isControl) {
-
-            } else {
-                AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
-                if (addressBean != null) {
-                    btDataPro.sendBTMessage(btDataPro.
-                            GetCmdCode(addressBean.getEcg(),
-                                    addressBean.getBloodPressure(),
-                                    addressBean.getBloodOxygen()));
-                }
+                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                return;
             }
-
+            AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
+            if (addressBean != null) {
+                btDataPro.sendBTMessage(btDataPro.
+                        GetCmdCode(addressBean.getEcg(),
+                                addressBean.getBloodPressure(),
+                                addressBean.getBloodOxygen()));
+            }
         });
 
         binding.trainBtnReturn.setOnClickListener(v -> {
@@ -414,7 +412,7 @@ public class ActiveActivity extends XPageActivity {
         });
 
         binding.activeImgBegin.setOnClickListener(v -> {
-            if(BaseUtil.isFastDoubleClick()){
+            if (BaseUtil.isFastDoubleClick()) {
                 return;
             }
             if (!LocalConfig.isControl) {
@@ -492,7 +490,6 @@ public class ActiveActivity extends XPageActivity {
                 } else {
                     Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                 }
-                //  isBlood = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -502,12 +499,12 @@ public class ActiveActivity extends XPageActivity {
     public void HandlerMessage() {
         try {
 
-            String txts = binding.activeTxtBegin.getCenterString();
-            if (txts.equals("开  始")) {
+            String srs = binding.activeTxtBegin.getCenterString();
+            if (srs.equals("开  始")) {
 
-                String highblood = binding.activeTxtHigh.getCenterString();
-                String lowblood = binding.activeTxtLow.getCenterString();
-                if (highblood.equals("0") && lowblood.equals("0")) {
+                String highBlood = binding.activeTxtHigh.getCenterString();
+                String lowBlood = binding.activeTxtLow.getCenterString();
+                if (highBlood.equals("0") && lowBlood.equals("0")) {
                     DialogLoader.getInstance().showConfirmDialog(
                             context,
                             getString(R.string.active_blood),
@@ -517,7 +514,9 @@ public class ActiveActivity extends XPageActivity {
                                 btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", true));
                                 timeCountTool.startCount();
                                 binding.activeTxtBegin.setCenterString("停  止");
-                                binding.activeImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
+
+                                binding.activeImgBegin.setBackground(ContextCompat
+                                        .getDrawable(this,R.drawable.stop));
                             },
                             getString(R.string.lab_cancel),
                             (dialog, which) -> {
@@ -530,7 +529,8 @@ public class ActiveActivity extends XPageActivity {
                     btDataPro.sendBTMessage(GetCmdCode(resiDta, "50", true));
                     timeCountTool.startCount();
                     binding.activeTxtBegin.setCenterString("停  止");
-                    binding.activeImgBegin.setBackground(getResources().getDrawable(R.drawable.stop));
+                    binding.activeImgBegin.setBackground(ContextCompat
+                            .getDrawable(this,R.drawable.stop));
                 }
             } else {
                 btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
@@ -559,21 +559,17 @@ public class ActiveActivity extends XPageActivity {
                     if (modletype == 1) {
                         LocalConfig.ModType = 1;
                         Intent in = new Intent(context, PassiveActivity.class);
-                        // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     } else if (modletype == 2) {
                         LocalConfig.ModType = 2;
                         Intent in = new Intent(context, IntelligenceActivity.class);
-                        //  in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }
                 },
                 getString(R.string.lab_no),
-                (dialog, which) -> {
-                    dialog.dismiss();
-                }
+                (dialog, which) -> dialog.dismiss()
         );
     }
 
