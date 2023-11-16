@@ -62,8 +62,6 @@ import java.util.TimerTask;
 public class PassiveActivity extends XPageActivity {
     private boolean isCloseDialog = false;//如果是运动后停止
     String motionHeight;//运动前的高压
-
-    String motionLow;//运动后的低压
     int modleType = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -73,7 +71,7 @@ public class PassiveActivity extends XPageActivity {
     UploadData uploadData;
     EcgData ecgData;
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-    String ContorlState = "52";
+    String contorlState = "52";
     BtDataPro btDataPro;
     String CMD_CODE = "";
     private Timer timer1;
@@ -82,13 +80,14 @@ public class PassiveActivity extends XPageActivity {
     Context context;
     ActivitRecordDao activitRecordDao;
     public TimeCountTool timeCountTool = TimeCountTool.getInstance();
-    String timecount = "";
+    String timeCount = "";
     double Total_mileage, Calories;
     ActivityPassiveBinding binding;
 
     static PeterTimeCountRefresh downTimer;
     static long nowTime = 300000;
-    int zhuansu = 5, spasmData = 1;
+    int zhuansu = 5;
+    int spasmData = 1;
     Long activeTime = 0L;
     boolean isOk = false;
     String Passive_B_Diastole_Shrink = "0/0", Passive_L_Diastole_Shrink = "0/0";
@@ -322,7 +321,7 @@ public class PassiveActivity extends XPageActivity {
         activitRecord.setUserName(LocalConfig.userName);
         activitRecord.setUserNumber(LocalConfig.medicalNumber);
         activitRecord.setRecordTime(sim);
-        activitRecord.setLongTime(timecount);
+        activitRecord.setLongTime(timeCount);
         activitRecord.setAduration("0");
         activitRecord.setPduration("0");
         activitRecord.setActivtType(LocalConfig.ModType + "");
@@ -588,11 +587,11 @@ public class PassiveActivity extends XPageActivity {
             }
             try {
                 if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                    if (ContorlState.equals("00") || ContorlState.equals("52")) {
+                    if (contorlState.equals("00") || contorlState.equals("52")) {
                         btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
-                    } else if (ContorlState.equals("51")) {
+                    } else if (contorlState.equals("51")) {
                         btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
-                        ContorlState = "52";
+                        contorlState = "52";
                         binding.passiveTxtBlood.setCenterString("点击开始测量血压");
                     }
                 } else {
@@ -740,7 +739,8 @@ public class PassiveActivity extends XPageActivity {
         if (isBegin) {
             avtive_status = "11";
         }
-        String splicingStr = cmd_head + sport_mode + avtive_status + active_direction + resistanceHex + spasmsHex
+        String splicingStr = cmd_head + sport_mode + avtive_status
+                + active_direction + resistanceHex + spasmsHex
                 + speedHex + timeHex + blood_measure;
         String CRC16 = CRC16Util.getCRC16(splicingStr);
         CMD_CODE = splicingStr + CRC16 + cmd_end;
@@ -833,16 +833,12 @@ public class PassiveActivity extends XPageActivity {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
 
-//                            LogUtils.e(tag + "uploadData.getHigh()==" + uploadData.getHigh());
-
                             if (!Objects.equals(motionHeight, uploadData.getHigh())) {
                                 motionHeight = uploadData.getHigh();
                                 if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
                                     observerHigh.onChanged(motionHeight);
                                 }
                             }
-
-//                            LogUtils.e(tag + "motionHeight==" + motionHeight + motionLow);
                         }
                         binding.passiveTxtBloodstate1.setCenterString("");
                         binding.passiveTxtBloodstate2.setCenterString("");
@@ -874,66 +870,66 @@ public class PassiveActivity extends XPageActivity {
                         activeTime = MyTimeUtils.Getminute(nowTime);
                         String text1 = MyTimeUtils.formatTime(nowTime);
                         binding.passiveTxtDowntimer.setCenterString(text1);
-                        timecount = timeCountTool.stopCount();
+                        timeCount = timeCountTool.stopCount();
                         getCalories_mileage();
                         if (uploadData.getSpasmState() != -1) {
-                            DialogFragment dialogFragment = new DialogFragment();
                             if (spasmCount == 5) {
-                                dialogFragment.setDialogFragment(new DialogFragment.DialogListener() {
-                                    @Override
-                                    public void saveClick() {
-                                        dialogFragment.dismiss();
-                                        BloodEndState = 1;
-                                        if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                                            if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                                                btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
-                                            } else if (ContorlState.equals("51")) {
-                                                btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
-                                                ContorlState = "52";
-                                                binding.passiveTxtBlood.setCenterString("点击开始测量血压");
+                                DialogLoader.getInstance().showConfirmDialog(
+                                        context,
+                                        getString(R.string.active_out),
+                                        getString(R.string.lab_yes),
+                                        (dialog, which) -> {
+                                            dialog.dismiss();
+                                            BloodEndState = 1;
+                                            if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                                                if (contorlState.equals("00") || contorlState.equals("52")) {
+                                                    btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
+                                                } else if (contorlState.equals("51")) {
+                                                    btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
+                                                    contorlState = "52";
+                                                    binding.passiveTxtBlood.setCenterString("点击开始测量血压");
+                                                }
+                                            } else {
+                                                Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                                             }
-                                        } else {
-                                            Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+                                        },
+                                        getString(R.string.lab_no),
+                                        (dialog, which) -> {
+                                            dialog.dismiss();
                                         }
-                                    }
-
-                                    @Override
-                                    public void closeClick() {
-                                        dialogFragment.dismiss();
-                                    }
-                                });
-
+                                );
                             } else {
-                                dialogFragment.setDialogFragment(new DialogFragment.DialogListener() {
-                                    @Override
-                                    public void saveClick() {
-                                        dialogFragment.dismiss();
-                                        BloodEndState = 1;
-                                        isCloseDialog = true;
-                                        if (uploadData != null && uploadData.getBlood().equals("已连接")) {
-                                            if (ContorlState.equals("00") || ContorlState.equals("52")) {
-                                                btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
-                                            } else if (ContorlState.equals("51")) {
-                                                btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
-                                                ContorlState = "52";
-                                                binding.passiveTxtBlood.setCenterString("点击开始测量血压");
+                                DialogLoader.getInstance().showConfirmDialog(
+                                        context,
+                                        getString(R.string.active_blood_end),
+                                        getString(R.string.lab_yes),
+                                        (dialog, which) -> {
+                                            dialog.dismiss();
+                                            BloodEndState = 1;
+                                            isCloseDialog = true;
+                                            if (uploadData != null && uploadData.getBlood().equals("已连接")) {
+                                                if (contorlState.equals("00") || contorlState.equals("52")) {
+                                                    btDataPro.sendBTMessage(GetCmdCode("51", false, spasmData, zhuansu, activeTime));
+                                                } else if (contorlState.equals("51")) {
+                                                    btDataPro.sendBTMessage(GetCmdCode("52", false, spasmData, zhuansu, activeTime));
+                                                    contorlState = "52";
+                                                    binding.passiveTxtBlood.setCenterString("点击开始测量血压");
+                                                }
+                                            } else {
+                                                Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
                                             }
-                                        } else {
-                                            Toast.makeText(context, "血压仪未连接，请检查设备", Toast.LENGTH_SHORT).show();
+                                        },
+                                        getString(R.string.lab_no),
+                                        (dialog, which) -> {
+                                            dialog.dismiss();
+                                            BloodEndState = 2;
                                         }
-                                    }
-
-                                    @Override
-                                    public void closeClick() {
-                                        dialogFragment.dismiss();
-                                        BloodEndState = 2;
-                                    }
-                                });
+                                );
                             }
-                            dialogFragment.show(getSupportFragmentManager(), "DialogFragment");
                         }
-                    }
 
+
+                    }
                 } else if (uploadData.getActiveState().equals("运行状态")) {
                     isBegin = true;
                     binding.passiveTimeJia.setEnabled(false);
@@ -964,7 +960,6 @@ public class PassiveActivity extends XPageActivity {
                     btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
 
                     Intent in = new Intent(context, DataResultsActivity.class);
-                    //  in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(in);
                     finish();
                 }
@@ -989,7 +984,7 @@ public class PassiveActivity extends XPageActivity {
                 break;
 
             case 3:
-                ContorlState = ObjectJson;
+                contorlState = ObjectJson;
                 break;
         }
     }
@@ -1039,7 +1034,6 @@ public class PassiveActivity extends XPageActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             dialogs();
             return false;

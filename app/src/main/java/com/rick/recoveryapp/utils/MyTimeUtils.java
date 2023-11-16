@@ -101,7 +101,7 @@ public class MyTimeUtils {
     }
 
     public static Long Getminute(Long ms) {
-        Integer ss = 1000;
+        int ss = 1000;
         Integer mi = ss * 60;
         Integer hh = mi * 60;
 
@@ -110,7 +110,7 @@ public class MyTimeUtils {
 //        Long second = (ms  - hour * hh - minute * mi) / ss;
 
         //Long hour = ms/ hh;
-        Long minute = ms / mi;
+        long minute = ms / mi;
         Long second = (ms   - minute * mi) / ss;
 
         StringBuffer sb = new StringBuffer();
