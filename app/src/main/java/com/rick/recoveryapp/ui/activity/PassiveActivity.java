@@ -627,10 +627,7 @@ public class PassiveActivity extends XPageActivity {
                             btDataPro.sendBTMessage(GetCmdCode("50", true, spasmData, zhuansu, activeTime));
                         },
                         getString(R.string.lab_cancel),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            // timeTask.start();
-                        }
+                        (dialog, which) -> dialog.dismiss()
                 );
             } else {
                 binding.passiveTimeJia.setEnabled(false);
@@ -666,7 +663,6 @@ public class PassiveActivity extends XPageActivity {
 
         //时间结束回调
         downTimer.setOnTimerFinishListener(() -> {
-            //    ActiveActivity.timeCountTool.stopCount();
             binding.passiveTxtDowntimer.setCenterString("00:00:00");
             nowTime = 300000;
             stop();

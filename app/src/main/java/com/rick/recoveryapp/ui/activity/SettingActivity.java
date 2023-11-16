@@ -42,10 +42,8 @@ public class SettingActivity extends XPageActivity implements ViewPager.OnPageCh
     public static final int PAGE_ONE = 0;
     public static final int PAGE_TWO = 1;
     Context context;
-    // ShadowButton setting_btn_return;
     private MyFragmentPagerAdapter mAdapter;
-    // NoSwipeViewPager setting_pager_test;
-    //  SuperTextView setting_txt_setting,setting_txt_history;
+
     Intent intent;
     ActivitySettingBinding binding;
     public static SharedPreferences sharedPreferences;
