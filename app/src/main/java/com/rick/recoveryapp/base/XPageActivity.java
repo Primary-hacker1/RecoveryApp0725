@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout.LayoutParams;
 
@@ -53,7 +55,7 @@ public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
     /**
      * 应用中所有XPageActivity的引用
      */
-    private static List<WeakReference<XPageActivity>> sActivities = new ArrayList<>();
+    private static final List<WeakReference<XPageActivity>> sActivities = new ArrayList<>();
     /**
      * 当前activity的引用
      */
@@ -81,13 +83,11 @@ public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
      * @return 栈顶Activity
      */
     public static XPageActivity getTopActivity() {
-        if (sActivities != null) {
-            int size = sActivities.size();
-            if (size >= 1) {
-                WeakReference<XPageActivity> ref = sActivities.get(size - 1);
-                if (ref != null) {
-                    return ref.get();
-                }
+        int size = sActivities.size();
+        if (size >= 1) {
+            WeakReference<XPageActivity> ref = sActivities.get(size - 1);
+            if (ref != null) {
+                return ref.get();
             }
         }
         return null;
@@ -97,9 +97,7 @@ public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
      * 广播退出时清理activity列表
      */
     public static void unInit() {
-        if (sActivities != null) {
-            sActivities.clear();
-        }
+        sActivities.clear();
     }
 
     /**
@@ -307,24 +305,19 @@ public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
             return false;
         } else {
             final FragmentManager fragmentManager = findActivity.getSupportFragmentManager();
-            if (fragmentManager != null) {
-                Fragment frg = fragmentManager.findFragmentByTag(pageName);
-                if (frg != null && frg instanceof XPageFragment) {
-                    if (fragmentManager.getBackStackEntryCount() > 1 && mHandler != null) {
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    fragmentManager.popBackStack(pageName, 0);
-                                } catch (Exception e) {
-                                    PageLog.e(e);
-                                }
-                            }
-                        }, getPopBackDelay());
-                    }
-                    ((XPageFragment) frg).onFragmentDataReset(bundle);
-                    return true;
+            Fragment frg = fragmentManager.findFragmentByTag(pageName);
+            if (frg instanceof XPageFragment) {
+                if (fragmentManager.getBackStackEntryCount() > 1 && mHandler != null) {
+                    mHandler.postDelayed(() -> {
+                        try {
+                            fragmentManager.popBackStack(pageName, 0);
+                        } catch (Exception e) {
+                            PageLog.e(e);
+                        }
+                    }, getPopBackDelay());
                 }
+                ((XPageFragment) frg).onFragmentDataReset(bundle);
+                return true;
             }
         }
         return false;
@@ -403,14 +396,8 @@ public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
                 if (frg == null) {
                     return null;
                 }
-                final XPageFragment opener = fragment;
                 frg.setRequestCode(page.getRequestCode());
-                frg.setFragmentFinishListener(new XPageFragment.OnFragmentFinishListener() {
-                    @Override
-                    public void onFragmentResult(int requestCode, int resultCode, Intent intent) {
-                        opener.onFragmentResult(requestCode, resultCode, intent);
-                    }
-                });
+                frg.setFragmentFinishListener(fragment::onFragmentResult);
                 return frg;
             }
         } else {
@@ -728,6 +715,10 @@ public class XPageActivity extends AppCompatActivity implements CoreSwitcher {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+
+        Window window = getWindow();
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//设置主界面不熄屏
 
         //处理新开activity的情况
         Intent newIntent = getIntent();

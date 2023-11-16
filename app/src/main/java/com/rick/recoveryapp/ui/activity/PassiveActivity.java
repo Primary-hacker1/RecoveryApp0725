@@ -447,8 +447,6 @@ public class PassiveActivity extends XPageActivity {
                     if (isOk) {
                         zhuansu = zhuansu + 1;
                         binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                            binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                            binding.progressViewZhuansuPassive.startProgressAnimation();
                         binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
                     } else {
                         DialogLoader.getInstance().showConfirmDialog(
@@ -460,10 +458,7 @@ public class PassiveActivity extends XPageActivity {
                                     isOk = true;
                                     zhuansu = zhuansu + 1;
                                     binding.progressViewZhuansuPassive.setGraduatedEnabled(true);
-//                                        binding.progressViewZhuansuPassive.setEndProgress(Float.parseFloat(LocalConfig.GetProgress((float) zhuansu, (float) 60)));
-//                                        binding.progressViewZhuansuPassive.startProgressAnimation();
                                     binding.passiveTxtZhuansu.setCenterString(zhuansu + "");
-                                    //  btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
                                 },
                                 getString(R.string.lab_cancel),
                                 (dialog, which) -> {
