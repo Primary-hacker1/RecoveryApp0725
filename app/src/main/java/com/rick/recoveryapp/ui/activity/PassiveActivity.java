@@ -561,19 +561,14 @@ public class PassiveActivity extends XPageActivity {
             }
             nowTime = nowTime - 300000;
             String text1 = MyTimeUtils.formatTime(nowTime);
-            if (nowTime >= 300000) {
-                binding.passiveTxtDowntimer.setCenterString(text1);
-                activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", false,
-                        spasmData, zhuansu, activeTime));
-            } else {
+            if (nowTime < 300000) {
                 nowTime = 300000;
                 text1 = MyTimeUtils.formatTime(nowTime);
-                binding.passiveTxtDowntimer.setCenterString(text1);
-                activeTime = MyTimeUtils.Getminute(nowTime);
-                btDataPro.sendBTMessage(GetCmdCode("50", false,
-                        spasmData, zhuansu, activeTime));
             }
+            binding.passiveTxtDowntimer.setCenterString(text1);
+            activeTime = MyTimeUtils.Getminute(nowTime);
+            btDataPro.sendBTMessage(GetCmdCode("50", false,
+                    spasmData, zhuansu, activeTime));
         });
 
         binding.passiveImgBlood.setOnClickListener(v -> {
@@ -894,9 +889,7 @@ public class PassiveActivity extends XPageActivity {
                                             }
                                         },
                                         getString(R.string.lab_no),
-                                        (dialog, which) -> {
-                                            dialog.dismiss();
-                                        }
+                                        (dialog, which) -> dialog.dismiss()
                                 );
                             } else {
                                 DialogLoader.getInstance().showConfirmDialog(
