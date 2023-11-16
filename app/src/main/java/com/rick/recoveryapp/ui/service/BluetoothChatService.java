@@ -366,7 +366,7 @@ public class BluetoothChatService {
             mAdapter.cancelDiscovery();
             //连接到BluetoothSocket
             try {
-                if(mmSocket!=null){// 这是一个阻塞调用，只会在成功的连接或异常返回
+                if (mmSocket != null) {// 这是一个阻塞调用，只会在成功的连接或异常返回
                     mmSocket.connect();
                 }
             } catch (IOException e) {
@@ -406,9 +406,9 @@ public class BluetoothChatService {
      * 它处理所有传入和传出传输。
      */
     private class ConnectedThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
+        private BluetoothSocket mmSocket;
+        private InputStream mmInStream;
+        private OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "create ConnectedThread");
@@ -418,7 +418,12 @@ public class BluetoothChatService {
 
             // 获取BluetoothSocket输入和输出流
             try {
-                tmpIn = socket.getInputStream();
+                if (socket == null) {
+                    return;
+                }
+                if (socket.getInputStream() != null) {
+                    tmpIn = socket.getInputStream();
+                }
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
                 Log.e(TAG, "temp sockets not created", e);
@@ -436,6 +441,9 @@ public class BluetoothChatService {
 
             while (true) {
                 try {
+                    if (mmInStream == null) {
+                        return;
+                    }
                     int availableBytes = mmInStream.available();
 
                     if (availableBytes > 0) {

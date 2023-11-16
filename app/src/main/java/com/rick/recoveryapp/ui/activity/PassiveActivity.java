@@ -16,7 +16,6 @@ import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.dialog.DialogFragment;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
