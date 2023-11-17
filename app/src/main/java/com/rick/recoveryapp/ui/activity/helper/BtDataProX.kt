@@ -73,12 +73,15 @@ class BtDataProX {
     }
 
     fun sendBTMessage(message: String) { //重写发送函数，参数不同。
-        if (BaseUtil.isFastDoubleClick200()) {
-            LogUtils.e("发送串口消息100m: 多次点击" + BaseUtil.isFastDoubleClick200())
-        }
         if (message.isEmpty()) {
             return
         }
+
+        if (BaseUtil.isFastDoubleClick200()) {
+            LogUtils.e("发送串口消息100m: 多次发送" + deleteCharString(message))
+            return
+        }
+
         val myQueue: BlockingQueue<String> = LinkedBlockingQueue()
         var executor = ThreadPoolExecutor(
                 corePoolSize,
@@ -436,18 +439,6 @@ class BtDataProX {
                 e.printStackTrace()
             }
         }
-
-        private fun deleteCharString(sourceString: String): String {
-            val deleteString = StringBuilder()
-            for (i in sourceString.indices) {
-                if (i % 2 == 1) {
-                    deleteString.append(sourceString[i]).append(" ")
-                } else {
-                    deleteString.append(sourceString[i])
-                }
-            }
-            return deleteString.toString()
-        }
     }
 
     companion object{
@@ -496,6 +487,18 @@ class BtDataProX {
                 s += r[i]
             }
             return s
+        }
+
+        private fun deleteCharString(sourceString: String): String {
+            val deleteString = StringBuilder()
+            for (i in sourceString.indices) {
+                if (i % 2 == 1) {
+                    deleteString.append(sourceString[i]).append(" ")
+                } else {
+                    deleteString.append(sourceString[i])
+                }
+            }
+            return deleteString.toString()
         }
     }
 }

@@ -9,12 +9,15 @@ import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.lifecycle.Observer;
+
 import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
+import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
 import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.chart.MyAVG;
@@ -51,8 +54,8 @@ import java.util.TimerTask;
 
 @Deprecated
 public class IntelligenceActivity extends XPageActivity {
-
-    private String tag = IntelligenceActivity.class.getName();
+    private boolean isCloseDialog = false;//如果是运动后停止
+    String motionHeight;//运动前的高压
     int modletype = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -80,6 +83,7 @@ public class IntelligenceActivity extends XPageActivity {
     String Inte_B_Diastole_Shrink = "0/0", Inte_L_Diastole_Shrink = "0/0";
     int spasmCount = 0;
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -796,6 +800,24 @@ public class IntelligenceActivity extends XPageActivity {
             case 1:
                 uploadData = gson.fromJson(ObjectJson, UploadData.class);
 
+                Observer<String> observerHigh = s -> {//运动完需要重新测量血压，血压那边一直传值，不同的话再跳转到结束页面
+
+                    BloodEndState = 2;
+
+                    LogUtils.e(tag + "第二次结束测量血压值结束！");
+                };
+
+                if (UriConfig.test) {
+                    uploadData.setBlood("已连接");
+                    if (isCloseDialog) {
+                        uploadData.setHigh("150");
+                        uploadData.setLow("80");
+                    } else {
+                        uploadData.setHigh("120");
+                        uploadData.setLow("60");
+                    }
+                }
+
                 if (isBegin) {
                     spasm = Integer.parseInt(uploadData.getSTspasm());
                     binding.progressViewSpasm.setGraduatedEnabled(true);
@@ -861,6 +883,13 @@ public class IntelligenceActivity extends XPageActivity {
                         if (!uploadData.getHigh().equals("0")) {
                             LocalConfig.BloodHight = uploadData.getHigh();
                             LocalConfig.BloodLow = uploadData.getLow();
+
+                            if (!Objects.equals(motionHeight, uploadData.getHigh())) {
+                                motionHeight = uploadData.getHigh();
+                                if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
+                                    observerHigh.onChanged(motionHeight);
+                                }
+                            }
                         }
                         binding.inteTxtBloodstate1.setCenterString("");
                         binding.inteTxtBloodstate2.setCenterString("");
@@ -935,10 +964,11 @@ public class IntelligenceActivity extends XPageActivity {
                                         (dialog, which) -> {
                                             dialog.dismiss();
                                             BloodEndState = 1;
+                                            isCloseDialog = true;
                                             if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                                                 if (ContorlState.equals("00") || ContorlState.equals("52")) {
                                                     btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
-                                                    btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
+//                                                    btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
                                                 } else if (ContorlState.equals("51")) {
                                                     btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
                                                     ContorlState = "52";
