@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.ui.activity.u3d.U3DDialogActivity;
 import com.rick.recoveryapp.base.XPageActivity;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.databinding.ActivitySelectrolesBinding;
 import com.rick.recoveryapp.utils.APKVersionInfoUtils;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -25,7 +25,7 @@ public class SelectRolesActivity extends XPageActivity {
 
     ActivitySelectrolesBinding binding;
     Context context;
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class SelectRolesActivity extends XPageActivity {
             initClick();
             LocalConfig.ip = "180.102.132.148";
             LocalConfig.sex = -1;
-            btDataPro = new BtDataPro();
+            btDataPro = new BtDataProX();
 
             binding.Box1.setEnabled(false);
             binding.Box2.setEnabled(false);

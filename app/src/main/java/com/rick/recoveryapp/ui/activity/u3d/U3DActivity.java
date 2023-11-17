@@ -167,7 +167,7 @@ public class U3DActivity extends UnityPlayerActivity {
             u3d_waveview_one.resetCanavas();
             OftenListData.clear();
             OftenListData = new ArrayList<>();
-            U3DFactory.btDataPro.sendBTMessage(U3DFactory.btDataPro.CONNECT_SEND);
+            U3DFactory.btDataPro.sendBTMessage(U3DFactory.btDataPro.getCONNECT_SEND());
             //  isBegin = true;
             U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "53", false, 5, 1));
             //获取蓝牙数据
@@ -830,7 +830,7 @@ public class U3DActivity extends UnityPlayerActivity {
         stop();
         LocalConfig.UserID = 0;
         U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(resistance, "50", false, zhuansu, jingluan));
-        U3DFactory.btDataPro.sendBTMessage(U3DFactory.btDataPro.CONNECT_CLOSE);
+        U3DFactory.btDataPro.sendBTMessage(U3DFactory.btDataPro.getCONNECT_CLOSE());
 
 //         SelectRolesActivity.seleinstance.finish();
         Intent intent = new Intent(context, AdminMainActivity.class);

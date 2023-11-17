@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import com.github.mikephil.charting.data.Entry;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.chart.ChartStyle;
 import com.rick.recoveryapp.databinding.ActivityDataresultsBinding;
 import com.rick.recoveryapp.greendao.ActivitRecordDao;
@@ -40,7 +40,7 @@ public class DataResultsActivity extends XPageActivity {
     List<ActivitRecord> RecordList;
     List<RecordDetailed> DetailedList;
     String RecordID;
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
     double resistance = 0, speed = 0, spasm = 0;
     ActivitRecord activitRecord;
     ChartStyle chartStyle;
@@ -65,7 +65,7 @@ public class DataResultsActivity extends XPageActivity {
     }
 
     public void SuperMain() {
-        btDataPro = new BtDataPro();
+        btDataPro = new BtDataProX();
         chartStyle = new ChartStyle(binding.chart1);
         initClick();
         Intent integer = getIntent();
@@ -238,7 +238,7 @@ public class DataResultsActivity extends XPageActivity {
 
             try {
                 if (LocalConfig.Model.equals("U3D")) {
-                    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                    btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
                     finish();
                 } else {
                     String remarks = binding.logger.getContentText();

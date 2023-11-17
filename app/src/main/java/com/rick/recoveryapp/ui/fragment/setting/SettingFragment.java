@@ -35,7 +35,7 @@ import com.rick.recoveryapp.ui.dialog.MacDrDialog;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.adapter.BtDevAdapter;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.ui.service.BtReceiver;
 import com.rick.recoveryapp.databinding.FragmentSettingBinding;
 import com.rick.recoveryapp.greendao.MacDrDao;
@@ -64,14 +64,14 @@ public class SettingFragment extends Fragment implements BtReceiver.Listener, Bt
     long time;//记录时间差
     String flag;//标记点击
     Boolean isLock = true;
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         settingFragment = this;
         binding = FragmentSettingBinding.inflate(getLayoutInflater(), container, false);
         macDrDao = LocalConfig.daoSession.getMacDrDao();
-        btDataPro = new BtDataPro();
+        btDataPro = new BtDataProX();
         initClinck();
         GetMac();
 

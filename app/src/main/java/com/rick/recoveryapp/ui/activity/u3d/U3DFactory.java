@@ -2,7 +2,7 @@ package com.rick.recoveryapp.ui.activity.u3d;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.entity.ConnectData;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class U3DFactory {
 
-    static BtDataPro btDataPro = new BtDataPro();
+    static BtDataProX btDataPro = new BtDataProX();
     static String CMD_CODE = "";
     static String IP = LocalConfig.ip;
     static int sex = LocalConfig.sex;
@@ -27,13 +27,13 @@ public class U3DFactory {
                 //速度设定
                 time_lv = "00",                   //设定时间
                 cmd_end = "ED";                   //结尾
-        String zuliHex = "0" + btDataPro.decToHex(zuli);
-        String spasmsHex = "0" + btDataPro.decToHex(spasms_lv);
+        String zuliHex = "0" + BtDataProX.Companion.decToHex(zuli);
+        String spasmsHex = "0" + BtDataProX.Companion.decToHex(spasms_lv);
         String speedHex = "";
         if (speed_lv >= 16) {
-            speedHex = btDataPro.decToHex(speed_lv);
+            speedHex = BtDataProX.Companion.decToHex(speed_lv);
         } else {
-            speedHex = "0" + btDataPro.decToHex(speed_lv);
+            speedHex = "0" + BtDataProX.Companion.decToHex(speed_lv);
         }
 
         String avtive_status = "10";

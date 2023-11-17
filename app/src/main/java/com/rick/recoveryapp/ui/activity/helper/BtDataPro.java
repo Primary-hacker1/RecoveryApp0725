@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.*;
 
+@Deprecated()
 public class BtDataPro {
 
     // 握手指令-发送

@@ -1,7 +1,7 @@
 package com.rick.recoveryapp.ui.activity.bean
 
 import com.common.network.LogUtils
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX
 import com.rick.recoveryapp.utils.CRC16Util
 
 class SerialPort {
@@ -37,7 +37,7 @@ class SerialPort {
                 val time_lv = "00"
                 //设定时间
                 val cmd_end = "ED" //结尾
-                val zuliHex = "0" + BtDataPro.decToHex(serialBean.zuli!!)
+                val zuliHex = "0" + BtDataProX.decToHex(serialBean.zuli!!)
                 var avtive_status = "10"
                 if (serialBean.isBegin == true) {
                     avtive_status = "11"
@@ -58,18 +58,18 @@ class SerialPort {
                 //设定时间
                 val cmd_end = "ED" //结尾
                 val zuliHex = "00"
-                val spasmsHex = "0" + BtDataPro.decToHex(serialBean.spasms_lv!!)
+                val spasmsHex = "0" + BtDataProX.decToHex(serialBean.spasms_lv!!)
                 var speedHex = ""
                 speedHex = if (serialBean.speed_lv!! >= 16) {
-                    BtDataPro.decToHex(serialBean.speed_lv!!)
+                    BtDataProX.decToHex(serialBean.speed_lv!!)
                 } else {
-                    "0" + BtDataPro.decToHex(serialBean.speed_lv!!)
+                    "0" + BtDataProX.decToHex(serialBean.speed_lv!!)
                 }
                 var timeHex = ""
                 timeHex = if (serialBean.time_lv!! >= 16) {
-                    BtDataPro.decToHex(Math.toIntExact(serialBean.time_lv!!))
+                    BtDataProX.decToHex(Math.toIntExact(serialBean.time_lv!!))
                 } else {
-                    "0" + BtDataPro.decToHex(Math.toIntExact(serialBean.time_lv!!))
+                    "0" + BtDataProX.decToHex(Math.toIntExact(serialBean.time_lv!!))
                 }
                 var avtive_status = "10"
                 if (serialBean.isBegin!!) {
@@ -93,12 +93,12 @@ class SerialPort {
                 val time_lv = "00"
                 //设定时间
                 val cmd_end = "ED" //结尾
-                val zuliHex = "0" + BtDataPro.decToHex(serialBean.zuli!!)
-                val spasmsHex = "0" + BtDataPro.decToHex(serialBean.spasms_lv!!)
+                val zuliHex = "0" + BtDataProX.decToHex(serialBean.zuli!!)
+                val spasmsHex = "0" + BtDataProX.decToHex(serialBean.spasms_lv!!)
                 val speedHex: String = if (serialBean.speed_lv!! >= 16) {
-                    BtDataPro.decToHex(serialBean.speed_lv!!)
+                    BtDataProX.decToHex(serialBean.speed_lv!!)
                 } else {
-                    "0" + BtDataPro.decToHex(serialBean.speed_lv!!)
+                    "0" + BtDataProX.decToHex(serialBean.speed_lv!!)
                 }
                 var avtive_status = "10"
                 if (serialBean.isBegin!!) {

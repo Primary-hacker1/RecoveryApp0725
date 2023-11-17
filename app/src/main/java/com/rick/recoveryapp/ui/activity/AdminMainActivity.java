@@ -39,7 +39,7 @@ import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.dialog.DialogActivity;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.ui.service.BtKeepService;
 import com.rick.recoveryapp.ui.service.BtReceiver;
 import com.rick.recoveryapp.databinding.ActivityMainBinding;
@@ -63,7 +63,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     Context context;
     Intent intent;
     ActivityMainBinding binding;
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
     public static AdminMainActivity instance;
 
     public static void newAdminMainActivity(Context context, AddressBean addressBean) {
@@ -91,7 +91,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             context = this;
             instance = this;
-            btDataPro = new BtDataPro();
+            btDataPro = new BtDataProX();
 
             SharedPreferences shared = getSharedPreferences("Personal", MODE_PRIVATE);
             boolean isfer = shared.getBoolean("isfer", true);
@@ -169,7 +169,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                         binding.mainImgLink.setBackgroundResource(drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(AdminMainActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
 //                        AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
 //                        if (addressBean != null) {
 //                            btDataPro.sendBTMessage(btDataPro.
@@ -322,7 +322,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
     @SuppressLint("MissingPermission")
     @Override
     public void onExit() {
-        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
         if (BaseApplication.mConnectService != null) {
             BaseApplication.mConnectService.stop();
         }

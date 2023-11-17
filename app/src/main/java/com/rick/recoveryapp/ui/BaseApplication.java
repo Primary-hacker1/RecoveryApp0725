@@ -27,7 +27,7 @@ import com.rick.recoveryapp.greendao.GreenDaoContext;
 import com.rick.recoveryapp.greendao.GreenDaoUpgradeHelper;
 import com.rick.recoveryapp.greendao.MacDrDao;
 import com.rick.recoveryapp.http.OKHttpUpdateHttpService;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.utils.LiveDataBus;
@@ -73,7 +73,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     public static String mConnectedDeviceName = "";
     public static BluetoothAdapter mBluetoothAdapter = null;
 
-    static BtDataPro btDataPro;
+    static BtDataProX btDataPro;
     static ArrayList<String> FirstList = new ArrayList<>();
     static ArrayList<String> SecondList = new ArrayList<>();
     ArrayList<String> mPermissionList = new ArrayList<>();
@@ -86,7 +86,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
         context = getApplicationContext();
 
-        btDataPro = new BtDataPro();
+        btDataPro = new BtDataProX();
 
         initUpdate();
 

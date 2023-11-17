@@ -22,7 +22,7 @@ import com.rick.recoveryapp.ui.activity.bean.SerialBean;
 import com.rick.recoveryapp.ui.activity.bean.SerialPort;
 import com.rick.recoveryapp.ui.activity.bean.SerialPort.Type;
 import com.rick.recoveryapp.ui.BaseApplication;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityActiviteXBinding;
 import com.rick.recoveryapp.databinding.ActivityManagerBinding;
@@ -66,7 +66,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
     EcgData ecgData;
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     String controlState = "52";//0x50：默认状态；0x51：启动血压测量；0x52：停止血压测量； 0x53: 清除当前血压测试数据
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
     private Timer timer1;
     private TimerTask timerTask1;
     boolean isBegin = false;
@@ -178,7 +178,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
         type = (Type) intent.getSerializableExtra("type");//获取点击的模式
         assert type != null;
         LogUtils.d("type==" + type.name());
-        btDataPro = new BtDataPro();
+        btDataPro = new BtDataProX();
         managerBinding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
         managerBinding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber);
         BaseApplication myApp = (BaseApplication) getApplication();
@@ -248,7 +248,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 PoolMessage msg = (PoolMessage) v;
                 if (msg.isState()) {
 //                        Log.d("BT", msg.getObjectName());
-                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                    if (msg.getObjectName().equals(btDataPro.getUPLODE_ANSWER())) {
                         UploadData uploadData;
                         uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
 //                            LogUtils.d("BTBlood"+ uploadData.getBlood_oxy());
@@ -319,11 +319,11 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 PoolMessage msg = (PoolMessage) v;
                 if (msg.isState()) {
                     int mark = 0;
-                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                    if (msg.getObjectName().equals(btDataPro.getUPLODE_ANSWER())) {
                         mark = 1;
-                    } else if (msg.getObjectName().equals(btDataPro.ECGDATA_ANSWER)) {
+                    } else if (msg.getObjectName().equals(btDataPro.getECGDATA_ANSWER())) {
                         mark = 2;
-                    } else if (msg.getObjectName().equals(btDataPro.CONTORL_ANSWER)) {
+                    } else if (msg.getObjectName().equals(btDataPro.getCONTORL_ANSWER())) {
                         mark = 3;
                     }
                     DataDisplay(mark, msg.getObjectJson());
@@ -653,7 +653,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                     serialBean.setBlood_measure("51");
 
                     if (type == Type.ACTIVE || type == Type.INTELLIGENT) {
-                        btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                        btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
                     }
 
                 } else if (controlState.equals("51")) {
@@ -1015,7 +1015,7 @@ public class ActiveXActivity extends CommonBaseActivity<ActivityActiviteXBinding
                 if (BloodEndState == 2) {
                     BloodEndState = 0;
                     SaveRecord();
-                    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                    btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
 
                     Intent in = new Intent(context, DataResultsActivity.class);
                     startActivity(in);

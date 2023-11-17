@@ -16,7 +16,7 @@ import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.service.BluetoothChatService;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityIntelligenceBinding;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
@@ -45,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,7 +62,7 @@ public class IntelligenceActivity extends XPageActivity {
     EcgData ecgData;
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     String ContorlState = "52";
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
     String CMD_CODE = "";
     private Timer timer1;
     private TimerTask timerTask1;
@@ -90,7 +91,7 @@ public class IntelligenceActivity extends XPageActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         context = this;
 
-        btDataPro = new BtDataPro();
+        btDataPro = new BtDataProX();
         itinClick();
         binding.activeTxtMassage.setLeftString(" 患者姓名：" + LocalConfig.userName);
         binding.activeTxtMassage.setLeftBottomString(" 患者编号：" + LocalConfig.medicalNumber + "");
@@ -141,7 +142,7 @@ public class IntelligenceActivity extends XPageActivity {
             public void run() {
                 try {
                     if (OftenListData != null) {
-                        if (OftenListData.size() > 0) {
+                        if (!OftenListData.isEmpty()) {
                             float cooY = OftenListData.get(0);
                             binding.IntelligenceWaveviewOne.showLine(cooY);
                             OftenListData.remove(0);
@@ -166,7 +167,7 @@ public class IntelligenceActivity extends XPageActivity {
                 PoolMessage msg = (PoolMessage) v;
                 if (msg.isState()) {
                     Log.d("BT", msg.getObjectName());
-                    if (msg.getObjectName().equals(btDataPro.UPLODE_ANSWER)) {
+                    if (msg.getObjectName().equals(btDataPro.getUPLODE_ANSWER())) {
                         UploadData uploadData = new UploadData();
                         uploadData = gson.fromJson(msg.getObjectJson(), UploadData.class);
                         //  uploadData.getECG(),uploadData.getBlood(),uploadData.getBlood_oxy()
@@ -289,13 +290,13 @@ public class IntelligenceActivity extends XPageActivity {
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(IntelligenceActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
                         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
                         if (addressBean != null) {
                             btDataPro.sendBTMessage(btDataPro.
-                                    GetCmdCode(addressBean.getEcg(),
-                                            addressBean.getBloodPressure(),
-                                            addressBean.getBloodOxygen()));
+                                    GetCmdCode(Objects.requireNonNull(addressBean.getEcg()),
+                                            Objects.requireNonNull(addressBean.getBloodPressure()),
+                                            Objects.requireNonNull(addressBean.getBloodOxygen())));
                         }
                     } else {
                         Log.d("BT_CONNECTED1", LocalConfig.isControl + " 2");
@@ -316,7 +317,7 @@ public class IntelligenceActivity extends XPageActivity {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                    btDataPro.sendBTMessage(btDataPro.getCONNECT_SEND());
                 }
             }, 1000);
         });
@@ -494,7 +495,7 @@ public class IntelligenceActivity extends XPageActivity {
                 if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                     if (ContorlState.equals("00") || ContorlState.equals("52")) {
                         btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
-                        btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                        btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
                     } else if (ContorlState.equals("51")) {
                         btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
                         ContorlState = "52";
@@ -753,13 +754,13 @@ public class IntelligenceActivity extends XPageActivity {
                 //    speed_lv = "00",                  //速度设定
                 time_lv = "00",                   //设定时间
                 cmd_end = "ED";                   //结尾
-        String zuliHex = "0" + btDataPro.decToHex(zuli);
-        String spasmsHex = "0" + btDataPro.decToHex(spasms_lv);
+        String zuliHex = "0" + BtDataProX.Companion.decToHex(zuli);
+        String spasmsHex = "0" + BtDataProX.Companion.decToHex(spasms_lv);
         String speedHex = "";
         if (speed_lv >= 16) {
-            speedHex = btDataPro.decToHex(speed_lv);
+            speedHex = BtDataProX.Companion.decToHex(speed_lv);
         } else {
-            speedHex = "0" + btDataPro.decToHex(speed_lv);
+            speedHex = "0" + BtDataProX.Companion.decToHex(speed_lv);
         }
 
         String avtive_status = "10";
@@ -781,11 +782,11 @@ public class IntelligenceActivity extends XPageActivity {
         }
 
         int mark = 0;
-        if (msg.equals(btDataPro.UPLODE_ANSWER)) {
+        if (msg.equals(btDataPro.getUPLODE_ANSWER())) {
             mark = 1;
-        } else if (msg.equals(btDataPro.ECGDATA_ANSWER)) {
+        } else if (msg.equals(btDataPro.getECGDATA_ANSWER())) {
             mark = 2;
-        } else if (msg.equals(btDataPro.CONTORL_ANSWER)) {
+        } else if (msg.equals(btDataPro.getCONTORL_ANSWER())) {
             mark = 3;
         }
 
@@ -911,7 +912,7 @@ public class IntelligenceActivity extends XPageActivity {
                                             if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                                                 if (ContorlState.equals("00") || ContorlState.equals("52")) {
                                                     btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
-                                                    btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                                                    btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
                                                 } else if (ContorlState.equals("51")) {
                                                     btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
                                                     ContorlState = "52";
@@ -937,7 +938,7 @@ public class IntelligenceActivity extends XPageActivity {
                                             if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                                                 if (ContorlState.equals("00") || ContorlState.equals("52")) {
                                                     btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
-                                                    btDataPro.sendBTMessage(btDataPro.CONTORL_CODE_BEGIN);
+                                                    btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
                                                 } else if (ContorlState.equals("51")) {
                                                     btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
                                                     ContorlState = "52";
@@ -982,7 +983,7 @@ public class IntelligenceActivity extends XPageActivity {
                 if (BloodEndState == 2) {
                     BloodEndState = 0;
                     SaveRecord();
-                    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
+                    btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
 
                     Intent in = new Intent(context, DataResultsActivity.class);
                     // in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

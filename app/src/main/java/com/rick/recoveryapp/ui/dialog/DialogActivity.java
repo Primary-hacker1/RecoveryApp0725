@@ -35,7 +35,7 @@ import com.rick.recoveryapp.ui.activity.SelectRolesActivity;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
-import com.rick.recoveryapp.ui.activity.helper.BtDataPro;
+import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.utils.HideKeyboard;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xpage.base.XPageActivity;
@@ -52,7 +52,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
     ButtonView dialog_close, dialog_next;
     EditText dialog_userid, dialog_name, dialog_medicalNumber;
     Context context;
-    BtDataPro btDataPro;
+    BtDataProX btDataPro;
 
     //   public static DialogActivity dialogActivity;
     String pas = "^[a-zA-Z\u4e00-\u9fa5]{2,15}";
@@ -81,7 +81,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
         dialog_userid.setText(sim);
         dialog_close.setOnClickListener(this);
         dialog_next.setOnClickListener(this);
-        btDataPro = new BtDataPro();
+        btDataPro = new BtDataProX();
         name = LocalConfig.userName;
         medicalNumber = LocalConfig.medicalNumber;
         if (name != null && medicalNumber != null) {
@@ -117,7 +117,7 @@ public class DialogActivity extends XPageActivity implements View.OnClickListene
                         return;
                     }
 
-                    btDataPro.sendBTMessage(btDataPro.CONNECT_SEND);
+                    btDataPro.sendBTMessage(btDataPro.getCONNECT_SEND());
 
                     if (LocalConfig.ModType == 0) {
 //                        ActiveXActivity.newActiveXActivity(this, SerialPort.Type.ACTIVE);
