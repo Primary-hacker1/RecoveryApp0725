@@ -430,7 +430,7 @@ class BtDataProX {
                 BaseApplication.mConnectService.write(send) //回调service
 
                 // 延时300毫秒
-                Thread.sleep(300)
+                Thread.sleep(200)
                 LogUtils.e("发送串口消息完毕: " + deleteCharString(data))
             } catch (e: InterruptedException) {
                 e.printStackTrace()

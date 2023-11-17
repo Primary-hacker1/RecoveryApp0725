@@ -1017,11 +1017,6 @@ public class IntelligenceActivity extends XPageActivity {
 
             case 3:
                 ContorlState = ObjectJson;
-                if (ContorlState.equals("51")) {
-                    //  binding.inteTxtBlood.setCenterString("测量中");
-                } else if (ContorlState.equals("52")) {
-                    //  binding.inteTxtBlood.setCenterString("点击开始测量血压");
-                }
                 break;
         }
     }

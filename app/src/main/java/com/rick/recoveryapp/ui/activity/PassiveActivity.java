@@ -618,7 +618,8 @@ public class PassiveActivity extends XPageActivity {
                             initCountDownTimer(nowTime);
                             timeCountTool.startCount();
                             activeTime = MyTimeUtils.Getminute(nowTime);
-                            btDataPro.sendBTMessage(GetCmdCode("50", true, spasmData, zhuansu, activeTime));
+                            btDataPro.sendBTMessage(GetCmdCode("50",
+                                    true, spasmData, zhuansu, activeTime));
                         },
                         getString(R.string.lab_cancel),
                         (dialog, which) -> dialog.dismiss()
