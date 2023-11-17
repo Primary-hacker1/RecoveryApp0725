@@ -9,6 +9,7 @@ import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.entity.EcgData;
 import com.rick.recoveryapp.entity.protocol.PoolMessage;
 import com.rick.recoveryapp.entity.protocol.UploadData;
+import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
 import com.rick.recoveryapp.utils.LocalConfig;
@@ -71,6 +72,10 @@ public class BtDataPro {
 
     public void sendBTMessage(String message) {//重写发送函数，参数不同。
 
+        if (BaseUtil.isFastDoubleClick200()) {
+            LogUtils.e("发送串口消息100m: 多次点击" + BaseUtil.isFastDoubleClick200());
+        }
+
         if (message.isEmpty()) {
             return;
         }
@@ -85,9 +90,9 @@ public class BtDataPro {
                 new LinkedBlockingQueue<>()
         );
 
-        try{
-            executor.execute(new Producer(myQueue,message));
-        }catch (Exception e){
+        try {
+            executor.execute(new Producer(myQueue, message));
+        } catch (Exception e) {
             executor = new ThreadPoolExecutor(
                     corePoolSize,
                     maxPoolSize,
@@ -95,7 +100,7 @@ public class BtDataPro {
                     TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<>()
             );
-            executor.execute(new Producer(myQueue,message));
+            executor.execute(new Producer(myQueue, message));
         }
 
         try {
@@ -570,7 +575,7 @@ public class BtDataPro {
         private final BlockingQueue<String> queue;
         private final String data;
 
-        public Producer(BlockingQueue<String> queue,String data) {
+        public Producer(BlockingQueue<String> queue, String data) {
             this.queue = queue;
             this.data = data;
         }

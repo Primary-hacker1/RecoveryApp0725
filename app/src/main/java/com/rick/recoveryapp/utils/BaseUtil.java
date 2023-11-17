@@ -13,4 +13,15 @@ public class BaseUtil {
         return false;
     }
 
+    private static long lastClickTime100;
+
+    public static boolean isFastDoubleClick200() {//发送相同命令100毫秒内忽略一次
+        long time = System.currentTimeMillis();
+        if (time - lastClickTime100 < 200) {
+            return true;
+        }
+        lastClickTime100 = time;
+        return false;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.rick.recoveryapp.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -322,6 +323,7 @@ public class IntelligenceActivity extends XPageActivity {
     }
 
 
+    @SuppressLint("DefaultLocale")
     public void SaveRecord() {
 
         Date date = new Date();
@@ -1055,27 +1057,9 @@ public class IntelligenceActivity extends XPageActivity {
                 binding.intelligenceTxtBegin.setCenterString("停  止");
                 timeCountTool.startCount();
             }
-            //  activeTimeTool.startCount();
-            //   initCountDownTimer(nowTime);
-            //   ActiveActivity.timeCountTool.startCount();
 
         } else {
-            // stop();
             btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-//            //   ActiveActivity.timeCountTool.stopCount();
-//            timecount = timeCountTool.stopCount();
-//            activeTimeTool.stopCount();
-//            getCalories_mileage();
-//            SaveRecord();
-//           // timeCountTool.setTime(0);
-//            btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-//            Intent in = new Intent(context, DataResultsActivity.class);
-//            in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            startActivity(in);
-//            finish();
-
-//            binding.intelligenceImgBegin.setBackground(getResources().getDrawable(R.drawable.begin));
-//            binding.intelligenceTxtBegin.setCenterString("开  始");
         }
     }
 

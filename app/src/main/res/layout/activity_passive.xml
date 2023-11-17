@@ -1292,8 +1292,8 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_marginBottom="5dp"
                         android:layout_weight="3"
                         app:sCenterTextColor="@color/white"
@@ -1305,13 +1305,32 @@
                         app:sShapeSelectorNormalColor="#16a6fb"
                         app:sUseRipple="false" />
 
+                    <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+                        android:id="@+id/passive_txt_time_down"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_weight="3"
+                        app:sCenterTextColor="@color/white"
+                        app:sCenterTextIsBold="true"
+                        app:sCenterTextSize="20sp"
+                        app:sCenterTextString="00:00:00"
+                        app:sDividerLineType="none"
+                        app:sShapeCornersRadius="20dp"
+                        android:visibility="gone"
+                        app:sShapeSelectorNormalColor="#16a6fb"
+                        app:sUseRipple="false" />
+
                     <com.xuexiang.xui.widget.button.shadowbutton.ShadowButton
                         android:id="@+id/passive_time_jian"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="5dp"
                         android:background="@drawable/white_jian"
                         app:sb_radius="100dp" />
 
