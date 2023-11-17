@@ -888,6 +888,7 @@ public class IntelligenceActivity extends XPageActivity {
                                 motionHeight = uploadData.getHigh();
                                 if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
                                     observerHigh.onChanged(motionHeight);
+                                    Inte_B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                 }
                             }
                         }

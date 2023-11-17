@@ -89,7 +89,7 @@ class SerialPort {
                 val active_direction = "20"
                 //运动方向
                 // spasms_lv = "00",                 //痉挛等级
-                //    speed_lv = "00",                  //速度设定
+                // speed_lv = "00",                  //速度设定
                 val time_lv = "00"
                 //设定时间
                 val cmd_end = "ED" //结尾
