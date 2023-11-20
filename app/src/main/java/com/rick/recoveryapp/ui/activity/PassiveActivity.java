@@ -421,7 +421,7 @@ public class PassiveActivity extends XPageActivity {
             if (BaseUtil.isFastDoubleClick()) {
                 return;
             }
-//            LogUtils.e(tag + "点击了一次开始");
+            LogUtils.e(tag + "点击了一次开始");
             if (!LocalConfig.isControl) {
                 Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
@@ -835,7 +835,7 @@ public class PassiveActivity extends XPageActivity {
                         binding.passiveTxtHigh.setCenterString(uploadData.getHigh());
                         binding.passiveTxtLow.setCenterString(uploadData.getLow());
 
-                        if(isClickBlood){//是否点击过测量血压
+                        if (isClickBlood) {//是否点击过测量血压
                             Passive_L_Diastole_Shrink = "0" + "/" + "0";
                             Passive_B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                             return;

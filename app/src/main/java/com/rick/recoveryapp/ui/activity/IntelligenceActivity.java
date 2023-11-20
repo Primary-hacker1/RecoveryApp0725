@@ -499,7 +499,7 @@ public class IntelligenceActivity extends XPageActivity {
                 if (uploadData != null && uploadData.getBlood().equals("已连接")) {
                     if (ContorlState.equals("00") || ContorlState.equals("52")) {
                         btDataPro.sendBTMessage(GetCmdCode(resistance, "51", false, zhuansuData, spasm));
-                        btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
+//                        btDataPro.sendBTMessage(btDataPro.getCONTORL_CODE_BEGIN());
                     } else if (ContorlState.equals("51")) {
                         btDataPro.sendBTMessage(GetCmdCode(resistance, "52", false, zhuansuData, spasm));
                         ContorlState = "52";

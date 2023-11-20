@@ -44,16 +44,16 @@ class BtDataProX {
     val CONN_CODE_ANSWER = "A8 81 0C"
 
     //设备信息上传应答
-     val UPLODE_ANSWER = "A8 82 0D"
+    val UPLODE_ANSWER = "A8 82 0D"
 
     //心电数据包应答
-     val ECGDATA_ANSWER = "A8 83"
+    val ECGDATA_ANSWER = "A8 83"
 
     //Mac地址绑定应答
     val MAC_ANSWER = "A8 85 01"
 
     //设备控制应答（血压仪启动/停止）
-     val CONTORL_ANSWER = "A8 84 01"
+    val CONTORL_ANSWER = "A8 84 01"
     private var CMD_CODE: String? = null
     private var MassageStr = ""
     var gson: Gson = GsonBuilder().disableHtmlEscaping().create()
@@ -61,6 +61,8 @@ class BtDataProX {
     private var corePoolSize = 2
     private var maxPoolSize = 2
     private var keepAliveTime = 0L
+
+    private var threadSleep = 300L
     fun GetCmdCode(ecgMac: String, bloodMac: String, doxygenMac: String): String {
         val cmdHead = "A88512"
         //包头
@@ -82,25 +84,37 @@ class BtDataProX {
             return
         }
 
+        threadSleep = if (message.length > 13) {//判断是否是暂停命令，延时一秒发送不然主板返回状态有bug
+            val subStr: String = message.substring(8, 10)
+            if (subStr == "10") {
+                1000
+            }else{
+                200
+            }
+        }else{
+            200
+        }
+
         val myQueue: BlockingQueue<String> = LinkedBlockingQueue()
         var executor = ThreadPoolExecutor(
+            corePoolSize,
+            maxPoolSize,
+            keepAliveTime,
+            TimeUnit.MILLISECONDS,
+            LinkedBlockingQueue()
+        )
+
+        try {
+            executor.execute(Producer(myQueue, message,threadSleep))
+        } catch (e: Exception) {
+            executor = ThreadPoolExecutor(
                 corePoolSize,
                 maxPoolSize,
                 keepAliveTime,
                 TimeUnit.MILLISECONDS,
                 LinkedBlockingQueue()
-        )
-        try {
-            executor.execute(Producer(myQueue, message))
-        } catch (e: Exception) {
-            executor = ThreadPoolExecutor(
-                    corePoolSize,
-                    maxPoolSize,
-                    keepAliveTime,
-                    TimeUnit.MILLISECONDS,
-                    LinkedBlockingQueue()
             )
-            executor.execute(Producer(myQueue, message))
+            executor.execute(Producer(myQueue, message,threadSleep))
         }
         try {
             // 等待生产者线程完成
@@ -281,7 +295,15 @@ class BtDataProX {
 //                + highstr + "  " + lowstr + "  " + oxy_vaulestr + "  " + information + '\n';
     }
 
-    private fun DataStr(uploadData: UploadData, activeType: String, activeState: String, spasmState: String, ecg: String, blood: String, blood_oxy: String): UploadData {
+    private fun DataStr(
+        uploadData: UploadData,
+        activeType: String,
+        activeState: String,
+        spasmState: String,
+        ecg: String,
+        blood: String,
+        blood_oxy: String
+    ): UploadData {
         val activeName: String = when (activeType) {
             "00" -> "智能模式/非运动"
             "01" -> "主动模式"
@@ -420,7 +442,12 @@ class BtDataProX {
         return bigint.toInt()
     }
 
-    internal class Producer(private val queue: BlockingQueue<String>, private val data: String) : Runnable {
+    internal class Producer(
+        private val queue: BlockingQueue<String>,
+        private val data: String,
+        private val threadSleep: Long
+    ) :
+        Runnable {
         override fun run() {
             try {
                 queue.put(data)
@@ -433,15 +460,16 @@ class BtDataProX {
                 BaseApplication.mConnectService.write(send) //回调service
 
                 // 延时300毫秒
-                Thread.sleep(200)
+                Thread.sleep(threadSleep)
                 LogUtils.e("发送串口消息完毕: " + deleteCharString(data))
+                LogUtils.e("发送串口延时消息：$threadSleep")
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
         }
     }
 
-    companion object{
+    companion object {
         // 将16进制字符串转化为字节数组
         fun hexStr2Bytes(paramString: String): ByteArray {
             val i = paramString.length / 2
@@ -453,7 +481,8 @@ class BtDataProX {
                 val l = k + 1
                 arrayOfByte[j] = (0xFF and Integer.decode(
                     "0x" + paramString.substring(j * 2, k)
-                            + paramString.substring(k, l))).toByte()
+                            + paramString.substring(k, l)
+                )).toByte()
                 ++j
             }
         }
@@ -480,6 +509,7 @@ class BtDataProX {
             }
             return reverse(r.toString())
         }
+
         //反转字符串（反转后就是正确顺序的十六进制数：从下到上的顺序）
         private fun reverse(r: String): String {
             var s = ""
