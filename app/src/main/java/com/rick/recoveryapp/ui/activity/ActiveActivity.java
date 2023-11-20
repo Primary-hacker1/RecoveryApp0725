@@ -150,7 +150,7 @@ public class ActiveActivity extends XPageActivity {
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(ActiveActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-                        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
+//                        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
                         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
                         if (addressBean != null) {
                             btDataPro.sendBTMessage(btDataPro.
@@ -922,6 +922,6 @@ public class ActiveActivity extends XPageActivity {
         LocalConfig.BloodHight = "0";
         LocalConfig.BloodLow = "0";
         TimeCountTool.setClean();
-        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
+//        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
     }
 }
