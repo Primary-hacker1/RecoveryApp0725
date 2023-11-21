@@ -84,7 +84,7 @@ public class PassiveActivity extends XPageActivity {
     ActivityPassiveBinding binding;
 
     static PeterTimeCountRefresh downTimer;
-    static long nowTime = Constants.passiveTime;
+    static long nowTime = 300000;
     int zhuansu = 5;
     int spasmData = 1;
     Long activeTime = 0L;
@@ -115,7 +115,7 @@ public class PassiveActivity extends XPageActivity {
         LocalConfig.daoSession = myApp.getDaoSession();
         activitRecordDao = LocalConfig.daoSession.getActivitRecordDao();
         recordDetailedDao = LocalConfig.daoSession.getRecordDetailedDao();
-        nowTime = Constants.passiveTime;
+        nowTime = 300000;
         activeTime = MyTimeUtils.Getminute(nowTime);
         String text1 = MyTimeUtils.formatTime(nowTime);
         binding.passiveTxtDowntimer.setCenterString(text1);
@@ -536,10 +536,10 @@ public class PassiveActivity extends XPageActivity {
                 Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
                 return;
             }
-            nowTime = nowTime + Constants.passiveTime;
+            nowTime = nowTime + 300000;
             String text = MyTimeUtils.formatTime(nowTime);
-            if (nowTime > Constants.passiveTime) {
-                nowTime = Constants.passiveTime;
+            if (nowTime > 300000) {
+                nowTime = 300000;
                 text = MyTimeUtils.formatTime(nowTime);
             }
             binding.passiveTxtDowntimer.setCenterString(text);
@@ -554,10 +554,10 @@ public class PassiveActivity extends XPageActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            nowTime = nowTime - Constants.passiveTime;
+            nowTime = nowTime - 300000;
             String text1 = MyTimeUtils.formatTime(nowTime);
-            if (nowTime < Constants.passiveTime) {
-                nowTime = Constants.passiveTime;
+            if (nowTime < 300000) {
+                nowTime = 300000;
                 text1 = MyTimeUtils.formatTime(nowTime);
             }
             binding.passiveTxtDowntimer.setCenterString(text1);
@@ -667,7 +667,7 @@ public class PassiveActivity extends XPageActivity {
 
             binding.passiveTxtTimeDown.setVisibility(View.VISIBLE);
 
-            nowTime = Constants.passiveTime;
+            nowTime = 300000;
             stop();
             binding.passiveTxtBegin.setCenterString("开  始");
             binding.passiveTimeJia.setEnabled(true);
@@ -1087,7 +1087,7 @@ public class PassiveActivity extends XPageActivity {
         binding.passiveTimeJian.setEnabled(true);
         binding.passiveTimeJia.setVisibility(View.VISIBLE);
         binding.passiveTimeJian.setVisibility(View.VISIBLE);
-        nowTime = Constants.passiveTime;
+        nowTime = 300000;
         binding.passiveTxtDowntimer.setCenterString(MyTimeUtils.formatTime(nowTime));
     }
 
