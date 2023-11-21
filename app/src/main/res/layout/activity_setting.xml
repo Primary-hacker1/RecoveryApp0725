@@ -87,6 +87,7 @@
                 app:sLeftTextString="登录设置" />
 
             <com.xuexiang.xui.widget.textview.supertextview.SuperTextView
+                android:id="@+id/sts_version"
                 style="@style/InfoItem.Account"
                 android:layout_marginRight="2dp"
                 app:sLeftTextString="版本信息" />

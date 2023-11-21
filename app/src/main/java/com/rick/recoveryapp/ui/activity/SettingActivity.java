@@ -29,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.viewpager.widget.ViewPager;
 
+import com.rick.recoveryapp.BuildConfig;
 import com.rick.recoveryapp.ui.adapter.MyFragmentPagerAdapter;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.databinding.ActivitySettingBinding;
@@ -63,6 +64,7 @@ public class SettingActivity extends XPageActivity implements ViewPager.OnPageCh
         binding.settingPagerTest.setCurrentItem(0);
         binding.settingPagerTest.addOnPageChangeListener(this);
         sharedPreferences = getSharedPreferences("Personal", MODE_PRIVATE);
+        binding.stsVersion.setRightString(BuildConfig.VERSION_NAME);
     }
 
     @Override
