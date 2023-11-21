@@ -89,7 +89,7 @@ public class PassiveActivity extends XPageActivity {
     int spasmData = 1;
     Long activeTime = 0L;
     boolean isOk = false;
-    String Passive_B_Diastole_Shrink = "0/0", Passive_L_Diastole_Shrink = "0/0";
+    String B_Diastole_Shrink = "0/0", L_Diastole_Shrink = "0/0";
     int spasmCount = 0;
     int BloodEndState = 0; // 0:初始状态  1：需要测量血压   2：血压测量完成
     boolean isNotBt = false;
@@ -325,8 +325,8 @@ public class PassiveActivity extends XPageActivity {
         activitRecord.setAduration("0");
         activitRecord.setPduration("0");
         activitRecord.setActivtType(LocalConfig.ModType + "");
-        activitRecord.setB_Diastole_Shrink(Passive_B_Diastole_Shrink);
-        activitRecord.setL_Diastole_Shrink(Passive_L_Diastole_Shrink);
+        activitRecord.setB_Diastole_Shrink(B_Diastole_Shrink);
+        activitRecord.setL_Diastole_Shrink(L_Diastole_Shrink);
         //使用String.format()格式化(四舍五入)
         activitRecord.setTotal_mileage(String.format("%.2f", Total_mileage));
         activitRecord.setCalories(String.format("%.2f", Calories));
@@ -334,8 +334,8 @@ public class PassiveActivity extends XPageActivity {
         activitRecordDao.insert(activitRecord);
         MyAVG myAVG = new MyAVG();
         myAVG.GetAvg(LocalConfig.UserID + "");
-        Passive_B_Diastole_Shrink = "0/0";
-        Passive_L_Diastole_Shrink = "0/0";
+        B_Diastole_Shrink = "0/0";
+        L_Diastole_Shrink = "0/0";
         timeCountTool.setTime(0);
     }
 
@@ -776,8 +776,10 @@ public class PassiveActivity extends XPageActivity {
                         uploadData.setHigh("150");
                         uploadData.setLow("80");
                     } else {
-//                        uploadData.setHigh("120");
-//                        uploadData.setLow("60");
+                        if(isClickBlood){
+                            uploadData.setHigh("120");
+                            uploadData.setLow("60");
+                        }
                     }
                 }
 
@@ -817,34 +819,34 @@ public class PassiveActivity extends XPageActivity {
                         binding.passiveTxtBloodstate2.setCenterString("测量错误");
                     } else {
 
-                        if (!uploadData.getHigh().equals("0")) {
-                            LocalConfig.BloodHight = uploadData.getHigh();
-                            LocalConfig.BloodLow = uploadData.getLow();
-
-                            if (!Objects.equals(motionHeight, uploadData.getHigh())) {
-                                motionHeight = uploadData.getHigh();
-                                if (isCloseDialog) {//运动测量后的血压，自动修改成测量完成，然后关闭界面
-                                    observerHigh.onChanged(motionHeight);
-                                    Passive_B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
-                                }
-                            }
-                        }
                         binding.passiveTxtBloodstate1.setCenterString("");
                         binding.passiveTxtBloodstate2.setCenterString("");
 
                         binding.passiveTxtHigh.setCenterString(uploadData.getHigh());
                         binding.passiveTxtLow.setCenterString(uploadData.getLow());
 
-                        if (isClickBlood) {//是否点击过测量血压
-                            Passive_L_Diastole_Shrink = "0" + "/" + "0";
-                            Passive_B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
-                            return;
-                        }
+                        if (!uploadData.getHigh().equals("0")) {
+                            LocalConfig.BloodHight = uploadData.getHigh();
+                            LocalConfig.BloodLow = uploadData.getLow();
 
-                        if (Passive_B_Diastole_Shrink.equals("0/0")) {//测量血压值
-                            Passive_B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
-                        } else {
-                            Passive_L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                            if (isClickBlood) {//是否点击过测量血压
+                                if (B_Diastole_Shrink.equals("0/0")) {
+                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                } else {
+                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                }
+                            } else {
+                                B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
+                                L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练后血压
+                            }
+
+                            if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
+                                motionHeight = uploadData.getHigh();
+                                if (isCloseDialog) {
+                                    observerHigh.onChanged(motionHeight);
+                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                }
+                            }
                         }
                     }
                 } else {
