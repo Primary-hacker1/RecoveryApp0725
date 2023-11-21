@@ -85,13 +85,14 @@ class BtDataProX {
         }
 
         threadSleep = if (message.length > 13) {//判断是否是暂停命令，延时一秒发送不然主板返回状态有bug
+//            if (type.equals("")) return
             val subStr: String = message.substring(8, 10)
             if (subStr == "10") {
                 1000
-            }else{
+            } else {
                 200
             }
-        }else{
+        } else {
             200
         }
 
@@ -105,7 +106,7 @@ class BtDataProX {
         )
 
         try {
-            executor.execute(Producer(myQueue, message,threadSleep))
+            executor.execute(Producer(myQueue, message, threadSleep))
         } catch (e: Exception) {
             executor = ThreadPoolExecutor(
                 corePoolSize,
@@ -114,7 +115,7 @@ class BtDataProX {
                 TimeUnit.MILLISECONDS,
                 LinkedBlockingQueue()
             )
-            executor.execute(Producer(myQueue, message,threadSleep))
+            executor.execute(Producer(myQueue, message, threadSleep))
         }
         try {
             // 等待生产者线程完成

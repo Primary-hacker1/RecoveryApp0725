@@ -533,19 +533,19 @@ public class PassiveActivity extends XPageActivity {
 
         binding.passiveTimeJia.setOnClickListener(v -> {
             if (!LocalConfig.isControl) {
-                Toast.makeText(this, R.string.bluetoothIsNotConnected, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetoothIsNotConnected,
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
             nowTime = nowTime + 300000;
             String text = MyTimeUtils.formatTime(nowTime);
-            if (nowTime > 300000) {
-                nowTime = 300000;
+            if (nowTime > 3600000) {
+                nowTime = 3600000;
                 text = MyTimeUtils.formatTime(nowTime);
             }
             binding.passiveTxtDowntimer.setCenterString(text);
             activeTime = MyTimeUtils.Getminute(nowTime);
-            btDataPro.sendBTMessage(GetCmdCode("50", false,
-                    spasmData, zhuansu, activeTime));
+            btDataPro.sendBTMessage(GetCmdCode("50", false, spasmData, zhuansu, activeTime));
         });
 
         binding.passiveTimeJian.setOnClickListener(v -> {
