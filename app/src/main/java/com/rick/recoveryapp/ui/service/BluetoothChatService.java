@@ -505,6 +505,9 @@ public class BluetoothChatService {
          * @param buffer The bytes to write
          */
         public void write(byte[] buffer) {
+            if (buffer.length == 0) {
+                return;
+            }
             try {
                 mmOutStream.write(buffer);
                 //将发送的消息共享回UI活动
