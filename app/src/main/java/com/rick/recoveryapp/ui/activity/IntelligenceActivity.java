@@ -882,8 +882,13 @@ public class IntelligenceActivity extends XPageActivity {
                                     L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                 }
                             } else {
-                                B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
-                                L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练后血压
+                                if (isCloseDialog) {
+                                    B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
+                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练后血压
+                                }else {//点的否
+                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练前血压
+                                    L_Diastole_Shrink = "0" + "/" + "0";//训练后血压
+                                }
                             }
 
                             if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压

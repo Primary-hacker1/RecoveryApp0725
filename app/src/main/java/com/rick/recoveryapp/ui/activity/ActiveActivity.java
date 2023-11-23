@@ -674,8 +674,13 @@ public class ActiveActivity extends XPageActivity {
                                     L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                 }
                             } else {
-                                B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
-                                L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练后血压
+                                if (isCloseDialog) {
+                                    B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
+                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练后血压
+                                }else {//点的否
+                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练前血压
+                                    L_Diastole_Shrink = "0" + "/" + "0";//训练后血压
+                                }
                             }
 
                             if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
@@ -794,10 +799,7 @@ public class ActiveActivity extends XPageActivity {
                     } else {
                         // Float
                         binding.activeTxtEcgstate.setCenterString("");
-                        for (int i = 0; i < EcgListData.size(); i++) {
-                            Float cooY = EcgListData.get(i);
-                            OftenListData.add(cooY);
-                        }
+                        OftenListData.addAll(EcgListData);
                         EcgListData = null;
                     }
                 } catch (Exception e) {

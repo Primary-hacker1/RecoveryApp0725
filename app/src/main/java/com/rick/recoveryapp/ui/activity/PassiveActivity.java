@@ -776,7 +776,7 @@ public class PassiveActivity extends XPageActivity {
                         uploadData.setHigh("150");
                         uploadData.setLow("80");
                     } else {
-                        if(isClickBlood){
+                        if (isClickBlood) {
                             uploadData.setHigh("120");
                             uploadData.setLow("60");
                         }
@@ -833,20 +833,24 @@ public class PassiveActivity extends XPageActivity {
                                 if (B_Diastole_Shrink.equals("0/0")) {
                                     B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                 } else {
-                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                    if (isCloseDialog) {
+                                        L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                    }
                                 }
                             } else {
-                                B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
-                                L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练后血压
-                            }
-
-                            if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
-                                motionHeight = uploadData.getHigh();
-                                if (isCloseDialog) {
-                                    observerHigh.onChanged(motionHeight);
-                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                if (isCloseDialog) {//是否点击了运动后测量血压
+                                    B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
+                                    if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
+                                        motionHeight = uploadData.getHigh();
+                                        observerHigh.onChanged(motionHeight);
+                                        L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                    }
+                                }else {//点的否
+                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练前血压
+                                    L_Diastole_Shrink = "0" + "/" + "0";//训练后血压
                                 }
                             }
+
                         }
                     }
                 } else {
