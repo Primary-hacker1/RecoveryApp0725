@@ -7,7 +7,7 @@ package com.rick.recoveryapp.ui.activity.helper;
 object UriConfig {
     const val BASE_URL = "http://124.221.169.68:5000" //release测试
 
-    const val test = true//测试模式
+    const val test = false//测试模式
 
 //    const val BASE_URL = "http://124.221.169.68:8088" //debug测试
 

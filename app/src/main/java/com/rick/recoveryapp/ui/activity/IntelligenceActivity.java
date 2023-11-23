@@ -817,8 +817,8 @@ public class IntelligenceActivity extends XPageActivity {
                         uploadData.setLow("80");
                     } else {
                         if(isClickBlood){
-                            uploadData.setHigh("120");
-                            uploadData.setLow("60");
+                            uploadData.setHigh("255");
+                            uploadData.setLow("255");
                         }
                     }
                 }
