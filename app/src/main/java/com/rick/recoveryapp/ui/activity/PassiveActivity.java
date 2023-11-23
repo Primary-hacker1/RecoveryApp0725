@@ -16,7 +16,6 @@ import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.service.BluetoothChatService;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
 import com.rick.recoveryapp.ui.BaseApplication;
@@ -35,6 +34,7 @@ import com.rick.recoveryapp.greendao.entity.ActivitRecord;
 import com.rick.recoveryapp.greendao.entity.RecordDetailed;
 import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.activity.bean.SharedPreferencesUtils;
+import com.rick.recoveryapp.ui.service.BluetoothChatServiceX;
 import com.rick.recoveryapp.utils.BaseUtil;
 import com.rick.recoveryapp.utils.CRC16Util;
 import com.rick.recoveryapp.utils.LiveDataBus;
@@ -212,6 +212,13 @@ public class PassiveActivity extends XPageActivity {
         LiveDataBus.get().with(Constants.BT_CONNECTED).observe(this, v -> {
             if (v instanceof LiveMessage) {
                 LiveMessage msg = (LiveMessage) v;
+
+                String message = msg.getMessage();
+
+                if(message.isEmpty()){
+                    return;
+                }
+
                 if (msg.getState().equals("蓝牙设备未连接")) {
                     isBegin = false;//恢复不然退出不了界面
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
@@ -249,7 +256,7 @@ public class PassiveActivity extends XPageActivity {
 
         if (BaseApplication.mConnectService != null) {
             //蓝牙闲置状态
-            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+            if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_NONE) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
                     binding.mainImgLink.setEnabled(true);
@@ -257,7 +264,7 @@ public class PassiveActivity extends XPageActivity {
                     BaseApplication.mConnectService.start();
                 }
                 //蓝牙已连接
-            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_CONNECTED) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                     binding.mainImgLink.setEnabled(false);

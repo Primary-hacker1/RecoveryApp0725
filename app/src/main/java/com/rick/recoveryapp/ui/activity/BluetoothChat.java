@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -36,9 +37,10 @@ import android.widget.Toast;
 
 
 import com.rick.recoveryapp.R;
-import com.rick.recoveryapp.ui.service.BluetoothChatService;
+import com.rick.recoveryapp.ui.service.BluetoothChatServiceX;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 /**
  * 显示通信信息的主Activity。
@@ -47,8 +49,6 @@ public class BluetoothChat extends Activity {
     // Debugging
     private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
-    //返回页面标志
-    private boolean exit = false;
 
     // 来自BluetoothChatService Handler的消息类型
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -60,10 +60,7 @@ public class BluetoothChat extends Activity {
     // 来自BluetoothChatService Handler的关键名
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
-    // Intent请求代码
-    private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
-    StringBuffer dataStr=new StringBuffer();
 
     // 布局视图
 //    private TextView mTitle;
@@ -74,11 +71,6 @@ public class BluetoothChat extends Activity {
     private TextView view;
 
 
-    // 声明复选按钮
-    private CheckBox in16;
-    private CheckBox autosend;
-    private CheckBox out16;
-
     // 声明button按钮
     private Button mSendButton;
     private Button stop;
@@ -88,8 +80,6 @@ public class BluetoothChat extends Activity {
     // 用来保存存储的文件名
     public String filename = "";
     // 保存用数据缓存
-    private String fmsg = "";
-    // 计数用
     private int countin = 0;
     private int countout = 0;
 
@@ -101,7 +91,7 @@ public class BluetoothChat extends Activity {
     // 本地蓝牙适配器
     private BluetoothAdapter mBluetoothAdapter = null;
     // 用于通信的服务
-    private BluetoothChatService mChatService = null;
+    private BluetoothChatServiceX mChatService = null;
     // CheckBox用
     private boolean inhex = true;
     private boolean outhex = true;
@@ -158,9 +148,10 @@ public class BluetoothChat extends Activity {
 
     private void init() {
         // 通过findViewById获得CheckBox对象
-        in16 = (CheckBox) findViewById(R.id.in16);
-        autosend = (CheckBox) findViewById(R.id.autosend);
-        out16 = (CheckBox) findViewById(R.id.out16);
+        // 声明复选按钮
+        CheckBox in16 = (CheckBox) findViewById(R.id.in16);
+        CheckBox autosend = (CheckBox) findViewById(R.id.autosend);
+        CheckBox out16 = (CheckBox) findViewById(R.id.out16);
 
         // 注册事件监听器
         in16.setOnCheckedChangeListener(listener);
@@ -269,7 +260,7 @@ public class BluetoothChat extends Activity {
     }
 
     //自动发送
-    private Runnable runnable = new Runnable() {
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             String message = view.getText().toString();
@@ -293,52 +284,47 @@ public class BluetoothChat extends Activity {
         outcount.setText("0");
         incount.setText("0");
 
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // 使用编辑文本小部件的内容发送消息
-                TextView view = (TextView) findViewById(R.id.edit_text_out);
+        mSendButton.setOnClickListener(v -> {
+            // 使用编辑文本小部件的内容发送消息
+            TextView view = (TextView) findViewById(R.id.edit_text_out);
 
-                String message = "A8810101B03CED";
-                sendMessage(message);
-            }
+            String message = "A8810101B03CED";
+            sendMessage(message);
         });
 
-        stop.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = "A8810102F03DED";
-                sendMessage(message);
-            }
+        stop.setOnClickListener(v -> {
+            String message = "A8810102F03DED";
+            sendMessage(message);
         });
 
         // 初始化BluetoothChatService以执行app_incon_bluetooth连接
-        mChatService = new BluetoothChatService( mHandler);
+        mChatService = new BluetoothChatServiceX( mHandler);
 
         AutoConnect();
         //初始化外发消息的缓冲区
-        mOutStringBuffer = new StringBuffer("");
+        mOutStringBuffer = new StringBuffer();
     }
 
 
     //重写发送函数，参数不同。
     private void sendMessage(String message) {
         // 确保已连接
-        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
+        if (mChatService.getState() != BluetoothChatServiceX.STATE_CONNECTED) {
             Toast.makeText(this, "未连接", Toast.LENGTH_SHORT)
                     .show();
             return;
         }
         // 检测是否有字符串发送
-        if (message.length() > 0) {
+        if (!message.isEmpty()) {
             // 获取 字符串并告诉BluetoothChatService发送
-            if (outhex == true) {
-                byte[] send = hexStr2Bytes(message);
-                mChatService.write(send);//回调service
+            byte[] send;//回调service
+            if (outhex) {
+                send = hexStr2Bytes(message);
 
-            } else if (outhex == false) {
-                byte[] send = message.getBytes();
-                mChatService.write(send);//回调service
+            } else {
+                send = message.getBytes();
             }
+            mChatService.write(send);//回调service
             // 清空输出缓冲区
             mOutStringBuffer.setLength(0);
         } else {
@@ -395,7 +381,7 @@ public class BluetoothChat extends Activity {
 
 
     // 该Handler从BluetoothChatService中获取信息
-    private final Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler(Objects.requireNonNull(Looper.myLooper())) {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -405,18 +391,18 @@ public class BluetoothChat extends Activity {
 
 
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
+                        case BluetoothChatServiceX.STATE_CONNECTED:
                             incount.setText("已连接");
                             incount.append(mConnectedDeviceName);
                             mConversationView.setText(null);
                             break;
 
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case BluetoothChatServiceX.STATE_CONNECTING:
                             incount.setText("正在连接。。。");
                             break;
 
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
+                        case BluetoothChatServiceX.STATE_LISTEN:
+                        case BluetoothChatServiceX.STATE_NONE:
                             incount.setText("没有连接");
                             break;
                     }
@@ -425,25 +411,25 @@ public class BluetoothChat extends Activity {
                 case MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     // 自动发送
-                    if (auto == true) {
-
+                    if (auto) {
                         // 自动发送模块
                         mHandler.postDelayed(runnable, 1000);
-                    } else if (auto == false) {
+                    } else {
                         mHandler.removeCallbacks(runnable);
                     }
                     // 发送计数
-                    if (outhex == true) {
+                    if (outhex) {
                         String writeMessage = Bytes2HexString(writeBuf);
                         countout += writeMessage.length() / 2;
                         outcount.setText("" + countout);
-                    } else if (outhex == false) {
+                    } else {
                         String writeMessage = null;
                         try {
                             writeMessage = new String(writeBuf, "GBK");
                         } catch (UnsupportedEncodingException e1) {
                             e1.printStackTrace();
                         }
+                        assert writeMessage != null;
                         countout += writeMessage.length();
                         outcount.setText("" + countout);
                     }
@@ -458,7 +444,6 @@ public class BluetoothChat extends Activity {
                        // dataStr.setLength(0);
                     //    mConversationView.setText(null);
                         String readMessage = bytesToHexString(readBuf, msg.arg1)+"*";
-                        fmsg += readMessage;
                         mConversationView.append(readMessage);
                       //  dataStr.append(mConversationView.getText().toString());
                         Log.d("DataStr", mConversationView.getText().toString());
@@ -466,16 +451,16 @@ public class BluetoothChat extends Activity {
 //                        countin += readMessage.length() / 2;
 //                        incount.setText("" + countin);
                      //   mConversationView.setText(null);
-                    } else if (inhex == false) {
+                    } else {
                         String readMessage = null;
                         try {
                             readMessage = new String(readBuf, 0, msg.arg1, "GBK");
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
-                        fmsg += readMessage;
                         mConversationView.append(readMessage);
                         // 接收计数，更新UI
+                        assert readMessage != null;
                         countin += readMessage.length();
                         incount.setText("" + countin);
                     }
@@ -501,84 +486,14 @@ public class BluetoothChat extends Activity {
     @SuppressLint("MissingPermission")
     public void AutoConnect() {
         try {
-            //        String address = data.getExtras().getString(DeviceListActivity.DEVICE_ADDRESS);
             String address = "00:1B:10:F1:EE:7E";
-
-            //00:1B:10:F1:EE:7E
-//            BluetoothDevice device = mBluetoothAdapter
-//                    .getRemoteDevice(address);
-//            // 尝试连接到设备
-//            mChatService.connect(device);
-
-            // DeviceListActivity返回时要连接的设备
-
-            // 获取设备的MAC地址
-//            String address = data.getExtras().getString(
-//                    DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-
-            // 获取BLuetoothDevice对象
             BluetoothDevice device = mBluetoothAdapter
                     .getRemoteDevice(address);
-            // 尝试连接到设备
             mChatService.connect(device);
-            // 获取设备
-//            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-//            target_device_name = device.getName();
-//            if (target_device_name.equals(mConnectedDeviceName)) {
-//                Toast.makeText(this, "已连接" + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-//                // sendBTmessage(1);
-//                return;
-//            }
-//            // 提示正在连接设备
-//            Toast.makeText(this, "正在连接" + target_device_name, Toast.LENGTH_SHORT).show();
-//            // 连接设备
-//            mConnectService.connect(device);
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            //java.lang.NullPointerException: Attempt to invoke virtual method 'void com.example.bluetooth.BluetoothService.connect(android.bluetooth.BluetoothDevice)' on a null object reference
         }
     }
-
-//    //返回该Activity回调函数
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (D)
-//            Log.d(TAG, "onActivityResult " + resultCode);
-//
-//        switch (requestCode) {
-//
-////search返回的
-//            case REQUEST_CONNECT_DEVICE:
-//
-//                // DeviceListActivity返回时要连接的设备
-//
-//                    // 获取设备的MAC地址
-//                    String address = data.getExtras().getString(
-//                            DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-//
-//                    // 获取BLuetoothDevice对象
-//                    BluetoothDevice device = mBluetoothAdapter
-//                            .getRemoteDevice(address);
-//                    // 尝试连接到设备
-//                    mChatService.connect(device);
-//
-//                break;
-////start返回的（遇到蓝牙不可用退出）
-//            case REQUEST_ENABLE_BT:
-//                // 当启用蓝牙的请求返回时
-//                if (resultCode == Activity.RESULT_OK) {
-//                    //蓝牙已启用，因此设置聊天会话
-//                    setupChat();//初始化文本
-//                } else {
-//                    // 用户未启用蓝牙或发生错误
-//                    Log.d(TAG, "BT not enabled");
-//
-//                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
-//                            Toast.LENGTH_SHORT).show();
-//                    finish();
-//                }
-//        }
-//    }
-
 
     // 保存按键响应函数
     public void onSaveButtonClicked(View v) {
@@ -587,7 +502,6 @@ public class BluetoothChat extends Activity {
 
     // 清屏按键响应函数
     public void onClearButtonClicked(View v) {
-        fmsg = "";
         mConversationView.setText(null);
         view.setText(null);
         return;
@@ -602,59 +516,6 @@ public class BluetoothChat extends Activity {
         return;
     }
 
-    // 保存功能实现
-//    private void Save() {
-//        // 显示对话框输入文件名
-//        LayoutInflater factory = LayoutInflater.from(BluetoothChat.this); // 图层模板生成器句柄
-//        final View DialogView = factory.inflate(R.layout.sname, null); // 用sname.xml模板生成视图模板
-//        new AlertDialog.Builder(BluetoothChat.this).setTitle("文件名")
-//                .setView(DialogView) // 设置视图模板
-//                .setPositiveButton("确定", new DialogInterface.OnClickListener() // 确定按键响应函数
-//                {
-//                    public void onClick(DialogInterface dialog,
-//                                        int whichButton) {
-//                        EditText text1 = (EditText) DialogView
-//                                .findViewById(R.id.sname); // 得到文件名输入框句柄
-//                        filename = text1.getText().toString(); // 得到文件名
-//
-//                        try {
-//                            if (Environment.getExternalStorageState()
-//                                    .equals(Environment.MEDIA_MOUNTED)) { // 如果SD卡已准备好
-//
-//                                filename = filename + ".txt"; // 在文件名末尾加上.txt
-//                                File sdCardDir = Environment
-//                                        .getExternalStorageDirectory(); // 得到SD卡根目录
-//                                File BuildDir = new File(sdCardDir,
-//                                        "/BluetoothSave"); // 打开BluetoothSave目录，如不存在则生成
-//                                if (BuildDir.exists() == false)
-//                                    BuildDir.mkdirs();
-//                                File saveFile = new File(BuildDir,
-//                                        filename); // 新建文件句柄，如已存在仍新建文档
-//                                FileOutputStream stream = new FileOutputStream(saveFile); // 打开文件输入流
-//                                stream.write(fmsg.getBytes());
-//                                stream.close();
-//                                Toast.makeText(BluetoothChat.this,
-//                                                "存储成功！", Toast.LENGTH_SHORT)
-//                                        .show();
-//                            } else {
-//                                Toast.makeText(BluetoothChat.this,
-//                                                "没有存储卡！", Toast.LENGTH_LONG)
-//                                        .show();
-//                            }
-//                        } catch (IOException e) {
-//                            return;
-//                        }
-//                    }
-//                })
-//                .setNegativeButton("取消", // 取消按键响应函数,直接退出对话框不做任何处理
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog,
-//                                                int which) {
-//                            }
-//                        }).show();
-//                        // 显示对话框
-//    }
-
     @Override
     public synchronized void onResume() {
         super.onResume();
@@ -665,7 +526,7 @@ public class BluetoothChat extends Activity {
         // onResume（）将在ACTION_REQUEST_ENABLE活动时被调用返回.
         if (mChatService != null) {
             // 只有状态是STATE_NONE，我们知道我们还没有启动蓝牙
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+            if (mChatService.getState() == BluetoothChatServiceX.STATE_NONE) {
                 // 启动BluetoothChat服务
                 mChatService.start();
             }
@@ -704,12 +565,8 @@ public class BluetoothChat extends Activity {
     }
 
     public void exit() {
-        exit = true;
-
-
-        if (exit == true) {
-            this.finish();
-        }
-
+        //返回页面标志
+        boolean exit = true;
+        this.finish();
     }
 }

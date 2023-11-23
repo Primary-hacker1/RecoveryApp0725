@@ -18,7 +18,7 @@ import com.common.network.LogUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.rick.recoveryapp.ui.activity.helper.Constants;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
-import com.rick.recoveryapp.ui.service.BluetoothChatService;
+import com.rick.recoveryapp.ui.service.BluetoothChatServiceX;
 import com.rick.recoveryapp.ui.service.BtReceiver;
 import com.rick.recoveryapp.entity.LiveMessage;
 import com.rick.recoveryapp.greendao.DaoMaster;
@@ -68,7 +68,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     // Intent请求代码
     public static LiveMessage liveMessage = null;
 
-    public static BluetoothChatService mConnectService = null;
+    public static BluetoothChatServiceX mConnectService = null;
     // 已连接设备的名字
     public static String mConnectedDeviceName = "";
     public static BluetoothAdapter mBluetoothAdapter = null;
@@ -214,7 +214,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
             switch (msg.what) {
                 case MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
+                        case BluetoothChatServiceX.STATE_CONNECTED:
                             LocalConfig.isControl = true;
                             liveMessage = new LiveMessage();
                             liveMessage.setIsConnt(true);
@@ -224,7 +224,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             LogUtils.d(tag + "已连接到 " + mConnectedDeviceName);
                             break;
 
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case BluetoothChatServiceX.STATE_CONNECTING:
                             liveMessage = new LiveMessage();
                             liveMessage.setIsConnt(false);
                             liveMessage.setMessage("");//正在连接。。。
@@ -233,11 +233,11 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
                             LogUtils.d(tag + "正在连接。。。 ");
                             break;
 
-                        case BluetoothChatService.STATE_LISTEN:
+                        case BluetoothChatServiceX.STATE_LISTEN:
                             mConnectedDeviceName = "";
                             break;
 
-                        case BluetoothChatService.STATE_NONE:
+                        case BluetoothChatServiceX.STATE_NONE:
                             break;
                     }
                     break;
@@ -317,7 +317,7 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
     @SuppressLint("MissingPermission")
     public static void AutoConnect() {
 
-        mConnectService = new BluetoothChatService(mHandler);
+        mConnectService = new BluetoothChatServiceX(mHandler);
 
 //        try {
 
@@ -351,6 +351,8 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 //        if (target_device_name.equals(mConnectedDeviceName)) {
 //            return;
 //        }
+
+        LogUtils.d(tag + device.getType());
 
         mConnectService.connect(device);
 

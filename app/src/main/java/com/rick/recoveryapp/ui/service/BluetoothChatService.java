@@ -23,6 +23,7 @@ import java.util.UUID;
  * 这个类做了所有设置和管理与其它蓝牙设备连接的工作。
  * 它有一个线程监听传入连接，一个线程与设备进行连接，还有一个线程负责连接后的数据传输。
  */
+@Deprecated
 public class BluetoothChatService {
 
     public final int MESSAGE_STATE_CHANGE = 1;

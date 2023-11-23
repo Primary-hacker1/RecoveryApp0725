@@ -18,7 +18,7 @@ import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.activity.helper.UriConfig;
-import com.rick.recoveryapp.ui.service.BluetoothChatService;
+import com.rick.recoveryapp.ui.service.BluetoothChatServiceX;
 import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.databinding.ActivityIntelligenceBinding;
@@ -124,7 +124,7 @@ public class IntelligenceActivity extends XPageActivity {
 
         if (BaseApplication.mConnectService != null) {
             //蓝牙闲置状态
-            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+            if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_NONE) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
                     binding.mainImgLink.setEnabled(true);
@@ -132,7 +132,7 @@ public class IntelligenceActivity extends XPageActivity {
                     BaseApplication.mConnectService.start();
                 }
                 //蓝牙已连接
-            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_CONNECTED) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                     binding.mainImgLink.setEnabled(false);
@@ -266,7 +266,7 @@ public class IntelligenceActivity extends XPageActivity {
 
         if (BaseApplication.mConnectService != null) {
             //蓝牙闲置状态
-            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+            if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_NONE) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
                     binding.mainImgLink.setEnabled(true);
@@ -274,7 +274,7 @@ public class IntelligenceActivity extends XPageActivity {
                     BaseApplication.mConnectService.start();
                 }
                 //蓝牙已连接
-            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_CONNECTED) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                     binding.mainImgLink.setEnabled(false);
@@ -296,7 +296,7 @@ public class IntelligenceActivity extends XPageActivity {
                         binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_open);
                         binding.mainImgLink.setEnabled(false);
                         Toast.makeText(IntelligenceActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
-//                        btDataPro.sendBTMessage(btDataPro.getCONNECT_CLOSE());
+                        btDataPro.sendBTMessage(btDataPro.getCONNECT_SEND());
                         AddressBean addressBean = SharedPreferencesUtils.Companion.getInstance().getAddressString();
                         if (addressBean != null) {
                             btDataPro.sendBTMessage(btDataPro.

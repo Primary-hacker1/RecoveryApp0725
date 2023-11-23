@@ -38,7 +38,7 @@ import com.rick.recoveryapp.ui.activity.u3d.U3DActivity;
 import com.rick.recoveryapp.ui.BaseApplication;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.dialog.DialogActivity;
-import com.rick.recoveryapp.ui.service.BluetoothChatService;
+import com.rick.recoveryapp.ui.service.BluetoothChatServiceX;
 import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.ui.service.BtKeepService;
 import com.rick.recoveryapp.ui.service.BtReceiver;
@@ -197,7 +197,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
         super.onResume();
         if (BaseApplication.mConnectService != null) {
             //蓝牙闲置状态
-            if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_NONE) {
+            if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_NONE) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(drawable.img_bt_close);
                     binding.mainImgLink.setEnabled(true);
@@ -205,7 +205,7 @@ public class AdminMainActivity extends XPageActivity implements ClickUtils.OnCli
                     BaseApplication.mConnectService.start();
                 }
                 //蓝牙已连接
-            } else if (BaseApplication.mConnectService.getState() == BluetoothChatService.STATE_CONNECTED) {
+            } else if (BaseApplication.mConnectService.getState() == BluetoothChatServiceX.STATE_CONNECTED) {
                 if (BaseApplication.liveMessage != null) {
                     binding.mainImgLink.setBackgroundResource(drawable.img_bt_open);
                     binding.mainImgLink.setEnabled(false);
