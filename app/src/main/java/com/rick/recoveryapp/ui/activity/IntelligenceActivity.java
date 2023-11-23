@@ -705,46 +705,17 @@ public class IntelligenceActivity extends XPageActivity {
                 getString(R.string.lab_yes),
                 (dialog, which) -> {
                     dialog.dismiss();
-//                        btDataPro.sendBTMessage(GetCmdCode(resistance, "50", false, zhuansuData, spasm));
-//                        stop();
-//
-//                        btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-//                        timecount = timeCountTool.stopCount();
-//                        getCalories_mileage();
-//                        SaveRecord();
-//                        timeCountTool.setTime(0);
-//                        activeTimeTool.setTime(0);
-//                        Date date = new Date();
-//                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//                        String sim = dateFormat.format(date);
-//                        LocalConfig.UserID = Long.valueOf(sim).longValue();
                     if (modletype == 1) {
                         LocalConfig.ModType = 0;
                         Intent in = new Intent(context, ActiveActivity.class);
-                        //   in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     } else if (modletype == 2) {
                         LocalConfig.ModType = 1;
                         Intent in = new Intent(context, PassiveActivity.class);
-                        //  in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(in);
                         finish();
                     }
-                    //    btDataPro.sendBTMessage(btDataPro.CONNECT_CLOSE);
-//                    if (modletype == 1) {
-//                        LocalConfig.ModType = 0;
-//                        Intent in = new Intent(context, ActiveActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
-//                    } else if (modletype == 2) {
-//                        LocalConfig.ModType = 1;
-//                        Intent in = new Intent(context, PassiveActivity.class);
-//                        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(in);
-//                        finish();
-//                    }
                 },
                 getString(R.string.lab_no),
                 (dialog, which) -> {
