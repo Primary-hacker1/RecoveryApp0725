@@ -832,8 +832,11 @@ public class PassiveActivity extends XPageActivity {
                             if (isClickBlood) {//是否点击过测量血压
                                 if (B_Diastole_Shrink.equals("0/0")) {
                                     B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
-                                } else {
-                                    if (isCloseDialog) {
+                                }
+                                if (isCloseDialog) {
+                                    if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
+                                        motionHeight = uploadData.getHigh();
+                                        observerHigh.onChanged(motionHeight);
                                         L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                     }
                                 }
@@ -845,13 +848,13 @@ public class PassiveActivity extends XPageActivity {
                                         observerHigh.onChanged(motionHeight);
                                         L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                     }
-                                }else {//点的否
+                                } else {//点的否
                                     B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();//训练前血压
                                     L_Diastole_Shrink = "0" + "/" + "0";//训练后血压
                                 }
                             }
-
                         }
+
                     }
                 } else {
 
