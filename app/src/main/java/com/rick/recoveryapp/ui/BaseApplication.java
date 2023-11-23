@@ -346,13 +346,10 @@ public class BaseApplication extends Application implements BtReceiver.Listener 
 
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
-        String target_device_name = device.getName();
-
+//        String target_device_name = device.getName();
 //        if (target_device_name.equals(mConnectedDeviceName)) {
 //            return;
 //        }
-
-        LogUtils.d(tag + device.getType());
 
         mConnectService.connect(device);
 

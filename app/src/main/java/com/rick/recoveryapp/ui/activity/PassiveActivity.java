@@ -215,11 +215,11 @@ public class PassiveActivity extends XPageActivity {
 
                 String message = msg.getMessage();
 
-                if(message.isEmpty()){
+                if (message == null) {
                     return;
                 }
 
-                if (msg.getState().equals("蓝牙设备未连接")) {
+                if (message.equals("蓝牙设备未连接")) {
                     isBegin = false;//恢复不然退出不了界面
                     binding.mainImgLink.setBackgroundResource(R.drawable.img_bt_close);
                     binding.mainImgLink.setEnabled(true);
