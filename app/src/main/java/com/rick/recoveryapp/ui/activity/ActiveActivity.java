@@ -628,8 +628,8 @@ public class ActiveActivity extends XPageActivity {
                 if (UriConfig.test) {
                     uploadData.setBlood("已连接");
                     if (isCloseDialog) {
-                        uploadData.setHigh("0");
-                        uploadData.setLow("0");
+                        uploadData.setHigh("150");
+                        uploadData.setLow("80");
                     } else {
                         if (isClickBlood) {
                             uploadData.setHigh("255");
@@ -677,6 +677,11 @@ public class ActiveActivity extends XPageActivity {
                                         observerHigh.onChanged(motionHeight);
                                         L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                     }
+                                }
+                                if (Objects.equals(B_Diastole_Shrink,
+                                        L_Diastole_Shrink)) {//训练前训练后不可能血压相同，一样的话就把训练前的改成0/0
+                                    B_Diastole_Shrink = "0" + "/" + "0";
+                                    LogUtils.e(tag + "B_Diastole_Shrink==" + B_Diastole_Shrink);
                                 }
                             } else {
                                 if (isCloseDialog) {//是否点击了运动后测量血压

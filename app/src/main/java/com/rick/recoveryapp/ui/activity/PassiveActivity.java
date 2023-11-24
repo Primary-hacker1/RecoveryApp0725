@@ -61,6 +61,7 @@ import java.util.TimerTask;
 public class PassiveActivity extends XPageActivity {
     private boolean isCloseDialog = false;//如果是运动后停止
     String motionHeight;//运动前的高压
+    String motionLow;//运动前的高压
     int modleType = 0;
     ArrayList<Float> EcgListData;
     static ArrayList<Float> OftenListData;
@@ -784,8 +785,8 @@ public class PassiveActivity extends XPageActivity {
                         uploadData.setLow("80");
                     } else {
                         if (isClickBlood) {
-                            uploadData.setHigh("120");
-                            uploadData.setLow("60");
+                            uploadData.setHigh("255");
+                            uploadData.setLow("255");
                         }
                     }
                 }
@@ -837,9 +838,11 @@ public class PassiveActivity extends XPageActivity {
                             LocalConfig.BloodLow = uploadData.getLow();
 
                             if (isClickBlood) {//是否点击过测量血压
+
                                 if (B_Diastole_Shrink.equals("0/0")) {
                                     B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                 }
+
                                 if (isCloseDialog) {
                                     if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
                                         motionHeight = uploadData.getHigh();
@@ -847,6 +850,12 @@ public class PassiveActivity extends XPageActivity {
                                         L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                     }
                                 }
+
+                                if (Objects.equals(B_Diastole_Shrink, L_Diastole_Shrink)) {
+                                    B_Diastole_Shrink = "0" + "/" + "0";
+                                    LogUtils.e(tag + "B_Diastole_Shrink==" + B_Diastole_Shrink);
+                                }
+
                             } else {
                                 if (isCloseDialog) {//是否点击了运动后测量血压
                                     B_Diastole_Shrink = "0" + "/" + "0";//训练前血压
