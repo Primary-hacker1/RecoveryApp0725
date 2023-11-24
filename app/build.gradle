@@ -64,7 +64,7 @@ android {
         generateStubs = true
     }
 
-    applicationVariants.all {
+    applicationVariants.configureEach {
         variant ->
             variant.outputs.all {
                 Calendar calendar = Calendar.getInstance(Locale.CHINA)
