@@ -14,12 +14,15 @@ import com.rick.recoveryapp.ui.activity.u3d.U3DDialogActivity;
 import com.rick.recoveryapp.base.XPageActivity;
 import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
 import com.rick.recoveryapp.databinding.ActivitySelectrolesBinding;
+import com.rick.recoveryapp.ui.activity.u3d.U3DFactory;
 import com.rick.recoveryapp.utils.APKVersionInfoUtils;
 import com.rick.recoveryapp.utils.LocalConfig;
 import com.xuexiang.xhttp2.XHttp;
 import com.xuexiang.xhttp2.callback.SimpleCallBack;
 import com.xuexiang.xhttp2.exception.ApiException;
 import com.xuexiang.xui.utils.StatusBarUtils;
+
+import java.util.Objects;
 
 public class SelectRolesActivity extends XPageActivity {
 
@@ -54,7 +57,7 @@ public class SelectRolesActivity extends XPageActivity {
             //  CheckVersion();
 
         } catch (Exception e) {
-            Log.d("error", e.getMessage());
+            Log.d("error", Objects.requireNonNull(e.getMessage()));
             //     android.view.InflateException: Binary XML file line #19 in com.rick.recoveryapp:layout/xui_dialog_loading: Binary XML file line #19 in com.rick.recoveryapp:layout/xui_dialog_loading: Error inflating class <unknown>
         }
     }
@@ -79,12 +82,13 @@ public class SelectRolesActivity extends XPageActivity {
                 btDataPro = null;
                 AdminMainActivity.instance.finish();
                 U3DActivity.newU3DActivity(this);
+
                 finish();
             }
         });
 
         binding.initImgRole1.setOnClickListener(v -> {
-            if (LocalConfig.sex >= 0 && LocalConfig.sex == 3) {
+            if (LocalConfig.sex == 3) {
                 binding.Box1.setChecked(false);
                 LocalConfig.sex = -1;
             } else {
@@ -99,7 +103,7 @@ public class SelectRolesActivity extends XPageActivity {
         binding.initImgRole2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (LocalConfig.sex >= 0 && LocalConfig.sex == 2) {
+                if (LocalConfig.sex == 2) {
                     binding.Box2.setChecked(false);
                     LocalConfig.sex = -1;
                 } else {
@@ -112,35 +116,29 @@ public class SelectRolesActivity extends XPageActivity {
             }
         });
 
-        binding.initImgRole3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (LocalConfig.sex >= 0 && LocalConfig.sex == 1) {
-                    binding.Box3.setChecked(false);
-                    LocalConfig.sex = -1;
-                } else {
-                    LocalConfig.sex = 1;
-                    binding.Box1.setChecked(false);
-                    binding.Box2.setChecked(false);
-                    binding.Box3.setChecked(true);
-                    binding.Box4.setChecked(false);
-                }
+        binding.initImgRole3.setOnClickListener(v -> {
+            if (LocalConfig.sex == 1) {
+                binding.Box3.setChecked(false);
+                LocalConfig.sex = -1;
+            } else {
+                LocalConfig.sex = 1;
+                binding.Box1.setChecked(false);
+                binding.Box2.setChecked(false);
+                binding.Box3.setChecked(true);
+                binding.Box4.setChecked(false);
             }
         });
 
-        binding.initImgRole4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (LocalConfig.sex >= 0 && LocalConfig.sex == 0) {
-                    binding.Box4.setChecked(false);
-                    LocalConfig.sex = -1;
-                } else {
-                    LocalConfig.sex = 0;
-                    binding.Box1.setChecked(false);
-                    binding.Box2.setChecked(false);
-                    binding.Box3.setChecked(false);
-                    binding.Box4.setChecked(true);
-                }
+        binding.initImgRole4.setOnClickListener(v -> {
+            if (LocalConfig.sex == 0) {
+                binding.Box4.setChecked(false);
+                LocalConfig.sex = -1;
+            } else {
+                LocalConfig.sex = 0;
+                binding.Box1.setChecked(false);
+                binding.Box2.setChecked(false);
+                binding.Box3.setChecked(false);
+                binding.Box4.setChecked(true);
             }
         });
     }
@@ -150,58 +148,5 @@ public class SelectRolesActivity extends XPageActivity {
         super.onDestroy();
         btDataPro = null;
         System.out.println("SelectRolesActivity已被销毁========");
-    }
-
-    public void CheckVersion() {
-//117.50.182.170/api/TestManagement/IsUpada?Version_name=1.0&Version_code=1
-
-        // mMiniLoadingDialog.show();
-        XHttp.get("/api/TestManagement/IsUpada?")
-                .keepJson(true)
-                .params("Version_name", APKVersionInfoUtils.getVersionName(this))
-                .params("Version_code", APKVersionInfoUtils.getVersionCode(this))
-                .execute(new SimpleCallBack<String>() {
-                    @SuppressLint("ResourceAsColor")
-                    @Override
-                    public void onSuccess(String response) {
-                        if (response != null) {
-
-//                            ResultDa redata = gson.fromJson(response, ResultDa.class);
-//                            int code = redata.getCode();
-//                            String res = redata.getResult();
-//                            String message = redata.getMessage();
-//                            if (res.equals("true")) {
-//
-////                                mMiniLoadingDialog.dismiss();
-//                                //更新提示框
-//                                XUpdate.newBuild(context)
-//                                        .updateUrl(Constants.FORCED_UPDATE_URL)
-//                                        .promptTopResId(R.drawable.update_top)
-//                                        .promptThemeColor(ResUtils.getColor(R.color.Progress_bule))
-//                                        .promptButtonTextColor(Color.WHITE)
-//                                        //  .promptHeightRatio(1F)
-//                                        .promptWidthRatio(0.7F)
-//                                        .update();
-////                                promptTopResId：设置顶部背景图片资源ID
-////                                promptTopDrawable：设置顶部背景图片drawable
-////                                promptTopBitmap：设置顶部背景图片位图
-//
-//                            } else if (res.equals("false")) {
-//                                //mMiniLoadingDialog.dismiss();
-//                                Toast.makeText(context, "已经是最新版本", Toast.LENGTH_SHORT).show();
-//                            }
-//                        } else {
-//                            //mMiniLoadingDialog.dismiss();
-//                            Toast.makeText(context, "未获取到服务器信息，版本检测失败", Toast.LENGTH_SHORT).show();
-//                        }
-                        }
-                    }
-
-                    @Override
-                    public void onError(ApiException e) {
-                        // ToastUtils.toast("编辑失败：" + e.getMessage());
-                        Log.d("HttpMessage", e.getMessage());
-                    }
-                });
     }
 }

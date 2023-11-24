@@ -91,6 +91,12 @@ public class U3DActivity extends UnityPlayerActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        U3DFactory.Connect();//每次进来重新获取用户信息
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unity);
@@ -177,7 +183,7 @@ public class U3DActivity extends UnityPlayerActivity {
             PassEcg();
             UnityPlayer.UnitySendMessage("GameMenue", "OnAndPause", "");
         } catch (Exception ex) {
-            Log.d("U3D", ex.getMessage());
+            Log.d("U3D", Objects.requireNonNull(ex.getMessage()));
         }
     }
 // Do others
@@ -697,17 +703,11 @@ public class U3DActivity extends UnityPlayerActivity {
 
                         UnityPlayer.UnitySendMessage("GameMenue", "OnAndStop", "");
                         U3DFactory.btDataPro.sendBTMessage(U3DFactory.GetCmdCode(1, "53", false, 5, 1));
-                        U3DActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                u3d_linear_data.setVisibility(View.GONE);
-                                //  u3d_btn_return.setVisibility(View.GONE);
-                            }
-                        });
+                        U3DActivity.this.runOnUiThread(() -> u3d_linear_data.setVisibility(View.GONE));
                         TimeCountTool.setClean();
                         ActiveTimeTool.setClean();
 
                         initView();
-//
 
                         Intent in = new Intent(context, DataResultsActivity.class);
                         startActivity(in);
@@ -820,11 +820,7 @@ public class U3DActivity extends UnityPlayerActivity {
 
     public String onExit() {
         //u3dCreateStat = 0;
-        U3DActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                u3d_linear_data.setVisibility(View.GONE);
-            }
-        });
+        U3DActivity.this.runOnUiThread(() -> u3d_linear_data.setVisibility(View.GONE));
 
 //         u3d_btn_return.setVisibility(View.GONE);
         stop();

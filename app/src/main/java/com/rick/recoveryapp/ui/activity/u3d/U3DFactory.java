@@ -70,8 +70,7 @@ public class U3DFactory {
     }
 
     public static String Analysis(Object obj) {
-        String JsonStr = gson.toJson(obj);
-        return JsonStr;
+        return gson.toJson(obj);
     }
 
 

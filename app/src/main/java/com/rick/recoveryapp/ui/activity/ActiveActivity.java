@@ -628,8 +628,8 @@ public class ActiveActivity extends XPageActivity {
                 if (UriConfig.test) {
                     uploadData.setBlood("已连接");
                     if (isCloseDialog) {
-                        uploadData.setHigh("150");
-                        uploadData.setLow("80");
+//                        uploadData.setHigh("150");
+//                        uploadData.setLow("80");
                     } else {
                         if(isClickBlood){
                             uploadData.setHigh("120");
