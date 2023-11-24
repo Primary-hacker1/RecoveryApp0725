@@ -632,8 +632,8 @@ public class ActiveActivity extends XPageActivity {
                         uploadData.setLow("80");
                     } else {
                         if (isClickBlood) {
-                            uploadData.setHigh("255");
-                            uploadData.setLow("255");
+                            uploadData.setHigh("120");
+                            uploadData.setLow("60");
                         }
                     }
                 }
@@ -668,20 +668,33 @@ public class ActiveActivity extends XPageActivity {
                             LocalConfig.BloodLow = uploadData.getLow();
 
                             if (isClickBlood) {//是否点击过测量血压
-                                if (B_Diastole_Shrink.equals("0/0")) {
-                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
-                                }
-                                if (isCloseDialog) {
-                                    if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
-                                        motionHeight = uploadData.getHigh();
-                                        observerHigh.onChanged(motionHeight);
-                                        L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+//                                if (B_Diastole_Shrink.equals("0/0")) {
+//                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+//                                }
+//                                if (isCloseDialog) {
+//                                    if (!Objects.equals(motionHeight, uploadData.getHigh())) {//运动完测量血压
+//                                        motionHeight = uploadData.getHigh();
+//                                        observerHigh.onChanged(motionHeight);
+//                                        L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+//                                    }
+//                                }
+//                                if (Objects.equals(B_Diastole_Shrink,
+//                                        L_Diastole_Shrink)) {//训练前训练后不可能血压相同，一样的话就把训练前的改成0/0
+//                                    B_Diastole_Shrink = "0" + "/" + "0";
+//                                    LogUtils.e(tag + "B_Diastole_Shrink==" + B_Diastole_Shrink);
+//                                }
+
+                                if (BloodEndState == 1) {
+                                    //运动后血压
+                                    L_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
+                                    if (!B_Diastole_Shrink.equals(L_Diastole_Shrink)) {
+                                        BloodEndState = 2;
+                                        Toast.makeText(context, "运动后血压测量已完成！", Toast.LENGTH_SHORT).show();
                                     }
-                                }
-                                if (Objects.equals(B_Diastole_Shrink,
-                                        L_Diastole_Shrink)) {//训练前训练后不可能血压相同，一样的话就把训练前的改成0/0
-                                    B_Diastole_Shrink = "0" + "/" + "0";
-                                    LogUtils.e(tag + "B_Diastole_Shrink==" + B_Diastole_Shrink);
+
+                                } else if (BloodEndState == 0) {
+                                    //运动前血压
+                                    B_Diastole_Shrink = uploadData.getLow() + "/" + uploadData.getHigh();
                                 }
                             } else {
                                 if (isCloseDialog) {//是否点击了运动后测量血压
