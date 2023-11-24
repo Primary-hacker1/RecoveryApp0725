@@ -519,7 +519,7 @@ public class ActiveActivity extends XPageActivity {
                                 binding.activeTxtBegin.setCenterString("停  止");
 
                                 binding.activeImgBegin.setBackground(ContextCompat
-                                        .getDrawable(this,R.drawable.stop));
+                                        .getDrawable(this, R.drawable.stop));
                             },
                             getString(R.string.lab_cancel),
                             (dialog, which) -> {
@@ -533,7 +533,7 @@ public class ActiveActivity extends XPageActivity {
                     timeCountTool.startCount();
                     binding.activeTxtBegin.setCenterString("停  止");
                     binding.activeImgBegin.setBackground(ContextCompat
-                            .getDrawable(this,R.drawable.stop));
+                            .getDrawable(this, R.drawable.stop));
                 }
             } else {
                 btDataPro.sendBTMessage(GetCmdCode(0, "50", false));
@@ -628,12 +628,12 @@ public class ActiveActivity extends XPageActivity {
                 if (UriConfig.test) {
                     uploadData.setBlood("已连接");
                     if (isCloseDialog) {
-//                        uploadData.setHigh("150");
-//                        uploadData.setLow("80");
+                        uploadData.setHigh("0");
+                        uploadData.setLow("0");
                     } else {
-                        if(isClickBlood){
-                            uploadData.setHigh("120");
-                            uploadData.setLow("60");
+                        if (isClickBlood) {
+                            uploadData.setHigh("255");
+                            uploadData.setLow("255");
                         }
                     }
                 }
