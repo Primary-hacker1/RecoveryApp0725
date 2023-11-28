@@ -1,5 +1,6 @@
 package com.rick.recoveryapp.ui.activity.u3d;
 
+import com.common.network.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rick.recoveryapp.ui.activity.helper.BtDataProX;
@@ -10,9 +11,10 @@ import com.unity3d.player.UnityPlayer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class U3DFactory {
-
+    private static final String tag = U3DFactory.class.getName();
     static BtDataProX btDataPro = new BtDataProX();
     static String CMD_CODE = "";
     static String IP = LocalConfig.ip;
@@ -48,25 +50,22 @@ public class U3DFactory {
         return CMD_CODE;
     }
 
-    public static void Connect() {
+    public static void connect() {
         ConnectData connectData = new ConnectData();
         connectData.setIp(IP);
         connectData.setPort("1883");
 
         Date date1 = new Date();
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("mmss");
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("mmss", Locale.CHINA);
         String sim1 = dateFormat1.format(date1);
         connectData.setId(sim1);
         connectData.setUsername("admin");
         connectData.setPasswd("password");
         connectData.setBianhao(LocalConfig.medicalNumber);
         connectData.setName(LocalConfig.userName);
-        System.out.println("=========="+LocalConfig.userName+"===============");
-//        connectData.setBianhao("121");
-//        connectData.setName("232");
+        LogUtils.e(tag + LocalConfig.userName);
         connectData.setSex(sex);//性别
         UnityPlayer.UnitySendMessage("DataManager", "Connect", Analysis(connectData));
-
     }
 
     public static String Analysis(Object obj) {

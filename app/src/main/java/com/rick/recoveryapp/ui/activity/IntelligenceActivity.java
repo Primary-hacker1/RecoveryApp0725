@@ -428,9 +428,9 @@ public class IntelligenceActivity extends XPageActivity {
 
             if (addressBean != null) {
                 btDataPro.sendBTMessage(btDataPro.
-                        GetCmdCode(addressBean.getEcg(),
-                                addressBean.getBloodPressure(),
-                                addressBean.getBloodOxygen()));
+                        GetCmdCode(Objects.requireNonNull(addressBean.getEcg()),
+                                Objects.requireNonNull(addressBean.getBloodPressure()),
+                                Objects.requireNonNull(addressBean.getBloodOxygen())));
             }
         });
 

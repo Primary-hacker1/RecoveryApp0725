@@ -16,7 +16,6 @@ import com.rick.recoveryapp.R;
 import com.rick.recoveryapp.ui.activity.AdminMainActivity;
 import com.rick.recoveryapp.ui.activity.DataResultsActivity;
 import com.rick.recoveryapp.ui.BaseApplication;
-import com.rick.recoveryapp.ui.activity.bean.AddressBean;
 import com.rick.recoveryapp.ui.service.BtKeepService;
 import com.rick.recoveryapp.chart.MyAVG;
 import com.rick.recoveryapp.entity.EcgData;
@@ -93,7 +92,7 @@ public class U3DActivity extends UnityPlayerActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        U3DFactory.Connect();//每次进来重新获取用户信息
+        U3DFactory.connect();//每次进来重新获取用户信息
     }
 
     @Override
@@ -169,7 +168,7 @@ public class U3DActivity extends UnityPlayerActivity {
 //            String medicalNumber = bundle.getString("medicalNumber");
 //            String userName = bundle.getString("userName");
 
-            U3DFactory.Connect();
+            U3DFactory.connect();
             u3d_waveview_one.resetCanavas();
             OftenListData.clear();
             OftenListData = new ArrayList<>();
